@@ -597,6 +597,7 @@
         <div id="admin-list"></div>
         <button id="admin-add-btn">➕ Добавить позицию</button>
         <button id="admin-download-btn">💾 Скачать menu.json</button>
+        <button id="admin-save-github-btn">🚀 Сохранить на GitHub</button>
         <button id="back-from-admin-btn">← Назад</button>
     </div>
 </section>
@@ -841,6 +842,47 @@
         alert('Файл menu.json скачан. Загрузите его в репозиторий на GitHub, заменив старый.');
       });
 
+      const GH_TOKEN  = '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';
+      const GH_REPO   = 'sashasazontov/lummu';
+      const GH_PATH   = 'menu.json';
+      const GH_BRANCH = 'main';
+
+      document.getElementById('admin-save-github-btn').addEventListener('click', () => {
+        if (!confirm('Сохранить текущие правки на GitHub?')) return;
+
+        const data = { categories: menuCategories, items: adminItems };
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        const headers = {
+          'Authorization': 'Bearer ' + GH_TOKEN,
+          'Accept': 'application/vnd.github+json'
+        };
+
+        fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_PATH}`, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'Обновление меню из админ-панели',
+              content: content,
+              branch: GH_BRANCH,
+              sha: file.sha
+            })
+          }))
+          .then(r => r.json())
+          .then(res => {
+            if (res.commit) {
+              localStorage.removeItem('lummu_menu');
+              menuItems = adminItems.map(x => ({ ...x }));
+              alert('✅ Сохранено на GitHub! Через минуту-другую изменения увидят все.');
+            } else {
+              console.error(res);
+              alert('Ошибка GitHub: ' + (res.message || 'неизвестная'));
+            }
+          })
+          .catch(e => alert('Ошибка сети: ' + e));
+      });
+           
       // локальное применение правок без перезагрузки (живёт до очистки браузера)
       function saveMenuOverride() {
         localStorage.setItem('lummu_menu', JSON.stringify({ categories: menuCategories, items: menuItems }));
