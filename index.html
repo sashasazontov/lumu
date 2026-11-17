@@ -446,7 +446,7 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', () => {
 
       let cart = [];
       try {
@@ -462,10 +462,11 @@
       // === НАСТРОЙКИ ===
       let menuItems = [];
 
-      // --- Состояние заказа (стол + id первого сообщения) ---
-      let orderState = { table: null, lastMsgId: null, orderNo: 0 };
+      // --- Состояние заказа (стол + сообщение + накопленные позиции) ---
+      let orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
       try {
-        orderState = JSON.parse(localStorage.getItem('lummu_order')) || orderState;
+        const saved = JSON.parse(localStorage.getItem('lummu_order'));
+        if (saved) orderState = Object.assign({ items: [] }, saved);
       } catch (e) {}
       function saveOrderState() {
         localStorage.setItem('lummu_order', JSON.stringify(orderState));
@@ -656,7 +657,7 @@
           resetBtn.style.cssText = 'width:100%;margin-top:8px;padding:8px;background:none;border:1px solid #444;color:var(--text-muted);border-radius:8px;cursor:pointer;font-size:0.85rem;';
           resetBtn.onclick = () => {
             if (confirm('Начать новый заказ? Стол будет запрошен заново.')) {
-              orderState = { table: null, lastMsgId: null, orderNo: 0 };
+              orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
               saveOrderState();
               updateCart();
             }
@@ -697,7 +698,7 @@
         }
       });
 
-      // --- Отправка заказа ---
+      // --- Отправка заказа / накопление в одно сообщение ---
       checkoutBtn.addEventListener('click', () => {
         if (cart.length === 0) return;
 
@@ -711,18 +712,6 @@
           tableNumber = tableNumber.trim();
         }
 
-        const orderPayload = {
-          table: tableNumber,
-          items: cart.map(item => ({
-            name: item.name,
-            size: item.size || null,
-            note: item.note || null,
-            qty: item.qty,
-            price: item.price
-          })),
-          total: cart.reduce((sum, i) => sum + i.price * i.qty, 0)
-        };
-
         checkoutBtn.disabled = true;
         const originalText = checkoutBtn.textContent;
         checkoutBtn.textContent = 'Отправка...';
@@ -730,25 +719,38 @@
         const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
         const CHAT_ID   = '-1003907000620';
 
-        const isAddition = orderState.orderNo > 0;
+        // Сливаем новые позиции с уже накопленными
+        cart.forEach(newItem => {
+          const match = orderState.items.find(old =>
+            old.name === newItem.name &&
+            old.size === newItem.size &&
+            old.note === newItem.note
+          );
+          if (match) match.qty += newItem.qty;
+          else orderState.items.push({ ...newItem });
+        });
 
-        let text = isAddition
-          ? `➕ ДОПОЛНЕНИЕ к заказу — стол ${orderPayload.table}\n⚠️ Ждёт подтверждения админа\n\n`
-          : `🛎 Заказ со стола ${orderPayload.table}\n\n`;
+        const grandTotal = orderState.items.reduce((s, i) => s + i.price * i.qty, 0);
+        orderState.orderNo += 1;
 
-        orderPayload.items.forEach(item => {
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        let text = `🛎 Заказ по столу ${tableNumber}\n`;
+        if (orderState.orderNo > 1) text += `🔄 Обновлено в ${time} — проверьте состав\n`;
+        text += '\n';
+        orderState.items.forEach(item => {
           const size = item.size ? ` (${item.size})` : '';
           const note = item.note ? ` — ${item.note}` : '';
-          text += `• ${item.name}${size}${note} ×${item.qty} — ${item.price} ₽\n`;
+          text += `• ${item.name}${size}${note} ×${item.qty} — ${item.price * item.qty} ₽\n`;
         });
-        text += `\n💵 Итого: ${orderPayload.total} ₽`;
+        text += `\n💵 Итого: ${grandTotal} ₽`;
 
-        const params = { chat_id: CHAT_ID, text: text };
-        if (isAddition && orderState.lastMsgId) {
-          params.reply_to_message_id = orderState.lastMsgId;
-        }
+        const isNew = !orderState.lastMsgId;
+        const params = isNew
+          ? { chat_id: CHAT_ID, text: text }
+          : { chat_id: CHAT_ID, message_id: orderState.lastMsgId, text: text };
 
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${isNew ? 'sendMessage' : 'editMessageText'}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(params)
@@ -756,16 +758,20 @@
         .then(res => res.json())
         .then(data => {
           if (data.ok) {
-            if (!isAddition) {
-              orderState.lastMsgId = data.result.message_id;
-            }
-            orderState.table = orderPayload.table;
-            orderState.orderNo += 1;
+            if (isNew) orderState.lastMsgId = data.result.message_id;
+            orderState.table = tableNumber;
             saveOrderState();
 
-            alert(isAddition
-              ? '✅ Дополнение отправлено в группу. Админ подтвердит его.'
-              : '✅ Заказ успешно отправлен в Telegram!');
+            alert(isNew
+              ? '✅ Заказ отправлен в Telegram!'
+              : `✅ Заказ обновлён! Позиций: ${orderState.items.length}`);
+            cart.length = 0;
+            updateCart();
+            showMenu();
+          } else if (!isNew && (data.description || '').includes('message is not modified')) {
+            // текст не изменился — считаем успехом
+            orderState.table = tableNumber;
+            saveOrderState();
             cart.length = 0;
             updateCart();
             showMenu();
