@@ -458,6 +458,47 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+  #admin-page > .tables-box > button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.admin-card {
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+.admin-card label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 6px 0 2px;
+}
+.admin-card input, .admin-card textarea, .admin-card select {
+    width: 100%;
+    padding: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+.admin-card textarea { resize: vertical; }
+.admin-row { display: flex; gap: 8px; }
+.admin-row > div { flex: 1; }
+.admin-del-btn {
+    width: 100%; margin-top: 8px; padding: 8px;
+    background: none; border: 1px solid #e74c3c; color: #e74c3c;
+    border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+}      
         footer {
             text-align: center;
             padding: 2rem;
@@ -485,6 +526,7 @@
             <button id="nav-menu-btn" class="nav-btn active">Меню</button>
             <button id="nav-cart-btn" class="nav-btn">Корзина (<span id="cart-count">0</span>)</button>
             <button id="nav-tables-btn" class="nav-btn">Столы</button>
+            <button id="nav-admin-btn" class="nav-btn">Админ</button>
            </div>
 
     <!-- ГЛАВНАЯ СТРАНИЦА -->
@@ -528,6 +570,19 @@
         <button id="back-from-tables-btn">← Назад</button>
     </div>
 </section>
+
+    <!-- РЕДАКТОР МЕНЮ -->
+<section id="admin-page" style="display: none;">
+    <div class="tables-box">
+        <h2>Редактор меню</h2>
+        <div id="admin-cat-list"></div>
+        <div id="admin-list"></div>
+        <button id="admin-add-btn">➕ Добавить позицию</button>
+        <button id="admin-download-btn">💾 Скачать menu.json</button>
+        <button id="back-from-admin-btn">← Назад</button>
+    </div>
+</section>
+
     
     <div class="categories" style="display: none;"></div>
 
@@ -564,6 +619,7 @@
 
       // === НАСТРОЙКИ ===
       let menuItems = [];
+      let menuCategories = [];
 
       // --- Активные заказы по столам ---
       let tables = [];
@@ -594,8 +650,11 @@
       const navCartBtn   = document.getElementById('nav-cart-btn');
       const menuElements = document.querySelectorAll('.categories, .items-grid');
       const headerNav    = document.getElementById('header-nav');
-      const tablesPage     = document.getElementById('tables-page');
-      const navTablesBtn   = document.getElementById('nav-tables-btn');
+      const tablesPage   = document.getElementById('tables-page');
+      const navTablesBtn = document.getElementById('nav-tables-btn');
+      const adminPage    = document.getElementById('admin-page');
+      const navAdminBtn  = document.getElementById('nav-admin-btn');
+
                  
       function setActiveNav(active) {
         navMenuBtn.classList.toggle('active', active === 'menu');
@@ -603,6 +662,7 @@
       }
 
       function hideAll() {
+        adminPage.style.display = 'none';
         tablesPage.style.display = 'none';
         heroPage.style.display = 'none';
         rulesPage.style.display = 'none';
@@ -640,11 +700,136 @@
         navCartBtn.classList.remove('active');
         renderTables();
       }
+            // === РЕДАКТОР МЕНЮ ===
+      let adminItems = [];
+      const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+      function showAdmin() {
+        hideAll();
+        adminPage.style.display = 'flex';
+        headerNav.style.display = 'flex';
+        navMenuBtn.classList.remove('active');
+        navCartBtn.classList.remove('active');
+        renderAdmin();
+      }
+
+      function renderAdmin() {
+        const list = document.getElementById('admin-list');
+        if (!menuItems.length) {
+          list.innerHTML = '<p class="empty-hint">Меню ещё не загрузилось — зайдите во вкладку «Меню» и вернитесь.</p>';
+          return;
+        }
+
+        adminItems = JSON.parse(JSON.stringify(menuItems)); // рабочая копия
+
+        const catOptions = menuCategories
+          .map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+
+        document.getElementById('admin-cat-list').innerHTML = `
+          <h4 style="color: var(--accent); margin-bottom: 8px;">Категории</h4>
+          ${menuCategories.map((c, ci) => `
+            <div class="admin-row" style="margin-bottom: 6px;">
+              <input data-cat-index="${ci}" value="${esc(c.title)}">
+            </div>`).join('')}
+        `;
+
+        list.innerHTML = adminItems.map((it, i) => `
+          <div class="admin-card" data-index="${i}">
+            <div class="admin-row">
+              <div><label>Название</label><input data-field="title" value="${esc(it.title)}"></div>
+              <div><label>Цена (₽, пусто = без цены)</label><input data-field="price" type="number" value="${it.price ?? ''}"></div>
+            </div>
+            <div class="admin-row">
+              <div><label>Категория</label><select data-field="category">${catOptions}</select></div>
+              <div><label>Размер (необязательно)</label><input data-field="size" value="${esc(it.size || '')}"></div>
+            </div>
+            <label>Описание</label>
+            <textarea data-field="desc" rows="2">${esc(it.desc || '')}</textarea>
+            <label>Подсказка в поле заметки (необязательно)</label>
+            <input data-field="note" value="${esc(it.note || '')}">
+            <label>Ссылка на фото</label>
+            <input data-field="img" value="${esc(it.img || '')}">
+            <div class="admin-row" style="margin-top: 8px;">
+              <div><label><input type="checkbox" data-field="promo" ${it.promo ? 'checked' : ''}> Акция</label></div>
+              <div><label><input type="checkbox" data-field="sold" ${it.sold ? 'checked' : ''}> Распродано</label></div>
+              <div><label><input type="checkbox" data-field="tobaccoBtn" ${it.tobaccoBtn ? 'checked' : ''}> Кнопка «Табаки»</label></div>
+            </div>
+            <button class="admin-del-btn">🗑 Удалить позицию</button>
+          </div>`).join('');
+
+        // выставить сохранённые категории в селектах
+        list.querySelectorAll('.admin-card').forEach(card => {
+          const it = adminItems[+card.dataset.index];
+          const sel = card.querySelector('select');
+          if (it.category) sel.value = it.category;
+        });
+      }
+
+      document.getElementById('admin-list').addEventListener('input', (e) => {
+        const card = e.target.closest('.admin-card');
+        const field = e.target.dataset.field;
+        if (!card || !field) return;
+        const it = adminItems[+card.dataset.index];
+        if (field === 'price') it.price = e.target.value === '' ? null : Number(e.target.value);
+        else if (e.target.type === 'checkbox') it[field] = e.target.checked;
+        else it[field] = e.target.value;
+      });
+
+      document.getElementById('admin-cat-list').addEventListener('input', (e) => {
+        const ci = e.target.dataset.catIndex;
+        if (ci === undefined) return;
+        menuCategories[+ci].title = e.target.value;
+      });
+
+      document.getElementById('admin-list').addEventListener('click', (e) => {
+        if (!e.target.classList.contains('admin-del-btn')) return;
+        const card = e.target.closest('.admin-card');
+        const idx = +card.dataset.index;
+        if (confirm(`Удалить «${adminItems[idx].title}» из меню? Изменение попадёт в файл только после скачивания.`)) {
+          adminItems.splice(idx, 1);
+          menuItems.splice(idx, 1); // чтобы меню на сайте сразу отразило правку
+          saveMenuOverride();
+          renderAdmin();
+        }
+      });
+
+      document.getElementById('admin-add-btn').addEventListener('click', () => {
+        const newItem = {
+          id: 'item-' + Date.now(),
+          title: 'Новая позиция',
+          category: menuCategories.length ? menuCategories[0].id : 'all',
+          price: 0
+        };
+        adminItems.push({ ...newItem });
+        menuItems.push({ ...newItem });
+        saveMenuOverride();
+        renderAdmin();
+      });
+
+      document.getElementById('admin-download-btn').addEventListener('click', () => {
+        const data = { categories: menuCategories, items: adminItems };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'menu.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        alert('Файл menu.json скачан. Загрузите его в репозиторий на GitHub, заменив старый.');
+      });
+
+      // локальное применение правок без перезагрузки (живёт до очистки браузера)
+      function saveMenuOverride() {
+        localStorage.setItem('lummu_menu', JSON.stringify({ categories: menuCategories, items: menuItems }));
+      }
+      try {
+        const override = JSON.parse(localStorage.getItem('lummu_menu'));
+        if (override && override.items) { menuCategories = override.categories || []; menuItems = override.items; }
+      } catch (e) {}           
 
       function renderTables() {
         const list = document.getElementById('tables-list');
         list.innerHTML = '';
-
+          
         // --- Активные столы ---
         if (tables.length === 0) {
           list.insertAdjacentHTML('beforeend',
@@ -774,12 +959,15 @@
       document.getElementById('back-from-rules-btn').addEventListener('click', showHero);
       navTablesBtn.addEventListener('click', showTables);
       document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
-      
+      navAdminBtn.addEventListener('click', showAdmin);
+      document.getElementById('back-from-admin-btn').addEventListener('click', showMenu);
+              
      // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
           const menu = await fetch('menu.json?v=' + Date.now()).then(r => r.json());
           menuItems = menu.items;
+          menuCategories = menu.categories;
 
           document.querySelector('.categories').innerHTML = menu.categories
             .map(c => `<button class="cat-btn" data-category="${c.id}">${c.title}</button>`)
