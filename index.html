@@ -728,15 +728,29 @@
         const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
         const CHAT_ID   = '-1003907000620';
 
-        try {
-          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
-          });
-        } catch (e) { /* сеть недоступна — стол всё равно закрыт */ }
-      }
+        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(p)
+        }).then(r => r.json());
 
+        const send = () => request('sendMessage', { chat_id: CHAT_ID, text: text })
+          .then(data => {
+            if (data.ok) {
+              t.lastMsgId = data.result.message_id;
+              saveClosed();
+            }
+          });
+
+        if (t.lastMsgId) {
+          request('editMessageText', { chat_id: CHAT_ID, message_id: t.lastMsgId, text: text })
+            .then(data => {
+              if (!data.ok) send();
+            });
+        } else {
+          send();
+        }
+      }
                           
       function showHero() {
         hideAll();
