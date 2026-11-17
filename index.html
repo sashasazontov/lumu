@@ -118,6 +118,24 @@
             border-color: rgba(46, 204, 113, 0.6);
         }
 
+        #nav-admin-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.4;
+  z-index: 100;
+}
+#nav-admin-btn:hover { opacity: 0.9; }
+
+
         .item-card.promo-card {
             border: 7.5px solid var(--accent-green);
             background-color: rgba(46, 204, 113, 0.05);
@@ -519,14 +537,14 @@
         }
     </style>
 </head>
-
+    
 <body>
 
+    
            <div class="header-nav" id="header-nav" style="display: none;">
             <button id="nav-menu-btn" class="nav-btn active">Меню</button>
             <button id="nav-cart-btn" class="nav-btn">Корзина (<span id="cart-count">0</span>)</button>
             <button id="nav-tables-btn" class="nav-btn">Столы</button>
-            <button id="nav-admin-btn" class="nav-btn">Админ</button>
            </div>
 
     <!-- ГЛАВНАЯ СТРАНИЦА -->
@@ -705,6 +723,12 @@
       const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
       function showAdmin() {
+        const ADMIN_PASSWORD = 'Sasha2009';
+        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
+          const pass = prompt('Пароль администратора:');
+          if (pass !== ADMIN_PASSWORD) return;
+          sessionStorage.setItem('lummu_admin_ok', '1');
+        }
         hideAll();
         adminPage.style.display = 'flex';
         headerNav.style.display = 'flex';
@@ -1309,5 +1333,7 @@
     });
                      
     </script>
+    
+    <button id="nav-admin-btn" title="Служебный вход">⚙</button>
 </body>
 </html>
