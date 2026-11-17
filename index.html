@@ -392,6 +392,72 @@
             border-color: transparent;
         }
 
+        #tables-page {
+    min-height: 90vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+#tables-page .tables-box {
+    background: var(--card-dark);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    max-width: 560px;
+    width: 100%;
+}
+#tables-page h2 {
+    color: var(--accent-blue);
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+.table-card {
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+.table-card h4 { color: var(--accent); margin-bottom: 8px; }
+.table-card .table-lines {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+.table-card .table-total {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.table-card .table-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.table-card .table-actions button {
+    flex: 1;
+    padding: 8px;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.btn-close-table   { border: 1px solid #e74c3c; color: #e74c3c; }
+.btn-restore-table { border: 1px solid var(--accent-green); color: var(--accent-green); }
+.btn-delete-table  { border: 1px solid #444; color: #777; }
+#tables-page .empty-hint {
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+#tables-page > .tables-box > button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
         footer {
             text-align: center;
             padding: 2rem;
@@ -418,7 +484,8 @@
            <div class="header-nav" id="header-nav" style="display: none;">
             <button id="nav-menu-btn" class="nav-btn active">Меню</button>
             <button id="nav-cart-btn" class="nav-btn">Корзина (<span id="cart-count">0</span>)</button>
-        </div>
+            <button id="nav-tables-btn" class="nav-btn">Столы</button>
+           </div>
 
     <!-- ГЛАВНАЯ СТРАНИЦА -->
     <section id="hero-page">
@@ -453,6 +520,15 @@
         </div>
     </section>
 
+    <!-- ПАНЕЛЬ УПРАВЛЕНИЯ СТОЛАМИ -->
+<section id="tables-page" style="display: none;">
+    <div class="tables-box">
+        <h2>Столы</h2>
+        <div id="tables-list"></div>
+        <button id="back-from-tables-btn">← Назад</button>
+    </div>
+</section>
+    
     <div class="categories" style="display: none;"></div>
 
     <main class="items-grid" style="display: none;"></main>
@@ -500,6 +576,17 @@
         localStorage.setItem('lummu_tables', JSON.stringify(tables));
       }
 
+      // --- Архив закрытых столов ---
+      let closedTables = [];
+      try {
+        closedTables = JSON.parse(localStorage.getItem('lummu_closed')) || [];
+      } catch (e) {
+        closedTables = [];
+      }
+      function saveClosed() {
+        localStorage.setItem('lummu_closed', JSON.stringify(closedTables));
+      }           
+
       // --- Переключение вкладок ---
       const heroPage     = document.getElementById('hero-page');
       const rulesPage    = document.getElementById('rules-page');
@@ -507,13 +594,16 @@
       const navCartBtn   = document.getElementById('nav-cart-btn');
       const menuElements = document.querySelectorAll('.categories, .items-grid');
       const headerNav    = document.getElementById('header-nav');
-
+      const tablesPage     = document.getElementById('tables-page');
+      const navTablesBtn   = document.getElementById('nav-tables-btn');
+                 
       function setActiveNav(active) {
         navMenuBtn.classList.toggle('active', active === 'menu');
         navCartBtn.classList.toggle('active', active === 'cart');
       }
 
       function hideAll() {
+        tablesPage.style.display = 'none';
         heroPage.style.display = 'none';
         rulesPage.style.display = 'none';
         cartContainer.style.display = 'none';
@@ -542,6 +632,89 @@
         headerNav.style.display = 'flex';
       }
 
+             function showTables() {
+        hideAll();
+        tablesPage.style.display = 'flex';
+        headerNav.style.display = 'flex';
+        navMenuBtn.classList.remove('active');
+        navCartBtn.classList.remove('active');
+        renderTables();
+      }
+
+      function renderTables() {
+        const list = document.getElementById('tables-list');
+        list.innerHTML = '';
+
+        // --- Активные столы ---
+        if (tables.length === 0) {
+          list.insertAdjacentHTML('beforeend',
+            '<p class="empty-hint">Активных столов нет. Оформите первый заказ — стол появится здесь.</p>');
+        }
+
+        tables.forEach((t, idx) => {
+          const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const lines = t.items
+            .map(i => `• ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`)
+            .join('<br>');
+
+          const card = document.createElement('div');
+          card.className = 'table-card';
+          card.innerHTML = `
+            <h4>Стол ${t.table}</h4>
+            <div class="table-lines">${lines || '<i>— нет позиций —</i>'}</div>
+            <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
+            <div class="table-actions">
+              <button class="btn-close-table">Закрыть стол</button>
+            </div>`;
+          card.querySelector('.btn-close-table').onclick = () => {
+            if (confirm(`Закрыть стол ${t.table}? Позже можно будет открыть заново из архива.`)) {
+              closedTables.unshift(tables.splice(idx, 1)[0]);
+              saveTables();
+              saveClosed();
+              renderTables();
+            }
+          };
+          list.appendChild(card);
+        });
+
+        // --- Архив ---
+        if (closedTables.length) {
+          list.insertAdjacentHTML('beforeend', '<h4 style="margin: 16px 0 10px; color: var(--text-muted);">Закрытые столы</h4>');
+        }
+
+        closedTables.forEach((t, idx) => {
+          const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const lines = t.items
+            .map(i => `• ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`)
+            .join('<br>');
+
+          const card = document.createElement('div');
+          card.className = 'table-card';
+          card.innerHTML = `
+            <h4>Стол ${t.table}</h4>
+            <div class="table-lines">${lines}</div>
+            <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
+            <div class="table-actions">
+              <button class="btn-restore-table">↩ Открыть заново</button>
+              <button class="btn-delete-table">Удалить совсем</button>
+            </div>`;
+          card.querySelector('.btn-restore-table').onclick = () => {
+            tables.push(closedTables.splice(idx, 1)[0]);
+            saveTables();
+            saveClosed();
+            renderTables();
+          };
+          card.querySelector('.btn-delete-table').onclick = () => {
+            if (confirm(`Удалить стол ${t.table} из архива навсегда?`)) {
+              closedTables.splice(idx, 1);
+              saveClosed();
+              renderTables();
+            }
+          };
+          list.appendChild(card);
+        });
+      }
+                       
       function showHero() {
         hideAll();
         heroPage.style.display = 'flex';
@@ -549,14 +722,16 @@
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
       }
-
+                 
       navMenuBtn.addEventListener('click', showMenu);
-      navCartBtn.addEventListener('click', showCart);
+      navCartBtn.addEventListener('click', showCart);           
       document.getElementById('open-menu-btn').addEventListener('click', showMenu);
       document.getElementById('open-rules-btn').addEventListener('click', showRules);
       document.getElementById('back-from-rules-btn').addEventListener('click', showHero);
-
-      // === МЕНЮ ИЗ JSON ===
+      navTablesBtn.addEventListener('click', showTables);
+      document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
+      
+     // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
           const menu = await fetch('menu.json').then(r => r.json());
