@@ -842,7 +842,6 @@
         alert('Файл menu.json скачан. Загрузите его в репозиторий на GitHub, заменив старый.');
       });
 
-      const GH_TOKEN  = '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';
       const GH_REPO   = 'sashasazontov/lumu';
       const GH_PATH   = 'menu.json';
       const GH_BRANCH = 'main';
@@ -850,10 +849,22 @@
       document.getElementById('admin-save-github-btn').addEventListener('click', () => {
         if (!confirm('Сохранить текущие правки на GitHub?')) return;
 
+        let ghToken = localStorage.getItem('lummu_gh_token');
+        if (!ghToken) {
+          ghToken = prompt('Вставьте GitHub-токен (github_pat_...):');
+          if (!ghToken) return;
+          ghToken = ghToken.trim();
+          if (!ghToken.startsWith('github_pat_')) {
+            alert('Строка не похожа на токен. Нажмите кнопку ещё раз и вставьте его целиком.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', ghToken);
+        }
+
         const data = { categories: menuCategories, items: adminItems };
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
         const headers = {
-          'Authorization': 'Bearer ' + GH_TOKEN,
+          'Authorization': 'Bearer ' + ghToken,
           'Accept': 'application/vnd.github+json'
         };
 
@@ -877,11 +888,15 @@
               alert('✅ Сохранено на GitHub! Через минуту-другую изменения увидят все.');
             } else {
               console.error(res);
+              if ((res.message || '') === 'Bad credentials') {
+                localStorage.removeItem('lummu_gh_token');
+              }
               alert('Ошибка GitHub: ' + (res.message || 'неизвестная'));
             }
           })
           .catch(e => alert('Ошибка сети: ' + e));
       });
+
            
       // локальное применение правок без перезагрузки (живёт до очистки браузера)
       function saveMenuOverride() {
