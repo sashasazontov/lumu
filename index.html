@@ -721,9 +721,12 @@
         });
       }
 
-        function sendTableClosed(t) {
+            function sendTableClosed(t) {
         const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
         const text = `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
+
+        const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
+        const CHAT_ID   = '-1003907000620';
 
         try {
           fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -733,6 +736,7 @@
           });
         } catch (e) { /* сеть недоступна — стол всё равно закрыт */ }
       }
+
                           
       function showHero() {
         hideAll();
