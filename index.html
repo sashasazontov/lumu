@@ -663,17 +663,23 @@
             <h4>Стол ${t.table}</h4>
             <div class="table-lines">${lines || '<i>— нет позиций —</i>'}</div>
             <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
-            <div class="table-actions">
-              <button class="btn-close-table">Закрыть стол</button>
+                        <div class="table-actions">
+              <button class="btn-close-table" data-pay="💵 Наличка">💵 Наличка</button>
+              <button class="btn-close-table" data-pay="💳 Перевод">💳 Перевод</button>
             </div>`;
-          card.querySelector('.btn-close-table').onclick = () => {
-            if (confirm(`Закрыть стол ${t.table}? Позже можно будет открыть заново из архива.`)) {
-              closedTables.unshift(tables.splice(idx, 1)[0]);
-              saveTables();
-              saveClosed();
-              renderTables();
-            }
-          };
+          card.querySelectorAll('.btn-close-table').forEach(btn => {
+            btn.onclick = () => {
+              if (confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) {
+                const closed = tables.splice(idx, 1)[0];
+                closed.pay = btn.dataset.pay;
+                closedTables.unshift(closed);
+                saveTables();
+                saveClosed();
+                renderTables();
+                sendTableClosed(closed);
+              }
+            };
+          });
           list.appendChild(card);
         });
 
@@ -714,7 +720,20 @@
           list.appendChild(card);
         });
       }
-                       
+
+        function sendTableClosed(t) {
+        const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+        const text = `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
+
+        try {
+          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+          });
+        } catch (e) { /* сеть недоступна — стол всё равно закрыт */ }
+      }
+                          
       function showHero() {
         hideAll();
         heroPage.style.display = 'flex';
