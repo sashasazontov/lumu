@@ -472,6 +472,17 @@
         localStorage.setItem('lummu_order', JSON.stringify(orderState));
       }
 
+      // --- Сохранённые заказы других столов ---
+      let savedOrders = [];
+      try {
+        savedOrders = JSON.parse(localStorage.getItem('lummu_saved')) || [];
+      } catch (e) {
+        savedOrders = [];
+      }
+      function saveSavedOrders() {
+        localStorage.setItem('lummu_saved', JSON.stringify(savedOrders));
+      }
+
       // --- Переключение вкладок ---
       const heroPage     = document.getElementById('hero-page');
       const rulesPage    = document.getElementById('rules-page');
@@ -649,24 +660,54 @@
         }
         totalRow.innerHTML = `<span>Итого:</span><span><strong>${total.toLocaleString()} ₽</strong></span>`;
 
-        // --- Кнопка сброса (новый заказ) ---
+        // --- Кнопки смены / возврата к столу ---
         let resetBtn = cartContainer.querySelector('.reset-order-btn');
         if (!resetBtn) {
           resetBtn = document.createElement('button');
           resetBtn.className = 'reset-order-btn';
           resetBtn.style.cssText = 'width:100%;margin-top:8px;padding:8px;background:none;border:1px solid #444;color:var(--text-muted);border-radius:8px;cursor:pointer;font-size:0.85rem;';
-          resetBtn.onclick = () => {
-            if (confirm('Начать новый заказ? Стол будет запрошен заново.')) {
-              orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
-              saveOrderState();
-              updateCart();
-            }
-          };
           cartContainer.insertBefore(resetBtn, checkoutBtn);
         }
         resetBtn.textContent = orderState.table
-          ? `Стол: ${orderState.table} — начать новый заказ`
-          : 'Новый заказ (сбросить стол)';
+          ? `Стол: ${orderState.table} — сменить стол`
+          : 'Другой стол';
+
+        resetBtn.onclick = () => {
+          // сохраняем текущий заказ в список, если он есть
+          if (orderState.table) {
+            savedOrders = savedOrders.filter(o => o.table !== orderState.table);
+            savedOrders.unshift({ ...orderState });
+            if (savedOrders.length > 5) savedOrders = savedOrders.slice(0, 5); // держим 5 последних
+            saveSavedOrders();
+          }
+          orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
+          saveOrderState();
+          alert('Текущий заказ сохранён. Теперь наберите позиции — при оформлении спросим номер нового стола.');
+          showMenu();
+        };
+
+        // кнопки возврата к сохранённым столам
+        cartContainer.querySelectorAll('.back-to-order-btn').forEach(b => b.remove());
+        savedOrders.forEach((saved, idx) => {
+          const backBtn = document.createElement('button');
+          backBtn.className = 'back-to-order-btn';
+          const savedTotal = saved.items.reduce((s, i) => s + i.price * i.qty, 0);
+          backBtn.textContent = `↩ Вернуться к столу ${saved.table} (${saved.items.length} поз., ${savedTotal.toLocaleString()} ₽)`;
+          backBtn.style.cssText = 'width:100%;margin-top:8px;padding:8px;background:none;border:1px solid var(--accent-blue);color:var(--accent-blue);border-radius:8px;cursor:pointer;font-size:0.85rem;';
+          backBtn.onclick = () => {
+            // текущий активный заказ тоже не теряем
+            if (orderState.table) {
+              savedOrders = savedOrders.filter(o => o.table !== orderState.table);
+              savedOrders.unshift({ ...orderState });
+            }
+            savedOrders.splice(idx, 1); // убираем стол, к которому возвращаемся
+            saveSavedOrders();
+            orderState = JSON.parse(JSON.stringify(saved));
+            saveOrderState();
+            updateCart();
+          };
+          cartContainer.insertBefore(backBtn, checkoutBtn);
+        });
 
         checkoutBtn.disabled = count === 0;
         localStorage.setItem('lummu_cart', JSON.stringify(cart));
@@ -769,7 +810,6 @@
             updateCart();
             showMenu();
           } else if (!isNew && (data.description || '').includes('message is not modified')) {
-            // текст не изменился — считаем успехом
             orderState.table = tableNumber;
             saveOrderState();
             cart.length = 0;
@@ -790,7 +830,7 @@
         });
       });
     });
-
+                 
     </script>
 </body>
 </html>
