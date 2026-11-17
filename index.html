@@ -463,7 +463,6 @@
       let menuItems = [];
 
       // --- Активные заказы по столам ---
-      // каждый элемент: { table, lastMsgId, orderNo, items: [...] }
       let tables = [];
       try {
         tables = JSON.parse(localStorage.getItem('lummu_tables')) || [];
@@ -760,33 +759,52 @@
         const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
         const CHAT_ID   = '-1003907000620';
 
-        // вливаем позиции корзины в заказ стола
+        // Сливаем позиции корзины с заказом стола и запоминаем, что добавилось
+        const added = [];
         cart.forEach(newItem => {
           const match = table.items.find(old =>
             old.name === newItem.name &&
             old.size === newItem.size &&
             old.note === newItem.note
           );
-          if (match) match.qty += newItem.qty;
-          else table.items.push({ ...newItem });
+          if (match) {
+            match.qty += newItem.qty;
+          } else {
+            table.items.push({ ...newItem });
+          }
+          added.push({ ...newItem });
         });
 
         const grandTotal = table.items.reduce((s, i) => s + i.price * i.qty, 0);
         table.orderNo += 1;
 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const isNew = !table.lastMsgId;
 
-        let text = `🛎 Заказ по столу ${table.table}\n`;
-        if (table.orderNo > 1) text += `🔄 Обновлено в ${time} — проверьте состав\n`;
-        text += '\n';
-        table.items.forEach(item => {
+        const itemLine = (item) => {
           const size = item.size ? ` (${item.size})` : '';
           const note = item.note ? ` — ${item.note}` : '';
-          text += `• ${item.name}${size}${note} ×${item.qty} — ${item.price * item.qty} ₽\n`;
+          return `• ${item.name}${size}${note} ×${item.qty} — ${item.price * item.qty} ₽`;
+        };
+
+        let text = `🛎 Заказ по столу ${table.table}\n`;
+
+        // для дополнений — что именно добавили в этот раз
+        if (!isNew) {
+          text += `\n➕ Добавлено в ${time}:\n`;
+          added.forEach(item => {
+            text += itemLine(item) + '\n';
+          });
+          text += '\n— Состав заказа: —\n';
+        } else {
+          text += '\n';
+        }
+
+        table.items.forEach(item => {
+          text += itemLine(item) + '\n';
         });
         text += `\n💵 Итого: ${grandTotal} ₽`;
 
-        const isNew = !table.lastMsgId;
         const params = isNew
           ? { chat_id: CHAT_ID, text: text }
           : { chat_id: CHAT_ID, message_id: table.lastMsgId, text: text };
@@ -811,7 +829,6 @@
             if (chooser) chooser.style.display = 'none';
             showMenu();
           } else if (!isNew && (data.description || '').includes('message to edit not found')) {
-            // сообщение удалили из группы — отправим заново
             table.lastMsgId = null;
             saveTables();
             request('sendMessage', { chat_id: CHAT_ID, text: text })
@@ -853,7 +870,7 @@
         window.scrollTo({ top: 0 });
       });
     });
-                    
+                     
     </script>
 </body>
 </html>
