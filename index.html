@@ -446,7 +446,7 @@
     </footer>
 
     <script>
-            document.addEventListener('DOMContentLoaded', () => {
+             document.addEventListener('DOMContentLoaded', () => {
 
       let cart = [];
       try {
@@ -462,25 +462,16 @@
       // === НАСТРОЙКИ ===
       let menuItems = [];
 
-      // --- Состояние заказа (стол + сообщение + накопленные позиции) ---
-      let orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
+      // --- Активные заказы по столам ---
+      // каждый элемент: { table, lastMsgId, orderNo, items: [...] }
+      let tables = [];
       try {
-        const saved = JSON.parse(localStorage.getItem('lummu_order'));
-        if (saved) orderState = Object.assign({ items: [] }, saved);
-      } catch (e) {}
-      function saveOrderState() {
-        localStorage.setItem('lummu_order', JSON.stringify(orderState));
-      }
-
-      // --- Сохранённые заказы других столов ---
-      let savedOrders = [];
-      try {
-        savedOrders = JSON.parse(localStorage.getItem('lummu_saved')) || [];
+        tables = JSON.parse(localStorage.getItem('lummu_tables')) || [];
       } catch (e) {
-        savedOrders = [];
+        tables = [];
       }
-      function saveSavedOrders() {
-        localStorage.setItem('lummu_saved', JSON.stringify(savedOrders));
+      function saveTables() {
+        localStorage.setItem('lummu_tables', JSON.stringify(tables));
       }
 
       // --- Переключение вкладок ---
@@ -658,56 +649,7 @@
           totalRow.className = 'cart-total-row';
           cartContainer.insertBefore(totalRow, checkoutBtn);
         }
-        totalRow.innerHTML = `<span>Итого:</span><span><strong>${total.toLocaleString()} ₽</strong></span>`;
-
-        // --- Кнопки смены / возврата к столу ---
-        let resetBtn = cartContainer.querySelector('.reset-order-btn');
-        if (!resetBtn) {
-          resetBtn = document.createElement('button');
-          resetBtn.className = 'reset-order-btn';
-          resetBtn.style.cssText = 'width:100%;margin-top:8px;padding:8px;background:none;border:1px solid #444;color:var(--text-muted);border-radius:8px;cursor:pointer;font-size:0.85rem;';
-          cartContainer.insertBefore(resetBtn, checkoutBtn);
-        }
-        resetBtn.textContent = orderState.table
-          ? `Стол: ${orderState.table} — сменить стол`
-          : 'Другой стол';
-
-        resetBtn.onclick = () => {
-          // сохраняем текущий заказ в список, если он есть
-          if (orderState.table) {
-            savedOrders = savedOrders.filter(o => o.table !== orderState.table);
-            savedOrders.unshift({ ...orderState });
-            if (savedOrders.length > 5) savedOrders = savedOrders.slice(0, 5); // держим 5 последних
-            saveSavedOrders();
-          }
-          orderState = { table: null, lastMsgId: null, orderNo: 0, items: [] };
-          saveOrderState();
-          alert('Текущий заказ сохранён. Теперь наберите позиции — при оформлении спросим номер нового стола.');
-          showMenu();
-        };
-
-        // кнопки возврата к сохранённым столам
-        cartContainer.querySelectorAll('.back-to-order-btn').forEach(b => b.remove());
-        savedOrders.forEach((saved, idx) => {
-          const backBtn = document.createElement('button');
-          backBtn.className = 'back-to-order-btn';
-          const savedTotal = saved.items.reduce((s, i) => s + i.price * i.qty, 0);
-          backBtn.textContent = `↩ Вернуться к столу ${saved.table} (${saved.items.length} поз., ${savedTotal.toLocaleString()} ₽)`;
-          backBtn.style.cssText = 'width:100%;margin-top:8px;padding:8px;background:none;border:1px solid var(--accent-blue);color:var(--accent-blue);border-radius:8px;cursor:pointer;font-size:0.85rem;';
-          backBtn.onclick = () => {
-            // текущий активный заказ тоже не теряем
-            if (orderState.table) {
-              savedOrders = savedOrders.filter(o => o.table !== orderState.table);
-              savedOrders.unshift({ ...orderState });
-            }
-            savedOrders.splice(idx, 1); // убираем стол, к которому возвращаемся
-            saveSavedOrders();
-            orderState = JSON.parse(JSON.stringify(saved));
-            saveOrderState();
-            updateCart();
-          };
-          cartContainer.insertBefore(backBtn, checkoutBtn);
-        });
+        totalRow.innerHTML = `<span>Итого в корзине:</span><span><strong>${total.toLocaleString()} ₽</strong></span>`;
 
         checkoutBtn.disabled = count === 0;
         localStorage.setItem('lummu_cart', JSON.stringify(cart));
@@ -739,19 +681,77 @@
         }
       });
 
-      // --- Отправка заказа / накопление в одно сообщение ---
-      checkoutBtn.addEventListener('click', () => {
-        if (cart.length === 0) return;
-
-        let tableNumber = orderState.table;
-        if (!tableNumber) {
-          tableNumber = prompt('Укажите номер стола (например, 12 или VIP-3):');
-          if (!tableNumber || tableNumber.trim() === '') {
-            alert('Номер стола обязателен для оформления заказа.');
-            return;
-          }
-          tableNumber = tableNumber.trim();
+      // --- Выбор стола при оформлении ---
+      function buildTableChooser() {
+        let chooser = cartContainer.querySelector('.table-chooser');
+        if (!chooser) {
+          chooser = document.createElement('div');
+          chooser.className = 'table-chooser';
+          cartContainer.insertBefore(chooser, cartContainer.querySelector('.cart-total-row') || checkoutBtn);
         }
+        chooser.style.display = 'block';
+        chooser.innerHTML = '<h3 style="margin: 0 0 10px;">Куда добавить заказ?</h3>';
+
+        if (tables.length) {
+          tables.forEach((t, idx) => {
+            const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; gap:8px; margin-bottom:8px;';
+
+            const btn = document.createElement('button');
+            btn.className = 'choose-table-btn';
+            btn.style.cssText = 'flex:1; padding:10px; background:none; border:1px solid var(--accent-blue); color:var(--accent-blue); border-radius:8px; cursor:pointer; font-size:0.9rem; text-align:left;';
+            btn.innerHTML = `<strong>Стол ${t.table}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${t.items.length} поз., ${tTotal.toLocaleString()} ₽</span>`;
+            btn.onclick = () => sendToTable(idx);
+            row.appendChild(btn);
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '✕';
+            delBtn.title = 'Закрыть заказ этого стола';
+            delBtn.style.cssText = 'width:38px; padding:10px 0; background:none; border:1px solid #444; color:#777; border-radius:8px; cursor:pointer;';
+            delBtn.onclick = () => {
+              if (confirm(`Убрать стол ${t.table} из списка? Заказ в Telegram останется, но дополнить его с этого устройства будет нельзя.`)) {
+                tables.splice(idx, 1);
+                saveTables();
+                buildTableChooser();
+              }
+            };
+            row.appendChild(delBtn);
+
+            chooser.appendChild(row);
+          });
+        } else {
+          const hint = document.createElement('p');
+          hint.style.cssText = 'color:var(--text-muted); font-size:0.9rem; margin-bottom:8px;';
+          hint.textContent = 'Активных столов пока нет — создайте новый.';
+          chooser.appendChild(hint);
+        }
+
+        const newBtn = document.createElement('button');
+        newBtn.textContent = '➕ Новый стол';
+        newBtn.style.cssText = 'width:100%; padding:10px; background:none; border:1px solid var(--accent-green); color:var(--accent-green); border-radius:8px; cursor:pointer; margin-top:4px;';
+        newBtn.onclick = () => {
+          const num = prompt('Укажите номер стола (например, 12 или VIP-3):');
+          if (!num || !num.trim()) return;
+          tables.push({ table: num.trim(), lastMsgId: null, orderNo: 0, items: [] });
+          saveTables();
+          sendToTable(tables.length - 1);
+        };
+        chooser.appendChild(newBtn);
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = '← Вернуться к корзине';
+        cancelBtn.style.cssText = 'width:100%; margin-top:8px; padding:8px; background:none; border:1px solid #444; color:var(--text-muted); border-radius:8px; cursor:pointer; font-size:0.85rem;';
+        cancelBtn.onclick = () => { chooser.style.display = 'none'; };
+        chooser.appendChild(cancelBtn);
+      }
+
+      // --- Отправка / обновление заказа конкретного стола ---
+      function sendToTable(idx) {
+        if (cart.length === 0) return;
+        const table = tables[idx];
+        if (!table) return;
 
         checkoutBtn.disabled = true;
         const originalText = checkoutBtn.textContent;
@@ -760,58 +760,75 @@
         const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
         const CHAT_ID   = '-1003907000620';
 
-        // Сливаем новые позиции с уже накопленными
+        // вливаем позиции корзины в заказ стола
         cart.forEach(newItem => {
-          const match = orderState.items.find(old =>
+          const match = table.items.find(old =>
             old.name === newItem.name &&
             old.size === newItem.size &&
             old.note === newItem.note
           );
           if (match) match.qty += newItem.qty;
-          else orderState.items.push({ ...newItem });
+          else table.items.push({ ...newItem });
         });
 
-        const grandTotal = orderState.items.reduce((s, i) => s + i.price * i.qty, 0);
-        orderState.orderNo += 1;
+        const grandTotal = table.items.reduce((s, i) => s + i.price * i.qty, 0);
+        table.orderNo += 1;
 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-        let text = `🛎 Заказ по столу ${tableNumber}\n`;
-        if (orderState.orderNo > 1) text += `🔄 Обновлено в ${time} — проверьте состав\n`;
+        let text = `🛎 Заказ по столу ${table.table}\n`;
+        if (table.orderNo > 1) text += `🔄 Обновлено в ${time} — проверьте состав\n`;
         text += '\n';
-        orderState.items.forEach(item => {
+        table.items.forEach(item => {
           const size = item.size ? ` (${item.size})` : '';
           const note = item.note ? ` — ${item.note}` : '';
           text += `• ${item.name}${size}${note} ×${item.qty} — ${item.price * item.qty} ₽\n`;
         });
         text += `\n💵 Итого: ${grandTotal} ₽`;
 
-        const isNew = !orderState.lastMsgId;
+        const isNew = !table.lastMsgId;
         const params = isNew
           ? { chat_id: CHAT_ID, text: text }
-          : { chat_id: CHAT_ID, message_id: orderState.lastMsgId, text: text };
+          : { chat_id: CHAT_ID, message_id: table.lastMsgId, text: text };
 
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${isNew ? 'sendMessage' : 'editMessageText'}`, {
+        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(params)
-        })
-        .then(res => res.json())
+          body: JSON.stringify(p)
+        }).then(r => r.json());
+
+        request(isNew ? 'sendMessage' : 'editMessageText', params)
         .then(data => {
           if (data.ok) {
-            if (isNew) orderState.lastMsgId = data.result.message_id;
-            orderState.table = tableNumber;
-            saveOrderState();
-
+            if (isNew) table.lastMsgId = data.result.message_id;
+            saveTables();
             alert(isNew
-              ? '✅ Заказ отправлен в Telegram!'
-              : `✅ Заказ обновлён! Позиций: ${orderState.items.length}`);
+              ? `✅ Новый заказ отправлен! Стол ${table.table}`
+              : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
             cart.length = 0;
             updateCart();
+            const chooser = cartContainer.querySelector('.table-chooser');
+            if (chooser) chooser.style.display = 'none';
             showMenu();
+          } else if (!isNew && (data.description || '').includes('message to edit not found')) {
+            // сообщение удалили из группы — отправим заново
+            table.lastMsgId = null;
+            saveTables();
+            request('sendMessage', { chat_id: CHAT_ID, text: text })
+            .then(d2 => {
+              if (d2.ok) {
+                table.lastMsgId = d2.result.message_id;
+                saveTables();
+                alert(`⚠️ Старое сообщение не найдено — заказ стола ${table.table} отправлен заново.`);
+                cart.length = 0;
+                updateCart();
+                showMenu();
+              } else {
+                alert('Не удалось отправить: ' + (d2.description || 'неизвестная ошибка'));
+              }
+            });
           } else if (!isNew && (data.description || '').includes('message is not modified')) {
-            orderState.table = tableNumber;
-            saveOrderState();
+            saveTables();
             cart.length = 0;
             updateCart();
             showMenu();
@@ -828,9 +845,15 @@
           checkoutBtn.disabled = false;
           checkoutBtn.textContent = originalText;
         });
+      }
+
+      checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) return;
+        buildTableChooser();
+        window.scrollTo({ top: 0 });
       });
     });
-                 
+                    
     </script>
 </body>
 </html>
