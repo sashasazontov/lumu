@@ -734,7 +734,7 @@
      // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
-          const menu = await fetch('menu.json').then(r => r.json());
+          const menu = await fetch('menu.json?v=' + Date.now()).then(r => r.json());
           menuItems = menu.items;
 
           document.querySelector('.categories').innerHTML = menu.categories
