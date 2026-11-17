@@ -65,7 +65,8 @@
       "note": "Шоты:",
       "promo": true,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": true
     },
     {
       "id": "promo-tea",
