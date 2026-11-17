@@ -177,8 +177,35 @@
             object-position: center;
             display: block;
             filter: brightness(0.85);
-        }
+        }   
 
+        /* Заглушка, пока картинка не загрузилась */
+.img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    background: radial-gradient(ellipse at center, rgba(10,165,201,0.15) 0%, #0f0f12 70%);
+    color: var(--text-main);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    z-index: 0;
+}
+
+.item-img {
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+.item-img.loaded { opacity: 0.85; }          /* 0.85 — как было filter: brightness(0.85) */
+.item-img.error  { display: none; }          /* битая картинка — остаётся заглушка */
+
+.item-card.sold-card .item-img.loaded { opacity: 0.35; }
+        
         .item-info {
             background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
             padding: 1.5rem;
@@ -542,9 +569,12 @@
           document.querySelector('.items-grid').innerHTML = menu.items.map(it => `
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}">
               <div class="item-img-wrapper">
-                <img src="${it.img}" alt="${it.title}" class="item-img">
-                ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
-                ${it.sold ? '<span class="sold-badge">Распродано</span>' : ''}
+    <div class="img-placeholder">${it.title}</div>
+    <img src="${it.img}" alt="${it.title}" class="item-img"
+         onload="this.classList.add('loaded')"
+         onerror="this.classList.add('error')">
+    ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
+    ${it.sold ? '<span class="sold-badge">Распродано</span>' : ''}
               </div>
               <div class="item-info">
                 <h3 class="item-title">${it.title}</h3>
