@@ -968,19 +968,19 @@
       const GH_REPO   = 'sashasazontov/lumu';
       const GH_PATH   = 'menu.json';
       const GH_BRANCH = 'main';
+      const TG_API    = 'https://bold-block-8b09lummu-tg.sasasazontov265.workers.dev';
 
         // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
       const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
       const TG_CHAT  = '-1003907000620';
 
       function tgSend(text) {
-        return fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: TG_CHAT, text })
         }).then(r => r.json());
       }
-
       const GH_LOG = 'tables_log.json';
 
       function ghLogHeaders() {
@@ -1634,7 +1634,8 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           ? `🛎 Заказ по столу ${t.table}\n\n✎ Заказ исправлен в ${time}\n\n${lines || '—'}\n\n💵 Итого: ${total.toLocaleString('ru-RU')} ₽`
           : `🛎 Стол ${t.table}\n\n✎ В ${time} заказ полностью отменён (все позиции убраны)`;
 
-        const apiCall = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
+        const apiCall = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
@@ -1673,7 +1674,8 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
         const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
 
-        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
+         const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
@@ -2001,7 +2003,8 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           ? { chat_id: TG_CHAT, text: text }
           : { chat_id: TG_CHAT, message_id: table.lastMsgId, text: text };
 
-        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
+         const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
