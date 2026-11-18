@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лу‑Му — Меню</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#15151a">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <style>
         :root {
             --bg-dark: #15151a;
@@ -119,21 +122,21 @@
         }
 
         #nav-admin-btn {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0, 0, 0, 0.15);
-  color: inherit;
-  font-size: 18px;
-  cursor: pointer;
-  opacity: 0.4;
-  z-index: 100;
-}
-#nav-admin-btn:hover { opacity: 0.9; }
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.15);
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.4;
+            z-index: 100;
+        }
+        #nav-admin-btn:hover { opacity: 0.9; }
 
         .item-card.promo-card {
             border: 7.5px solid var(--accent-green);
@@ -197,31 +200,31 @@
         }
 
         /* Заглушка, пока картинка не загрузилась */
-.img-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 12px;
-    background: radial-gradient(ellipse at center, rgba(10,165,201,0.15) 0%, #0f0f12 70%);
-    color: var(--text-main);
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    z-index: 0;
-}
+        .img-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 12px;
+            background: radial-gradient(ellipse at center, rgba(10,165,201,0.15) 0%, #0f0f12 70%);
+            color: var(--text-main);
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            z-index: 0;
+        }
 
-.item-img {
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-.item-img.loaded { opacity: 0.85; }
-.item-img.error  { display: none; }
+        .item-img {
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .item-img.loaded { opacity: 0.85; }
+        .item-img.error  { display: none; }
 
-.item-card.sold-card .item-img.loaded { opacity: 0.35; }
+        .item-card.sold-card .item-img.loaded { opacity: 0.35; }
 
         .item-info {
             background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
@@ -292,6 +295,32 @@
         .tobacco-list { list-style: none; padding: 0; margin: 0.75rem 0; font-size: 0.85rem; color: var(--text-muted); }
         .tobacco-list li { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .tobacco-list li:last-child { border-bottom: none; }
+
+        /* Фото-чипы табаков */
+        .tobacco-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0.75rem 0;
+        }
+        .tobacco-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px 4px 4px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .tobacco-chip img {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #0f0f12;
+        }
+        .tobacco-chip.tobacco-photo { padding-right: 12px; }
 
         #cart-container {
             padding: 1.5rem 1rem;
@@ -410,143 +439,143 @@
         }
 
         #tables-page {
-    min-height: 90vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 2rem 1rem;
-}
-#tables-page .tables-box {
-    background: var(--card-dark);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 2rem 1.5rem;
-    max-width: 560px;
-    width: 100%;
-}
-#tables-page h2 {
-    color: var(--accent-blue);
-    text-align: center;
-    margin-bottom: 1.25rem;
-}
-.table-card {
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
-}
-.table-card h4 { color: var(--accent); margin-bottom: 8px; }
-.table-card .table-lines {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-}
-.table-card .table-total {
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 8px;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-.table-card .table-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.table-card .table-actions button {
-    flex: 1;
-    padding: 8px;
-    background: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-.btn-close-table   { border: 1px solid #e74c3c; color: #e74c3c; }
-.btn-restore-table { border: 1px solid var(--accent-green); color: var(--accent-green); }
-.btn-delete-table  { border: 1px solid #444; color: #777; }
-.btn-edit-table    { border: 1px solid var(--accent-blue); color: var(--accent-blue); }
-.edit-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 0;
-    font-size: 0.9rem;
-    color: var(--text-main);
-}
-.edit-row .edit-name { flex: 1; }
-.edit-qty-btn {
-    width: 26px; height: 26px; padding: 0; font-size: 14px;
-    background: rgba(255,255,255,0.1); border: none; color: #fff;
-    border-radius: 6px; cursor: pointer;
-}
-.edit-qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.edit-del-btn {
-    background: none; border: none; color: #ff5a6a;
-    cursor: pointer; font-size: 15px; padding: 0 4px;
-}
-.edit-done-btn {
-    margin-top: 10px; width: 100%; padding: 10px;
-    background: var(--accent-gradient); color: #000;
-    border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
-}
-.edit-cancel-btn {
-    margin-top: 6px; width: 100%; padding: 8px;
-    background: none; border: 1px solid #444; color: #777;
-    border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-}
+            min-height: 90vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        #tables-page .tables-box {
+            background: var(--card-dark);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            max-width: 560px;
+            width: 100%;
+        }
+        #tables-page h2 {
+            color: var(--accent-blue);
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+        .table-card {
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .table-card h4 { color: var(--accent); margin-bottom: 8px; }
+        .table-card .table-lines {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .table-card .table-total {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 8px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .table-card .table-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .table-card .table-actions button {
+            flex: 1;
+            padding: 8px;
+            background: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-close-table   { border: 1px solid #e74c3c; color: #e74c3c; }
+        .btn-restore-table { border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .btn-delete-table  { border: 1px solid #444; color: #777; }
+        .btn-edit-table    { border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+        .edit-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+        .edit-row .edit-name { flex: 1; }
+        .edit-qty-btn {
+            width: 26px; height: 26px; padding: 0; font-size: 14px;
+            background: rgba(255,255,255,0.1); border: none; color: #fff;
+            border-radius: 6px; cursor: pointer;
+        }
+        .edit-qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .edit-del-btn {
+            background: none; border: none; color: #ff5a6a;
+            cursor: pointer; font-size: 15px; padding: 0 4px;
+        }
+        .edit-done-btn {
+            margin-top: 10px; width: 100%; padding: 10px;
+            background: var(--accent-gradient); color: #000;
+            border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+        }
+        .edit-cancel-btn {
+            margin-top: 6px; width: 100%; padding: 8px;
+            background: none; border: 1px solid #444; color: #777;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+        }
 
-#tables-page .empty-hint {
-    color: var(--text-muted);
-    text-align: center;
-    margin-bottom: 1rem;
-}
-#tables-page > .tables-box > button {
-    margin-top: 1rem;
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    color: var(--accent-blue);
-    border: 1px solid var(--accent-blue);
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
+        #tables-page .empty-hint {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        #tables-page > .tables-box > button {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-  #admin-page > .tables-box > button {
-    margin-top: 1rem;
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    color: var(--accent-blue);
-    border: 1px solid var(--accent-blue);
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-.admin-card {
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 12px;
-}
-.admin-card label {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin: 6px 0 2px;
-}
-.admin-card input, .admin-card textarea, .admin-card select {
-    width: 100%;
-    padding: 8px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: var(--text-main);
-    font-size: 0.9rem;
-}
-.admin-card textarea { resize: vertical; }
-.admin-row { display: flex; gap: 8px; }
-.admin-row > div { flex: 1; }
-.admin-del-btn {
-    width: 100%; margin-top: 8px; padding: 8px;
-    background: none; border: 1px solid #e74c3c; color: #e74c3c;
-    border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-}
+        #admin-page > .tables-box > button {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .admin-card {
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .admin-card label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 6px 0 2px;
+        }
+        .admin-card input, .admin-card textarea, .admin-card select {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+        .admin-card textarea { resize: vertical; }
+        .admin-row { display: flex; gap: 8px; }
+        .admin-row > div { flex: 1; }
+        .admin-del-btn {
+            width: 100%; margin-top: 8px; padding: 8px;
+            background: none; border: 1px solid #e74c3c; color: #e74c3c;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+        }
         footer {
             text-align: center;
             padding: 2rem;
@@ -586,6 +615,7 @@
             <div class="hero-buttons">
                 <button id="open-menu-btn">Открыть меню →</button>
                 <button id="open-rules-btn">Правила посещения</button>
+                <button id="install-btn" style="display: none; background: transparent; color: var(--text-main); border: 1px solid #444;">📲 Установить приложение</button>
             </div>
             <div class="hero-features">
                 <div>💨 Премиум-табаки и миксы</div>
@@ -610,29 +640,30 @@
     </section>
 
     <!-- ПАНЕЛЬ УПРАВЛЕНИЯ СТОЛАМИ -->
-<section id="tables-page" style="display: none;">
-    <div class="tables-box">
-        <h2>Столы</h2>
-        <div id="tables-list"></div>
-        <button id="back-from-tables-btn">← Назад</button>
-        <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
-        <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
-        <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
-    </div>
-</section>
+    <section id="tables-page" style="display: none;">
+        <div class="tables-box">
+            <h2>Столы</h2>
+            <div id="tables-list"></div>
+            <button id="back-from-tables-btn">← Назад</button>
+            <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
+            <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
+            <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
+            <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
+        </div>
+    </section>
 
     <!-- РЕДАКТОР МЕНЮ -->
-<section id="admin-page" style="display: none;">
-    <div class="tables-box">
-        <h2>Редактор меню</h2>
-        <div id="admin-cat-list"></div>
-        <div id="admin-list"></div>
-        <button id="admin-add-btn">➕ Добавить позицию</button>
-        <button id="admin-download-btn">💾 Скачать menu.json</button>
-        <button id="admin-save-github-btn">🚀 Сохранить на GitHub</button>
-        <button id="back-from-admin-btn">← Назад</button>
-    </div>
-</section>
+    <section id="admin-page" style="display: none;">
+        <div class="tables-box">
+            <h2>Редактор меню</h2>
+            <div id="admin-cat-list"></div>
+            <div id="admin-list"></div>
+            <button id="admin-add-btn">➕ Добавить позицию</button>
+            <button id="admin-download-btn">💾 Скачать menu.json</button>
+            <button id="admin-save-github-btn">🚀 Сохранить на GitHub</button>
+            <button id="back-from-admin-btn">← Назад</button>
+        </div>
+    </section>
 
     <div class="categories" style="display: none;"></div>
 
@@ -655,7 +686,18 @@
 
     <script>
 
-             document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // === PWA ===
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+      let deferredPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const btn = document.getElementById('install-btn');
+        if (btn) btn.style.display = 'inline-block';
+      });
 
       let cart = [];
       try {
@@ -667,6 +709,33 @@
       const cartContainer = document.getElementById('cart-container');
       const cartCountEl   = document.getElementById('cart-count');
       const checkoutBtn   = document.getElementById('checkout-btn');
+
+      // === QR-СТОЛ ===
+      const urlTable = new URLSearchParams(location.search).get('table');
+      if (urlTable && urlTable.trim()) {
+        localStorage.setItem('lummu_qr_table', urlTable.trim());
+      }
+      function getQrTable() {
+        return localStorage.getItem('lummu_qr_table') || '';
+      }
+      function clearQrTable() {
+        localStorage.removeItem('lummu_qr_table');
+        const b = document.getElementById('qr-banner');
+        if (b) b.remove();
+      }
+      function showQrBanner() {
+        const t = getQrTable();
+        if (!t) return;
+        const old = document.getElementById('qr-banner');
+        if (old) old.remove();
+        const b = document.createElement('div');
+        b.id = 'qr-banner';
+        b.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:12px; margin:12px 1rem 0; padding:10px 16px; background:rgba(46,204,113,0.12); border:1px solid var(--accent-green); border-radius:12px; color:var(--text-main); font-size:0.95rem;';
+        b.innerHTML = `<span>🪑 Вы за столом <strong>${esc(t)}</strong></span>
+          <button id="qr-clear-btn" style="background:none; border:1px solid #444; color:var(--text-muted); border-radius:6px; padding:4px 10px; cursor:pointer; font-size:0.8rem;">не за этим столом</button>`;
+        document.body.insertBefore(b, document.querySelector('.categories'));
+        document.getElementById('qr-clear-btn').onclick = clearQrTable;
+      }
 
       // === НАСТРОЙКИ ===
       let menuItems = [];
@@ -718,6 +787,8 @@
         rulesPage.style.display = 'none';
         cartContainer.style.display = 'none';
         menuElements.forEach(el => el.style.display = 'none');
+        const banner = document.getElementById('qr-banner');
+        if (banner) banner.remove();
         window.scrollTo({ top: 0 });
       }
 
@@ -727,6 +798,7 @@
         document.querySelector('.categories').style.display = 'flex';
         headerNav.style.display = 'flex';
         setActiveNav('menu');
+        showQrBanner();
       }
 
       function showCart() {
@@ -742,16 +814,28 @@
         headerNav.style.display = 'flex';
       }
 
+      // === РОЛИ ===
+      function getRole() {
+        return sessionStorage.getItem('lummu_role') || '';
+      }
+
       function showTables() {
+        if (getRole() === '') {
+          const pass = prompt('Пароль персонала или администратора:');
+          if (pass === 'Sasha2009') sessionStorage.setItem('lummu_role', 'admin');
+          else if (pass === 'Barman2026') sessionStorage.setItem('lummu_role', 'staff');
+          else return;
+        }
         hideAll();
         tablesPage.style.display = 'flex';
         headerNav.style.display = 'flex';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
-        const isAdmin = sessionStorage.getItem('lummu_admin_ok') === '1';
-        document.getElementById('weekly-report-btn').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('export-report-btn').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('week-finalize-btn').style.display = isAdmin ? 'block' : 'none';
+        const admin = getRole() === 'admin';
+        document.getElementById('weekly-report-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('shift-close-btn').style.display = admin ? 'block' : 'none';
         renderTables();
       }
 
@@ -761,11 +845,14 @@
 
       function showAdmin() {
         const ADMIN_PASSWORD = 'Sasha2009';
-        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
-          const pass = prompt('Пароль администратора:');
-          if (pass !== ADMIN_PASSWORD) return;
-          sessionStorage.setItem('lummu_admin_ok', '1');
+        const STAFF_PASSWORD = 'Barman2026';
+        if (getRole() === '') {
+          const pass = prompt('Пароль администратора или персонала:');
+          if (pass === ADMIN_PASSWORD) sessionStorage.setItem('lummu_role', 'admin');
+          else if (pass === STAFF_PASSWORD) sessionStorage.setItem('lummu_role', 'staff');
+          else return;
         }
+        if (getRole() === 'staff') { showTables(); return; } // бармен — сразу к столам
         hideAll();
         adminPage.style.display = 'flex';
         headerNav.style.display = 'flex';
@@ -882,7 +969,7 @@
       const GH_PATH   = 'menu.json';
       const GH_BRANCH = 'main';
 
-    // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
+        // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
       const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
       const TG_CHAT  = '-1003907000620';
 
@@ -914,7 +1001,10 @@
           .then(r => r.json())
           .then(file => {
             let log = [];
-            try { log = JSON.parse(atob(file.content)); } catch (e) {}
+            try {
+              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
+              log = JSON.parse(new TextDecoder().decode(bytes));
+            } catch (e) {}
             log.unshift(closed);
             if (log.length > 500) log = log.slice(0, 500);
             return fetch(api, {
@@ -1030,11 +1120,7 @@
 
       // === ЭКСПОРТ ВЫРУЧКИ ===
       document.getElementById('export-report-btn').addEventListener('click', async () => {
-        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
-          const pass = prompt('Пароль администратора:');
-          if (pass !== 'Sasha2009') return;
-          sessionStorage.setItem('lummu_admin_ok', '1');
-        }
+        if (getRole() !== 'admin') return;
         const days = Number(prompt('За сколько дней выгрузить отчёт?', '30'));
         if (!days || days <= 0) return;
 
@@ -1073,11 +1159,8 @@
 
       // === СВЕДЕНИЕ НЕДЕЛИ ===
       async function sendWeekFinalReport() {
-        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
-          const pass = prompt('Пароль администратора:');
-          if (pass !== 'Sasha2009') return;
-          sessionStorage.setItem('lummu_admin_ok', '1');
-        }
+        if (getRole() !== 'admin') return;
+
         const log = await fetchClosedLog();
         const since = weekResetPoint(log);
         const rows = log
@@ -1098,7 +1181,7 @@
           const d = new Date(t.closedAt);
           const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
           revenue += total;
-          const pay = (t.pay || '').replace('💵 ', 'нал').replace('💳 ', 'перевод');
+          const pay = (t.pay || '').replace('💵 ', '').replace('💳 ', '');
           text += `— ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })} · Стол ${t.table} · ${pay}\n`;
           t.items.forEach(i => {
             text += `    ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty} — ${(i.price * i.qty).toLocaleString('ru-RU')} ₽\n`;
@@ -1155,7 +1238,10 @@
           .then(r => r.json())
           .then(file => {
             let logArr = [];
-            try { logArr = JSON.parse(atob(file.content)); } catch (e) {}
+            try {
+              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
+              logArr = JSON.parse(new TextDecoder().decode(bytes));
+            } catch (e) {}
             logArr.unshift({ weekResetAt: new Date().toISOString() });
             if (logArr.length > 500) logArr = logArr.slice(0, 500);
             return fetch(api, {
@@ -1173,13 +1259,120 @@
           .catch(e => alert('Отчёт отправлен, но период не обнулён: ' + e));
       }
 
+      // === ЗАКРЫТИЕ СМЕНЫ ===
+      function shiftClosePoint(log) {
+        let last = 0;
+        (log || []).forEach(e => {
+          if (e && e.shiftCloseAt) {
+            const t = new Date(e.shiftCloseAt).getTime();
+            if (t > last) last = t;
+          }
+        });
+        return last;
+      }
+
+      async function closeShift() {
+        if (getRole() !== 'admin') return;
+
+        const log = await fetchClosedLog();
+        const mark = shiftClosePoint(log);
+        const since = mark > 0 ? mark : new Date().setHours(0, 0, 0, 0);
+        const rows = log
+          .filter(t => t.closedAt && new Date(t.closedAt).getTime() > since)
+          .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
+
+        if (!rows.length) {
+          if (!confirm('С последнего закрытия смены столов не было. Всё равно закрыть смену?')) return;
+        }
+
+        const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+
+        let revenue = 0, cash = 0, card = 0;
+        const byItem = {};
+        rows.forEach(t => {
+          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          revenue += total;
+          if ((t.pay || '').includes('Наличка')) cash += total;
+          else if ((t.pay || '').includes('Перевод')) card += total;
+          t.items.forEach(i => {
+            const key = i.name + (i.size ? ' (' + i.size + ')' : '');
+            byItem[key] = byItem[key] || { qty: 0, sum: 0 };
+            byItem[key].qty += i.qty;
+            byItem[key].sum += i.price * i.qty;
+          });
+        });
+
+        let text = `🌙 Смена закрыта — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
+        text += `🕐 Период: с ${period}\n`;
+        text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
+        text += `🪑 Столов закрыто: ${rows.length}\n`;
+        text += `💵 Наличка: ${cash.toLocaleString('ru-RU')} ₽ · 💳 Перевод: ${card.toLocaleString('ru-RU')} ₽\n`;
+        if (rows.length) {
+          text += `📈 Средний чек стола: ${Math.round(revenue / rows.length).toLocaleString('ru-RU')} ₽\n`;
+          const top = Object.entries(byItem).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
+          text += `\n🏆 Топ позиций:\n`;
+          top.forEach(([name, v], i) => {
+            text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
+          });
+        }
+
+        const parts = [];
+        let chunk = '';
+        text.split('\n').forEach(line => {
+          if ((chunk + line + '\n').length > 3800) { parts.push(chunk); chunk = ''; }
+          chunk += line + '\n';
+        });
+        if (chunk) parts.push(chunk);
+
+        Promise.all(parts.map(p => tgSend(p))).then(results => {
+          if (results.every(r => r.ok)) {
+            writeShiftClose();
+          } else {
+            alert('Не удалось отправить: ' + ((results.find(r => !r.ok) || {}).description || 'ошибка'));
+          }
+        });
+      }
+
+      function writeShiftClose() {
+        let headers = ghLogHeaders();
+        if (!headers) {
+          const t = prompt('Для отметки смены нужен GitHub-токен (вводится один раз):');
+          if (!t || !t.trim().startsWith('github_pat_')) {
+            alert('Отчёт отправлен, но смена не отмечена — нужен GitHub-токен.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', t.trim());
+          headers = ghLogHeaders();
+        }
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => {
+            let logArr = [];
+            try {
+              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
+              logArr = JSON.parse(new TextDecoder().decode(bytes));
+            } catch (e) {}
+            logArr.unshift({ shiftCloseAt: new Date().toISOString() });
+            if (logArr.length > 500) logArr = logArr.slice(0, 500);
+            return fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: 'Закрытие смены',
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+                branch: GH_BRANCH,
+                sha: file.sha
+              })
+            });
+          })
+          .then(() => alert('✅ Смена закрыта, итоги в Telegram. Следующая смена начнёт считать с нуля.'))
+          .catch(e => alert('Отчёт отправлен, но смена не отмечена: ' + e));
+      }
+
       // === КНОПКА СВОДКИ ===
       document.getElementById('weekly-report-btn').addEventListener('click', async () => {
-        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
-          const pass = prompt('Пароль администратора:');
-          if (pass !== 'Sasha2009') return;
-          sessionStorage.setItem('lummu_admin_ok', '1');
-        }
+        if (getRole() !== 'admin') return;
         const text = await collectWeekStats();
         if (!text) { alert('За последнюю неделю нет закрытых столов.'); return; }
         tgSend(text).then(d =>
@@ -1188,7 +1381,9 @@
 
       document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
-             document.getElementById('admin-save-github-btn').addEventListener('click', () => {
+      document.getElementById('shift-close-btn').addEventListener('click', closeShift);
+
+      document.getElementById('admin-save-github-btn').addEventListener('click', () => {
         if (!confirm('Сохранить текущие правки на GitHub?')) return;
 
         let ghToken = localStorage.getItem('lummu_gh_token');
@@ -1261,13 +1456,13 @@
         tables.forEach((t, idx) => {
           const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
           const lines = t.items
-            .map(i => `• ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`)
+            .map(i => `• ${esc(i.name)}${i.size ? ' (' + esc(i.size) + ')' : ''}${i.note ? ' — ' + esc(i.note) : ''} ×${i.qty}`)
             .join('<br>');
 
           const card = document.createElement('div');
           card.className = 'table-card';
           card.innerHTML = `
-            <h4>Стол ${t.table}</h4>
+            <h4>Стол ${esc(t.table)}</h4>
             <div class="table-lines">${lines || '<i>— нет позиций —</i>'}</div>
             <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
             <div class="table-actions">
@@ -1292,6 +1487,10 @@
           });
           card.querySelector('.btn-edit-table').onclick = () => editTable(idx);
           list.appendChild(card);
+          if (getRole() !== 'admin') {
+            const tot = card.querySelector('.table-total');
+            if (tot) tot.style.display = 'none';
+          }
         });
 
         // --- Архив ---
@@ -1302,13 +1501,13 @@
         closedTables.forEach((t, idx) => {
           const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
           const lines = t.items
-            .map(i => `• ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`)
+            .map(i => `• ${esc(i.name)}${i.size ? ' (' + esc(i.size) + ')' : ''}${i.note ? ' — ' + esc(i.note) : ''} ×${i.qty}`)
             .join('<br>');
 
           const card = document.createElement('div');
           card.className = 'table-card';
           card.innerHTML = `
-            <h4>Стол ${t.table}</h4>
+            <h4>Стол ${esc(t.table)}</h4>
             <div class="table-lines">${lines}</div>
             <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
             <div class="table-actions">
@@ -1329,10 +1528,14 @@
             }
           };
           list.appendChild(card);
+          if (getRole() !== 'admin') {
+            const tot = card.querySelector('.table-total');
+            if (tot) tot.style.display = 'none';
+          }
         });
       }
 
-      // === ПРАВКА ЗАКАЗА СТОЛА ===
+              // === ПРАВКА ЗАКАЗА СТОЛА ===
       function editTable(idx) {
         const t = tables[idx];
         if (!t) return;
@@ -1342,7 +1545,7 @@
 
         const editor = document.createElement('div');
         editor.className = 'table-card';
-        editor.innerHTML = `<h4>Стол ${t.table} — правка заказа</h4>`;
+        editor.innerHTML = `<h4>Стол ${esc(t.table)} — правка заказа</h4>`;
 
         if (!t.items.length) {
           editor.insertAdjacentHTML('beforeend', '<p class="empty-hint">В заказе нет позиций.</p>');
@@ -1352,7 +1555,7 @@
           const row = document.createElement('div');
           row.className = 'edit-row';
           row.innerHTML = `
-            <span class="edit-name">${item.name}${item.size ? ' (' + item.size + ')' : ''}${item.note ? ' — ' + item.note : ''}</span>
+            <span class="edit-name">${esc(item.name)}${item.size ? ' (' + esc(item.size) + ')' : ''}${item.note ? ' — ' + esc(item.note) : ''}</span>
             <button type="button" class="edit-qty-btn" data-dec>−</button>
             <span>${item.qty}</span>
             <button type="button" class="edit-qty-btn" data-inc>+</button>
@@ -1379,6 +1582,10 @@
         const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
         editor.insertAdjacentHTML('beforeend',
           `<div class="table-total"><span>Итого:</span> <span>${total.toLocaleString()} ₽</span></div>`);
+        if (getRole() !== 'admin') {
+          const tot = editor.querySelector('.table-total');
+          if (tot) tot.style.display = 'none';
+        }
 
         const doneBtn = document.createElement('button');
         doneBtn.className = 'edit-done-btn';
@@ -1413,16 +1620,13 @@
           ? `🛎 Заказ по столу ${t.table}\n\n✎ Заказ исправлен в ${time}\n\n${lines || '—'}\n\n💵 Итого: ${total.toLocaleString('ru-RU')} ₽`
           : `🛎 Стол ${t.table}\n\n✎ В ${time} заказ полностью отменён (все позиции убраны)`;
 
-        const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
-        const CHAT_ID   = '-1003907000620';
-
-        const apiCall = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
+        const apiCall = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
         }).then(r => r.json());
 
-        const send = () => apiCall('sendMessage', { chat_id: CHAT_ID, text: text })
+        const send = () => apiCall('sendMessage', { chat_id: TG_CHAT, text: text })
           .then(d => {
             if (d.ok) {
               t.lastMsgId = d.result.message_id;
@@ -1431,7 +1635,7 @@
           });
 
         if (t.lastMsgId) {
-          apiCall('editMessageText', { chat_id: CHAT_ID, message_id: t.lastMsgId, text: text })
+          apiCall('editMessageText', { chat_id: TG_CHAT, message_id: t.lastMsgId, text: text })
             .then(data => {
               if (!data.ok && (data.description || '').includes('message to edit not found')) {
                 t.lastMsgId = null;
@@ -1455,16 +1659,13 @@
 
         const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
 
-        const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
-        const CHAT_ID   = '-1003907000620';
-
-        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
+        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
         }).then(r => r.json());
 
-        const send = () => request('sendMessage', { chat_id: CHAT_ID, text: text })
+        const send = () => request('sendMessage', { chat_id: TG_CHAT, text: text })
           .then(data => {
             if (data.ok) {
               t.lastMsgId = data.result.message_id;
@@ -1473,7 +1674,7 @@
           });
 
         if (t.lastMsgId) {
-          request('editMessageText', { chat_id: CHAT_ID, message_id: t.lastMsgId, text: text })
+          request('editMessageText', { chat_id: TG_CHAT, message_id: t.lastMsgId, text: text })
             .then(data => {
               if (!data.ok) send();
             });
@@ -1514,18 +1715,23 @@
           document.querySelector('.items-grid').innerHTML = menu.items.map(it => `
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}">
               <div class="item-img-wrapper">
-    <div class="img-placeholder">${it.title}</div>
-    <img src="${it.img}" alt="${it.title}" class="item-img"
-         onload="this.classList.add('loaded')"
-         onerror="this.classList.add('error')">
-    ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
-    ${it.sold ? '<span class="sold-badge">Распродано</span>' : ''}
+                <div class="img-placeholder">${it.title}</div>
+                <img src="${it.img}" alt="${it.title}" class="item-img"
+                     onload="this.classList.add('loaded')"
+                     onerror="this.classList.add('error')">
+                ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
+                ${it.sold ? '<span class="sold-badge">Распродано</span>' : ''}
               </div>
               <div class="item-info">
                 <h3 class="item-title">${it.title}</h3>
                 ${it.desc ? `<p class="item-desc">${it.desc}</p>` : ''}
                 ${it.list && it.list.length
-                  ? `<ul class="tobacco-list">${it.list.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
+                  ? `<div class="tobacco-cards">${it.list.map(l => {
+                      if (typeof l === 'string') return `<div class="tobacco-chip">${esc(l)}</div>`;
+                      return `<div class="tobacco-chip tobacco-photo">
+                        <img src="${l.img}" alt="${esc(l.name)}" onerror="this.style.display='none'">
+                        <span>${esc(l.name)}</span></div>`;
+                    }).join('')}</div>` : ''}
                 ${it.price ? `<div class="item-price">${it.price} ₽${it.size ? ` (${it.size})` : ''}</div>` : ''}
                 ${it.note ? `<input type="text" class="tobacco-input" placeholder="${it.note}">` : ''}
                 ${it.price ? `<button class="add-to-cart-btn" data-id="${it.id}" ${it.sold ? 'disabled' : ''}>
@@ -1676,7 +1882,7 @@
             const btn = document.createElement('button');
             btn.className = 'choose-table-btn';
             btn.style.cssText = 'flex:1; padding:10px; background:none; border:1px solid var(--accent-blue); color:var(--accent-blue); border-radius:8px; cursor:pointer; font-size:0.9rem; text-align:left;';
-            btn.innerHTML = `<strong>Стол ${t.table}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${t.items.length} поз., ${tTotal.toLocaleString()} ₽</span>`;
+            btn.innerHTML = `<strong>Стол ${esc(t.table)}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${t.items.length} поз., ${tTotal.toLocaleString()} ₽</span>`;
             btn.onclick = () => sendToTable(idx);
             row.appendChild(btn);
 
@@ -1731,9 +1937,6 @@
         const originalText = checkoutBtn.textContent;
         checkoutBtn.textContent = 'Отправка...';
 
-        const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
-        const CHAT_ID   = '-1003907000620';
-
         // Сливаем позиции корзины с заказом стола и запоминаем, что добавилось
         const added = [];
         cart.forEach(newItem => {
@@ -1781,10 +1984,10 @@
         text += `\n💵 Итого: ${grandTotal} ₽`;
 
         const params = isNew
-          ? { chat_id: CHAT_ID, text: text }
-          : { chat_id: CHAT_ID, message_id: table.lastMsgId, text: text };
+          ? { chat_id: TG_CHAT, text: text }
+          : { chat_id: TG_CHAT, message_id: table.lastMsgId, text: text };
 
-        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
+        const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
@@ -1806,7 +2009,7 @@
           } else if (!isNew && (data.description || '').includes('message to edit not found')) {
             table.lastMsgId = null;
             saveTables();
-            request('sendMessage', { chat_id: CHAT_ID, text: text })
+            request('sendMessage', { chat_id: TG_CHAT, text: text })
             .then(d2 => {
               if (d2.ok) {
                 table.lastMsgId = d2.result.message_id;
@@ -1839,11 +2042,33 @@
         });
       }
 
+      // --- Оформление заказа: с QR — сразу в стол, без — выбор из списка ---
       checkoutBtn.addEventListener('click', () => {
         if (cart.length === 0) return;
-        buildTableChooser();
-        window.scrollTo({ top: 0 });
+        const qrTable = getQrTable();
+        if (qrTable) {
+          let idx = tables.findIndex(t => t.table === qrTable);
+          if (idx === -1) {
+            tables.push({ table: qrTable, lastMsgId: null, orderNo: 0, items: [] });
+            saveTables();
+            idx = tables.length - 1;
+          }
+          sendToTable(idx);
+        } else {
+          buildTableChooser();
+          window.scrollTo({ top: 0 });
+        }
       });
+
+      // --- Установка PWA ---
+      document.getElementById('install-btn').addEventListener('click', () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt = null;
+          document.getElementById('install-btn').style.display = 'none';
+        }
+      });
+
     });
 
     </script>
@@ -1852,4 +2077,3 @@
 </body>
 </html>
 
-        
