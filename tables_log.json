@@ -1,5 +1,21 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 138,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Кальян Премиум",
+        "price": 2500,
+        "size": "",
+        "note": "Вишня яблоко вдлоа",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-18T04:31:06.668Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "7",
     "lastMsgId": 134,
     "orderNo": 1,
