@@ -617,7 +617,7 @@
         <h2>Столы</h2>
         <div id="tables-list"></div>
         <button id="back-from-tables-btn">← Назад</button>
-        <button id="weekly-report-btn">📊 Сводка за неделю</button>
+        <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
     </div>
 </section>
 
@@ -743,13 +743,17 @@
         headerNav.style.display = 'flex';
       }
 
-             function showTables() {
+        function showTables() {
         hideAll();
         tablesPage.style.display = 'flex';
         headerNav.style.display = 'flex';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
+        document.getElementById('weekly-report-btn').style.display =
+          sessionStorage.getItem('lummu_admin_ok') === '1' ? 'block' : 'none';
         renderTables();
+      }
+
            
       }
             // === РЕДАКТОР МЕНЮ ===
@@ -986,12 +990,14 @@
       maybeSendWeekly();
 
       // === КНОПКА СВОДКИ ===
-      document.getElementById('weekly-report-btn').addEventListener('click', async () => {
+           document.getElementById('weekly-report-btn').addEventListener('click', async () => {
+        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
+          const pass = prompt('Пароль администратора:');
+          if (pass !== 'Sasha2009') return;
+          sessionStorage.setItem('lummu_admin_ok', '1');
+        }
         const text = await collectWeekStats();
-        if (!text) { alert('За последнюю неделю нет закрытых столов.'); return; }
-        tgSend(text).then(d =>
-          alert(d.ok ? '📊 Сводка отправлена в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка')));
-      });
+
           
 
 
