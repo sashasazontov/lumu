@@ -1,5 +1,13 @@
 [
   {
+    "table": "8",
+    "lastMsgId": null,
+    "orderNo": 0,
+    "items": [],
+    "closedAt": "2026-11-18T21:14:46.206Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "1",
     "lastMsgId": null,
     "orderNo": 1,
