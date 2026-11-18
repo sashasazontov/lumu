@@ -460,6 +460,37 @@
 .btn-close-table   { border: 1px solid #e74c3c; color: #e74c3c; }
 .btn-restore-table { border: 1px solid var(--accent-green); color: var(--accent-green); }
 .btn-delete-table  { border: 1px solid #444; color: #777; }
+.btn-edit-table    { border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+.edit-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+.edit-row .edit-name { flex: 1; }
+.edit-qty-btn {
+    width: 26px; height: 26px; padding: 0; font-size: 14px;
+    background: rgba(255,255,255,0.1); border: none; color: #fff;
+    border-radius: 6px; cursor: pointer;
+}
+.edit-qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.edit-del-btn {
+    background: none; border: none; color: #ff5a6a;
+    cursor: pointer; font-size: 15px; padding: 0 4px;
+}
+.edit-done-btn {
+    margin-top: 10px; width: 100%; padding: 10px;
+    background: var(--accent-gradient); color: #000;
+    border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+}
+.edit-cancel-btn {
+    margin-top: 6px; width: 100%; padding: 8px;
+    background: none; border: 1px solid #444; color: #777;
+    border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+}
+
 #tables-page .empty-hint {
     color: var(--text-muted);
     text-align: center;
@@ -1048,7 +1079,8 @@
             <h4>Стол ${t.table}</h4>
             <div class="table-lines">${lines || '<i>— нет позиций —</i>'}</div>
             <div class="table-total"><span>Итого:</span> <span>${tTotal.toLocaleString()} ₽</span></div>
-                        <div class="table-actions">
+            <div class="table-actions">
+              <button class="btn-edit-table">✎ Править</button>
               <button class="btn-close-table" data-pay="💵 Наличка">💵 Наличка</button>
               <button class="btn-close-table" data-pay="💳 Перевод">💳 Перевод</button>
             </div>`;
@@ -1067,6 +1099,7 @@
               }
             };
           });
+          card.querySelector('.btn-edit-table').onclick = () => editTable(idx);
           list.appendChild(card);
         });
 
@@ -1107,6 +1140,118 @@
           list.appendChild(card);
         });
       }
+
+               // === ПРАВКА ЗАКАЗА СТОЛА ===
+      function editTable(idx) {
+        const t = tables[idx];
+        if (!t) return;
+
+        const list = document.getElementById('tables-list');
+        list.innerHTML = '';
+
+        const editor = document.createElement('div');
+        editor.className = 'table-card';
+        editor.innerHTML = `<h4>Стол ${t.table} — правка заказа</h4>`;
+
+        if (!t.items.length) {
+          editor.insertAdjacentHTML('beforeend', '<p class="empty-hint">В заказе нет позиций.</p>');
+        }
+
+        t.items.forEach((item, ii) => {
+          const row = document.createElement('div');
+          row.className = 'edit-row';
+          row.innerHTML = `
+            <span class="edit-name">${item.name}${item.size ? ' (' + item.size + ')' : ''}${item.note ? ' — ' + item.note : ''}</span>
+            <button type="button" class="edit-qty-btn" data-dec>−</button>
+            <span>${item.qty}</span>
+            <button type="button" class="edit-qty-btn" data-inc>+</button>
+            <span style="min-width: 70px; text-align: right; color: var(--text-muted);">${(item.price * item.qty).toLocaleString()} ₽</span>
+            <button type="button" class="edit-del-btn" title="Убрать позицию">✕</button>`;
+
+          const rerender = () => editTable(idx);
+
+          row.querySelector('[data-inc]').onclick = () => { item.qty += 1; saveTables(); rerender(); };
+          row.querySelector('[data-dec]').onclick = () => {
+            if (item.qty > 1) { item.qty -= 1; saveTables(); rerender(); }
+          };
+          row.querySelector('[data-dec]').disabled = item.qty <= 1;
+          row.querySelector('.edit-del-btn').onclick = () => {
+            if (confirm(`Убрать «${item.name}» из заказа стола ${t.table}?`)) {
+              t.items.splice(ii, 1);
+              saveTables();
+              rerender();
+            }
+          };
+          editor.appendChild(row);
+        });
+
+        const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+        editor.insertAdjacentHTML('beforeend',
+          `<div class="table-total"><span>Итого:</span> <span>${total.toLocaleString()} ₽</span></div>`);
+
+        const doneBtn = document.createElement('button');
+        doneBtn.className = 'edit-done-btn';
+        doneBtn.textContent = '✅ Готово — сохранить и уведомить';
+        doneBtn.onclick = () => {
+          saveTables();
+          sendTableUpdate(t);
+          renderTables();
+        };
+        editor.appendChild(doneBtn);
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'edit-cancel-btn';
+        cancelBtn.textContent = '← Не менять ничего';
+        cancelBtn.onclick = renderTables;
+        editor.appendChild(cancelBtn);
+
+        list.appendChild(editor);
+      }
+
+      function sendTableUpdate(t) {
+        const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+
+        const lines = t.items.map(i => {
+          const size = i.size ? ` (${i.size})` : '';
+          const note = i.note ? ` — ${i.note}` : '';
+          return `• ${i.name}${size}${note} ×${i.qty} — ${i.price * i.qty} ₽`;
+        }).join('\n');
+
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const text = t.items.length
+          ? `🛎 Заказ по столу ${t.table}\n\n✎ Заказ исправлен в ${time}\n\n${lines || '—'}\n\n💵 Итого: ${total.toLocaleString('ru-RU')} ₽`
+          : `🛎 Стол ${t.table}\n\n✎ В ${time} заказ полностью отменён (все позиции убраны)`;
+
+        const BOT_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
+        const CHAT_ID   = '-1003907000620';
+
+        const apiCall = (apiMethod, p) => fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${apiMethod}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(p)
+        }).then(r => r.json());
+
+        const send = () => apiCall('sendMessage', { chat_id: CHAT_ID, text: text })
+          .then(d => {
+            if (d.ok) {
+              t.lastMsgId = d.result.message_id;
+              saveTables();
+            }
+          });
+
+        if (t.lastMsgId) {
+          apiCall('editMessageText', { chat_id: CHAT_ID, message_id: t.lastMsgId, text: text })
+            .then(data => {
+              if (!data.ok && (data.description || '').includes('message to edit not found')) {
+                t.lastMsgId = null;
+                saveTables();
+                send();
+              }
+            });
+        } else {
+          send();
+        }
+      }        
 
             function sendTableClosed(t) {
         const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
