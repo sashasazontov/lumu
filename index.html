@@ -586,6 +586,7 @@
         <h2>Столы</h2>
         <div id="tables-list"></div>
         <button id="back-from-tables-btn">← Назад</button>
+        <button id="weekly-report-btn">📊 Сводка за неделю</button>
     </div>
 </section>
 
@@ -718,6 +719,7 @@
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
         renderTables();
+           
       }
             // === РЕДАКТОР МЕНЮ ===
       let adminItems = [];
@@ -846,6 +848,123 @@
       const GH_PATH   = 'menu.json';
       const GH_BRANCH = 'main';
 
+    // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
+      const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
+      const TG_CHAT  = '-1003907000620';
+
+      function tgSend(text) {
+        return fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TG_CHAT, text })
+        }).then(r => r.json());
+      }
+
+      const GH_LOG = 'tables_log.json';
+
+      function ghLogHeaders() {
+        const t = localStorage.getItem('lummu_gh_token');
+        return t ? { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' } : null;
+      }
+
+      function logClosedToGithub(closed) {
+        let headers = ghLogHeaders();
+        if (!headers) {
+          const t = prompt('Для общей сводки по всем устройствам нужен GitHub-токен (вводится один раз на этом устройстве):');
+          if (!t || !t.trim().startsWith('github_pat_')) return;
+          localStorage.setItem('lummu_gh_token', t.trim());
+          headers = ghLogHeaders();
+        }
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => {
+            let log = [];
+            try { log = JSON.parse(atob(file.content)); } catch (e) {}
+            log.unshift(closed);
+            if (log.length > 500) log = log.slice(0, 500);
+            return fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: 'Закрытие стола ' + closed.table,
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(log, null, 2)))),
+                branch: GH_BRANCH,
+                sha: file.sha
+              })
+            });
+          })
+          .catch(e => console.warn('Журнал не записался:', e));
+      }
+
+      const WEEKLY_MS = 7 * 24 * 60 * 60 * 1000;
+
+      async function fetchClosedLog() {
+        try {
+          const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_LOG + '?t=' + Date.now());
+          if (!r.ok) return closedTables;
+          return await r.json();
+        } catch (e) {
+          return closedTables;
+        }
+      }
+
+      async function collectWeekStats() {
+        const log = await fetchClosedLog();
+        const now = Date.now();
+        const week = log.filter(t =>
+          t.closedAt && now - new Date(t.closedAt).getTime() <= WEEKLY_MS);
+        if (!week.length) return null;
+
+        const revenue = week.reduce((s, t) =>
+          s + t.items.reduce((x, i) => x + i.price * i.qty, 0), 0);
+
+        const byItem = {};
+        week.forEach(t => t.items.forEach(i => {
+          const key = i.name + (i.size ? ' (' + i.size + ')' : '');
+          byItem[key] = byItem[key] || { qty: 0, sum: 0 };
+          byItem[key].qty += i.qty;
+          byItem[key].sum += i.price * i.qty;
+        }));
+        const top = Object.entries(byItem)
+          .sort((a, b) => b[1].sum - a[1].sum)
+          .slice(0, 5);
+
+        const period = `${new Date(now - WEEKLY_MS).toLocaleDateString('ru-RU')} — ${new Date(now).toLocaleDateString('ru-RU')}`;
+
+        let text = `📊 Сводка Лу-Му (${period})\n\n`;
+        text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
+        text += `🪑 Закрыто столов: ${week.length}\n`;
+        text += `📈 Средний чек стола: ${Math.round(revenue / week.length).toLocaleString('ru-RU')} ₽\n\n`;
+        text += `🏆 Топ-5 позиций:\n`;
+        top.forEach(([name, v], i) => {
+          text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
+        });
+        return text;
+      }
+
+      async function maybeSendWeekly() {
+        const last = Number(localStorage.getItem('lummu_weekly_sent') || 0);
+        if (Date.now() - last < WEEKLY_MS) return;
+        const text = await collectWeekStats();
+        if (!text) return;
+        tgSend(text).then(d => {
+          if (d.ok) localStorage.setItem('lummu_weekly_sent', Date.now());
+        });
+      }
+      maybeSendWeekly();
+
+      // === КНОПКА СВОДКИ ===
+      document.getElementById('weekly-report-btn').addEventListener('click', async () => {
+        const text = await collectWeekStats();
+        if (!text) { alert('За последнюю неделю нет закрытых столов.'); return; }
+        tgSend(text).then(d =>
+          alert(d.ok ? '📊 Сводка отправлена в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка')));
+      });
+          
+
+
+           
       document.getElementById('admin-save-github-btn').addEventListener('click', () => {
         if (!confirm('Сохранить текущие правки на GitHub?')) return;
 
@@ -937,12 +1056,14 @@
             btn.onclick = () => {
               if (confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) {
                 const closed = tables.splice(idx, 1)[0];
+                closed.closedAt = new Date().toISOString();  
                 closed.pay = btn.dataset.pay;
                 closedTables.unshift(closed);
                 saveTables();
                 saveClosed();
                 renderTables();
                 sendTableClosed(closed);
+                logClosedToGithub(closed);
               }
             };
           });
