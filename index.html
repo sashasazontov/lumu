@@ -1147,8 +1147,22 @@
         });
         csv.push(['', '', '', 'Итого:', rows.length + ' столов', revenue]);
 
-        const text = csv.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n');
-        const blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' });
+        const text = csv.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n').replace(/₽/g, 'руб.');
+
+function toCp1251Bytes(str) {
+  const extra = { 'Ё': 0xA8, 'ё': 0xB8, '—': 0x97, '–': 0x96, '«': 0xAB, '»': 0xBB, '№': 0xB9 };
+  const out = [];
+  for (const ch of str) {
+    const code = ch.codePointAt(0);
+    if (code < 128) out.push(code);
+    else if (extra[ch] !== undefined) out.push(extra[ch]);
+    else if (code >= 0x0410 && code <= 0x044F) out.push(code - 0x0410 + 0xC0);
+    else out.push(63);
+  }
+  return out;
+}
+
+const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'lumu_report_' + new Date().toISOString().slice(0, 10) + '.csv';
