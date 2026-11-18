@@ -135,7 +135,6 @@
 }
 #nav-admin-btn:hover { opacity: 0.9; }
 
-
         .item-card.promo-card {
             border: 7.5px solid var(--accent-green);
             background-color: rgba(46, 204, 113, 0.05);
@@ -195,7 +194,7 @@
             object-position: center;
             display: block;
             filter: brightness(0.85);
-        }   
+        }
 
         /* Заглушка, пока картинка не загрузилась */
 .img-placeholder {
@@ -219,11 +218,11 @@
     opacity: 0;
     transition: opacity 0.4s ease;
 }
-.item-img.loaded { opacity: 0.85; }          /* 0.85 — как было filter: brightness(0.85) */
-.item-img.error  { display: none; }          /* битая картинка — остаётся заглушка */
+.item-img.loaded { opacity: 0.85; }
+.item-img.error  { display: none; }
 
 .item-card.sold-card .item-img.loaded { opacity: 0.35; }
-        
+
         .item-info {
             background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
             padding: 1.5rem;
@@ -547,7 +546,7 @@
     width: 100%; margin-top: 8px; padding: 8px;
     background: none; border: 1px solid #e74c3c; color: #e74c3c;
     border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-}      
+}
         footer {
             text-align: center;
             padding: 2rem;
@@ -568,10 +567,9 @@
         }
     </style>
 </head>
-    
+
 <body>
 
-    
            <div class="header-nav" id="header-nav" style="display: none;">
             <button id="nav-menu-btn" class="nav-btn active">Меню</button>
             <button id="nav-cart-btn" class="nav-btn">Корзина (<span id="cart-count">0</span>)</button>
@@ -618,6 +616,8 @@
         <div id="tables-list"></div>
         <button id="back-from-tables-btn">← Назад</button>
         <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
+        <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
+        <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
     </div>
 </section>
 
@@ -634,7 +634,6 @@
     </div>
 </section>
 
-    
     <div class="categories" style="display: none;"></div>
 
     <main class="items-grid" style="display: none;"></main>
@@ -655,6 +654,7 @@
     </footer>
 
     <script>
+
              document.addEventListener('DOMContentLoaded', () => {
 
       let cart = [];
@@ -692,7 +692,7 @@
       }
       function saveClosed() {
         localStorage.setItem('lummu_closed', JSON.stringify(closedTables));
-      }           
+      }
 
       // --- Переключение вкладок ---
       const heroPage     = document.getElementById('hero-page');
@@ -706,7 +706,6 @@
       const adminPage    = document.getElementById('admin-page');
       const navAdminBtn  = document.getElementById('nav-admin-btn');
 
-                 
       function setActiveNav(active) {
         navMenuBtn.classList.toggle('active', active === 'menu');
         navCartBtn.classList.toggle('active', active === 'cart');
@@ -743,18 +742,20 @@
         headerNav.style.display = 'flex';
       }
 
-        function showTables() {
+      function showTables() {
         hideAll();
         tablesPage.style.display = 'flex';
         headerNav.style.display = 'flex';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
-        document.getElementById('weekly-report-btn').style.display =
-          sessionStorage.getItem('lummu_admin_ok') === '1' ? 'block' : 'none';
+        const isAdmin = sessionStorage.getItem('lummu_admin_ok') === '1';
+        document.getElementById('weekly-report-btn').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('export-report-btn').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('week-finalize-btn').style.display = isAdmin ? 'block' : 'none';
         renderTables();
       }
 
-            // === РЕДАКТОР МЕНЮ ===
+      // === РЕДАКТОР МЕНЮ ===
       let adminItems = [];
       const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
@@ -942,11 +943,25 @@
         }
       }
 
+      // Точка последнего сведения недели (метка weekResetAt в журнале)
+      function weekResetPoint(log) {
+        let last = 0;
+        (log || []).forEach(e => {
+          if (e && e.weekResetAt) {
+            const t = new Date(e.weekResetAt).getTime();
+            if (t > last) last = t;
+          }
+        });
+        return last;
+      }
+
       async function collectWeekStats() {
         const log = await fetchClosedLog();
         const now = Date.now();
+        const mark = weekResetPoint(log);
+        const since = mark > 0 ? mark : now - WEEKLY_MS;
         const week = log.filter(t =>
-          t.closedAt && now - new Date(t.closedAt).getTime() <= WEEKLY_MS);
+          t.closedAt && new Date(t.closedAt).getTime() > since);
         if (!week.length) return null;
 
         const revenue = week.reduce((s, t) =>
@@ -963,7 +978,7 @@
           .sort((a, b) => b[1].sum - a[1].sum)
           .slice(0, 5);
 
-        const period = `${new Date(now - WEEKLY_MS).toLocaleDateString('ru-RU')} — ${new Date(now).toLocaleDateString('ru-RU')}`;
+        const period = `${new Date(since).toLocaleDateString('ru-RU')} — ${new Date(now).toLocaleDateString('ru-RU')}`;
 
         let text = `📊 Сводка Лу-Му (${period})\n\n`;
         text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
@@ -987,8 +1002,179 @@
       }
       maybeSendWeekly();
 
+      // === ЦВЕТ СЕЗОНА ===
+      function applySeasonTheme() {
+        const now = new Date();
+        const md = (now.getMonth() + 1) * 100 + now.getDate(); // например, 1215 = 15 декабря
+        let theme = null;
+        if (md >= 1215 || md <= 114) {
+          theme = { name: 'новогодний', accent: '#e8564f', blue: '#d63b3b', green: '#f0a848',
+                    grad: 'linear-gradient(135deg, #d63b3b 0%, #f0a848 100%)' };
+        } else if (md >= 210 && md <= 214) {
+          theme = { name: 'валентинов день', accent: '#ff6b9d', blue: '#e84a8a', green: '#ff8fab',
+                    grad: 'linear-gradient(135deg, #e84a8a 0%, #ff8fab 100%)' };
+        } else if (md >= 301 && md <= 309) {
+          theme = { name: '8 марта', accent: '#f78fb3', blue: '#e962a5', green: '#ffc1d4',
+                    grad: 'linear-gradient(135deg, #e962a5 0%, #ffc1d4 100%)' };
+        }
+        if (theme) {
+          const r = document.documentElement.style;
+          r.setProperty('--accent', theme.accent);
+          r.setProperty('--accent-blue', theme.blue);
+          r.setProperty('--accent-green', theme.green);
+          r.setProperty('--accent-gradient', theme.grad);
+        }
+        console.log('Тема сезона:', theme ? theme.name : 'обычная');
+      }
+      applySeasonTheme();
+
+      // === ЭКСПОРТ ВЫРУЧКИ ===
+      document.getElementById('export-report-btn').addEventListener('click', async () => {
+        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
+          const pass = prompt('Пароль администратора:');
+          if (pass !== 'Sasha2009') return;
+          sessionStorage.setItem('lummu_admin_ok', '1');
+        }
+        const days = Number(prompt('За сколько дней выгрузить отчёт?', '30'));
+        if (!days || days <= 0) return;
+
+        const log = await fetchClosedLog();
+        const since = Date.now() - days * 24 * 60 * 60 * 1000;
+        const rows = log.filter(t => t.closedAt && new Date(t.closedAt).getTime() >= since);
+
+        const csv = [['Дата', 'Время', 'Стол', 'Оплата', 'Состав заказа', 'Сумма, ₽']];
+        let revenue = 0;
+        rows.forEach(t => {
+          const d = new Date(t.closedAt);
+          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          revenue += total;
+          const items = t.items.map(i =>
+            `${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`).join('; ');
+          csv.push([
+            d.toLocaleDateString('ru-RU'),
+            d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+            'Стол ' + t.table,
+            (t.pay || '').replace('💵 ', '').replace('💳 ', ''),
+            items,
+            total
+          ]);
+        });
+        csv.push(['', '', '', 'Итого:', rows.length + ' столов', revenue]);
+
+        const text = csv.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n');
+        const blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'lumu_report_' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if (!rows.length) alert('За последние ' + days + ' дн. закрытых столов нет — файл пустой.');
+      });
+
+      // === СВЕДЕНИЕ НЕДЕЛИ ===
+      async function sendWeekFinalReport() {
+        if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
+          const pass = prompt('Пароль администратора:');
+          if (pass !== 'Sasha2009') return;
+          sessionStorage.setItem('lummu_admin_ok', '1');
+        }
+        const log = await fetchClosedLog();
+        const since = weekResetPoint(log);
+        const rows = log
+          .filter(t => t.closedAt && new Date(t.closedAt).getTime() > since)
+          .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
+
+        if (!rows.length) {
+          alert('С последнего сведения закрытых столов нет.');
+          return;
+        }
+
+        let revenue = 0;
+        let text = '📋 ОТЧЁТ Лу-Му — период ' +
+          new Date(since > 0 ? since : new Date(rows[0].closedAt).getTime()).toLocaleDateString('ru-RU') +
+          ' — ' + new Date().toLocaleDateString('ru-RU') + '\n\n';
+
+        rows.forEach(t => {
+          const d = new Date(t.closedAt);
+          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          revenue += total;
+          const pay = (t.pay || '').replace('💵 ', 'нал').replace('💳 ', 'перевод');
+          text += `— ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })} · Стол ${t.table} · ${pay}\n`;
+          t.items.forEach(i => {
+            text += `    ${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty} — ${(i.price * i.qty).toLocaleString('ru-RU')} ₽\n`;
+          });
+          text += `    Сумма: ${total.toLocaleString('ru-RU')} ₽\n`;
+        });
+
+        const byItem = {};
+        rows.forEach(t => t.items.forEach(i => {
+          const key = i.name + (i.size ? ' (' + i.size + ')' : '');
+          byItem[key] = byItem[key] || { qty: 0, sum: 0 };
+          byItem[key].qty += i.qty;
+          byItem[key].sum += i.price * i.qty;
+        }));
+        const top = Object.entries(byItem).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
+        text += '\n🏆 Топ позиций:\n';
+        top.forEach(([name, v], i) => {
+          text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
+        });
+
+        text += `\n💵 ИТОГО: ${revenue.toLocaleString('ru-RU')} ₽ за ${rows.length} столов\n📊 Средний чек: ${Math.round(revenue / rows.length).toLocaleString('ru-RU')} ₽`;
+
+        // Telegram принимает до 4096 символов — режем на части при необходимости
+        const parts = [];
+        let chunk = '';
+        text.split('\n').forEach(line => {
+          if ((chunk + line + '\n').length > 3800) { parts.push(chunk); chunk = ''; }
+          chunk += line + '\n';
+        });
+        if (chunk) parts.push(chunk);
+
+        Promise.all(parts.map(p => tgSend(p))).then(results => {
+          if (results.every(r => r.ok)) {
+            writeWeekReset();
+          } else {
+            alert('Не удалось отправить: ' + ((results.find(r => !r.ok) || {}).description || 'ошибка'));
+          }
+        });
+      }
+
+      function writeWeekReset() {
+        let headers = ghLogHeaders();
+        if (!headers) {
+          const t = prompt('Для обнуления периода нужен GitHub-токен (вводится один раз):');
+          if (!t || !t.trim().startsWith('github_pat_')) {
+            alert('Отчёт отправлен, но период не обнулён — нужен GitHub-токен.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', t.trim());
+          headers = ghLogHeaders();
+        }
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => {
+            let logArr = [];
+            try { logArr = JSON.parse(atob(file.content)); } catch (e) {}
+            logArr.unshift({ weekResetAt: new Date().toISOString() });
+            if (logArr.length > 500) logArr = logArr.slice(0, 500);
+            return fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: 'Обнуление периода сводки',
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+                branch: GH_BRANCH,
+                sha: file.sha
+              })
+            });
+          })
+          .then(() => alert('✅ Отчёт отправлен, период обнулён. Сводка теперь считает с чистого листа.'))
+          .catch(e => alert('Отчёт отправлен, но период не обнулён: ' + e));
+      }
+
       // === КНОПКА СВОДКИ ===
-           document.getElementById('weekly-report-btn').addEventListener('click', async () => {
+      document.getElementById('weekly-report-btn').addEventListener('click', async () => {
         if (sessionStorage.getItem('lummu_admin_ok') !== '1') {
           const pass = prompt('Пароль администратора:');
           if (pass !== 'Sasha2009') return;
@@ -1000,11 +1186,9 @@
           alert(d.ok ? '📊 Сводка отправлена в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка')));
       });
 
-          
+      document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
-
-           
-      document.getElementById('admin-save-github-btn').addEventListener('click', () => {
+             document.getElementById('admin-save-github-btn').addEventListener('click', () => {
         if (!confirm('Сохранить текущие правки на GitHub?')) return;
 
         let ghToken = localStorage.getItem('lummu_gh_token');
@@ -1055,7 +1239,6 @@
           .catch(e => alert('Ошибка сети: ' + e));
       });
 
-           
       // локальное применение правок без перезагрузки (живёт до очистки браузера)
       function saveMenuOverride() {
         localStorage.setItem('lummu_menu', JSON.stringify({ categories: menuCategories, items: menuItems }));
@@ -1063,12 +1246,12 @@
       try {
         const override = JSON.parse(localStorage.getItem('lummu_menu'));
         if (override && override.items) { menuCategories = override.categories || []; menuItems = override.items; }
-      } catch (e) {}           
+      } catch (e) {}
 
       function renderTables() {
         const list = document.getElementById('tables-list');
         list.innerHTML = '';
-          
+
         // --- Активные столы ---
         if (tables.length === 0) {
           list.insertAdjacentHTML('beforeend',
@@ -1096,7 +1279,7 @@
             btn.onclick = () => {
               if (confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) {
                 const closed = tables.splice(idx, 1)[0];
-                closed.closedAt = new Date().toISOString();  
+                closed.closedAt = new Date().toISOString();
                 closed.pay = btn.dataset.pay;
                 closedTables.unshift(closed);
                 saveTables();
@@ -1149,7 +1332,7 @@
         });
       }
 
-               // === ПРАВКА ЗАКАЗА СТОЛА ===
+      // === ПРАВКА ЗАКАЗА СТОЛА ===
       function editTable(idx) {
         const t = tables[idx];
         if (!t) return;
@@ -1259,9 +1442,9 @@
         } else {
           send();
         }
-      }        
+      }
 
-            function sendTableClosed(t) {
+      function sendTableClosed(t) {
         const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
 
         const lines = t.items.map(i => {
@@ -1298,7 +1481,7 @@
           send();
         }
       }
-                          
+
       function showHero() {
         hideAll();
         heroPage.style.display = 'flex';
@@ -1306,9 +1489,9 @@
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
       }
-                 
+
       navMenuBtn.addEventListener('click', showMenu);
-      navCartBtn.addEventListener('click', showCart);           
+      navCartBtn.addEventListener('click', showCart);
       document.getElementById('open-menu-btn').addEventListener('click', showMenu);
       document.getElementById('open-rules-btn').addEventListener('click', showRules);
       document.getElementById('back-from-rules-btn').addEventListener('click', showHero);
@@ -1316,8 +1499,8 @@
       document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
       navAdminBtn.addEventListener('click', showAdmin);
       document.getElementById('back-from-admin-btn').addEventListener('click', showMenu);
-              
-     // === МЕНЮ ИЗ JSON ===
+
+      // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
           const menu = await fetch('menu.json?v=' + Date.now()).then(r => r.json());
@@ -1662,9 +1845,11 @@
         window.scrollTo({ top: 0 });
       });
     });
-                     
+
     </script>
-    
+
     <button id="nav-admin-btn" title="Служебный вход">⚙</button>
 </body>
 </html>
+
+        
