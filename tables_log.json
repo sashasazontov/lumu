@@ -1,5 +1,35 @@
 [
   {
+    "table": "4",
+    "lastMsgId": 130,
+    "orderNo": 2,
+    "items": [
+      {
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Pepsi",
+        "price": 220,
+        "size": "",
+        "note": "",
+        "qty": 3
+      },
+      {
+        "name": "Ром-Кола",
+        "price": 379,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-18T04:28:32.052Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "2",
     "lastMsgId": 128,
     "orderNo": 1,
