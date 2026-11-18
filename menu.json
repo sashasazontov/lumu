@@ -66,7 +66,7 @@
       "promo": true,
       "tobaccoBtn": false,
       "list": [],
-      "sold": true
+      "sold": false
     },
     {
       "id": "promo-tea",
