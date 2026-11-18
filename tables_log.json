@@ -2,6 +2,22 @@
   {
     "table": "1",
     "lastMsgId": null,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Виски",
+        "price": 279,
+        "size": "50 мл",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-18T05:34:09.425Z",
+    "pay": "💳 Перевод"
+  },
+  {
+    "table": "1",
+    "lastMsgId": null,
     "orderNo": 0,
     "items": [],
     "closedAt": "2026-11-18T05:31:09.337Z",
