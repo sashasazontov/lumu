@@ -1,5 +1,21 @@
 [
   {
+    "table": "7",
+    "lastMsgId": 134,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Соленья ассорти",
+        "price": 1180,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-18T04:29:52.077Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "4",
     "lastMsgId": 130,
     "orderNo": 2,
