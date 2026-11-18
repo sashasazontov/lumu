@@ -754,8 +754,6 @@
         renderTables();
       }
 
-           
-      }
             // === РЕДАКТОР МЕНЮ ===
       let adminItems = [];
       const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -997,6 +995,10 @@
           sessionStorage.setItem('lummu_admin_ok', '1');
         }
         const text = await collectWeekStats();
+        if (!text) { alert('За последнюю неделю нет закрытых столов.'); return; }
+        tgSend(text).then(d =>
+          alert(d.ok ? '📊 Сводка отправлена в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка')));
+      });
 
           
 
