@@ -1,5 +1,27 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "6",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Напиток Кола 50% + Грейпфрут 50%",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "2",
@@ -18,5 +40,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795189399552
+  "updatedAt": 1795196261923
 }
