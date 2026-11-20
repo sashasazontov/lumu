@@ -1977,6 +1977,17 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
       loadMenu();
       pullRemoteState();
+
+      // --- Добавление позиции в корзину (общая для всех путей) ---
+      function addItemToCart(it, note) {
+        const existing = cart.find(item =>
+          item.name === it.title && item.size === (it.size || '') && item.note === note
+        );
+        if (existing) existing.qty += 1;
+        else cart.push({ name: it.title, price: it.price, size: it.size || '', note: note || '', qty: 1 });
+        updateCart();
+        showCart();
+      }
         
       // === ДЕЛЕГИРОВАНИЕ КЛИКОВ ===
       document.addEventListener('click', (e) => {
@@ -1996,15 +2007,16 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           if (addBtn.disabled) return;
           const it = menuItems.find(i => i.id === addBtn.dataset.id);
           if (!it || typeof it.price !== 'number') return;
+
+          // У позиций со списком табаков (кальяны) сначала выбираем вкус
+          if (it.list && it.list.length) {
+            openMixBuilder(it.id, true);
+            return;
+          }
+
           const noteInput = addBtn.closest('.item-info').querySelector('.tobacco-input');
           const note = noteInput ? noteInput.value.trim() : '';
-          const existing = cart.find(item =>
-            item.name === it.title && item.size === (it.size || '') && item.note === note
-          );
-          if (existing) existing.qty += 1;
-          else cart.push({ name: it.title, price: it.price, size: it.size || '', note, qty: 1 });
-          updateCart();
-          showCart();
+          addItemToCart(it, note);
           return;
         }
 
@@ -2393,15 +2405,16 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
       let mixItemId = null;
       let mixSelected = [];
-
+      let mixForced = false;
       function closeMixBuilder() {
         mixOverlay.style.display = 'none';
       }
 
-      function openMixBuilder(itemId) {
+      function openMixBuilder(itemId, forced) {
         const it = menuItems.find(i => i.id === itemId);
         if (!it || !it.list || !it.list.length) return;
         mixItemId = itemId;
+        mixForced = !!forced;
         mixSelected = [];
         renderMixBuilder(it);
         mixOverlay.style.display = 'flex';
@@ -2422,7 +2435,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             </div>
             <div id="mix-weights"></div>
             <div id="mix-preview"></div>
-            <button id="mix-apply-btn" class="mix-primary">Заполнить заметку</button>
+            <button id="mix-apply-btn" class="mix-primary">${mixForced ? '🛒 В корзину с этим вкусом' : 'Заполнить заметку'}</button>
             <button id="mix-close-btn" class="mix-ghost">← Закрыть</button>
           </div>`;
 
@@ -2465,11 +2478,23 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         });
       }
 
+
       function applyMix() {
         if (!mixSelected.length) {
-          alert('Сначала выберите хотя бы один вкус.');
+          alert(mixForced ? 'Выберите хотя бы один вкус — без него кальян не добавить.' : 'Сначала выберите хотя бы один вкус.');
           return;
         }
+        const text = mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
+
+        // Режим заказа кальяна: сразу в корзину с выбранным вкусом
+        if (mixForced) {
+          const it = menuItems.find(i => i.id === mixItemId);
+          closeMixBuilder();
+          if (it) addItemToCart(it, text);
+          return;
+        }
+
+        // Обычный режим: подставить вкус в заметку карточки
         let card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
         if (!card) return;
 
@@ -2483,14 +2508,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           if (cartBtn) card.querySelector('.item-info').insertBefore(input, cartBtn);
           else card.querySelector('.item-info').appendChild(input);
         }
-
-        const text = mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
         input.value = text;
         input.dispatchEvent(new Event('input', { bubbles: true }));
         closeMixBuilder();
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-
+        
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
         if (deferredPrompt) {
