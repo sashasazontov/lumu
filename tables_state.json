@@ -2,15 +2,22 @@
   "tables": [
     {
       "table": "2",
-      "lastMsgId": null,
-      "orderNo": 1,
+      "lastMsgId": 164,
+      "orderNo": 3,
       "items": [
         {
           "name": "Кальян Премиум",
           "price": 2500,
           "size": "",
           "note": "",
-          "qty": 1
+          "qty": 3
+        },
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "",
+          "qty": 2
         }
       ]
     }
@@ -49,5 +56,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795174517309
+  "updatedAt": 1795174692559
 }
