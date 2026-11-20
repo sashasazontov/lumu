@@ -24,14 +24,14 @@
     {
       "table": "2",
       "lastMsgId": 216,
-      "orderNo": 3,
+      "orderNo": 4,
       "items": [
         {
           "name": "Пиво за 280",
           "price": 280,
           "size": "",
           "note": "Гараж",
-          "qty": 3
+          "qty": 4
         },
         {
           "name": "Пиво за 280",
@@ -82,5 +82,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795215482613
+  "updatedAt": 1795216555467
 }
