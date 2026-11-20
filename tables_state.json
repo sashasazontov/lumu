@@ -1,28 +1,14 @@
 {
   "tables": [
     {
-      "table": "1",
-      "lastMsgId": 182,
-      "orderNo": 3,
+      "table": "2",
+      "lastMsgId": 184,
+      "orderNo": 1,
       "items": [
         {
-          "name": "Пиво за 280",
-          "price": 280,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Pepsi",
-          "price": 220,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Coca‑Cola",
-          "price": 220,
-          "size": "",
+          "name": "Тархун Ананас",
+          "price": 260,
+          "size": "250 мл",
           "note": "",
           "qty": 1
         }
@@ -86,5 +72,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795186374556
+  "updatedAt": 1795186400406
 }
