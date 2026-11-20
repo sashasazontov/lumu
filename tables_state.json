@@ -3,11 +3,25 @@
     {
       "table": "1",
       "lastMsgId": 182,
-      "orderNo": 1,
+      "orderNo": 3,
       "items": [
         {
           "name": "Пиво за 280",
           "price": 280,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Pepsi",
+          "price": 220,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Coca‑Cola",
+          "price": 220,
           "size": "",
           "note": "",
           "qty": 1
@@ -72,5 +86,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795186320534
+  "updatedAt": 1795186374556
 }
