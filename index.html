@@ -975,7 +975,8 @@
       const TG_CHAT  = '-1003907000620';
 
       function tgSend(text) {
-        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
+          
+     return fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: TG_CHAT, text })
@@ -1634,7 +1635,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           ? `🛎 Заказ по столу ${t.table}\n\n✎ Заказ исправлен в ${time}\n\n${lines || '—'}\n\n💵 Итого: ${total.toLocaleString('ru-RU')} ₽`
           : `🛎 Стол ${t.table}\n\n✎ В ${time} заказ полностью отменён (все позиции убраны)`;
 
-        const apiCall = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
+        const apiCall = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1673,9 +1674,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }).join('\n');
 
         const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
-
-         const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
-
+             
+          const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
+          
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(p)
@@ -2003,7 +2004,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           ? { chat_id: TG_CHAT, text: text }
           : { chat_id: TG_CHAT, message_id: table.lastMsgId, text: text };
 
-         const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
+         const request = (apiMethod, p) => fetch(`https://api.telegram.org/bot${TG_TOKEN}/${apiMethod}`, {
 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
