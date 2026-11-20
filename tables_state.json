@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": null,
@@ -19,10 +20,10 @@
           "note": "Манго 50% + Освежающая Мята 50%",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-20T14:10:57.145Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "3",
       "lastMsgId": 119,
@@ -56,5 +57,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795178746155
+  "updatedAt": 1795183858649
 }
