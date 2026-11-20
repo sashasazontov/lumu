@@ -1,5 +1,28 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 158,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Pepsi",
+        "price": 220,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-20T10:28:33.093Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "8",
     "lastMsgId": null,
     "orderNo": 0,
