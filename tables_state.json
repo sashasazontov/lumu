@@ -1,5 +1,20 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "2",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "3",
@@ -34,5 +49,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795172817089
+  "updatedAt": 1795174517309
 }
