@@ -1,15 +1,15 @@
 {
   "tables": [
     {
-      "table": "2",
-      "lastMsgId": 184,
+      "table": "4",
+      "lastMsgId": 187,
       "orderNo": 1,
       "items": [
         {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Мандарин 100%",
           "qty": 1
         }
       ]
@@ -72,5 +72,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795186400406
+  "updatedAt": 1795186496086
 }
