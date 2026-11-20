@@ -780,6 +780,7 @@
             <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
             <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
             <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
+            <button id="shift-open-btn" style="display: none;">🌅 Открыть смену</button>
         </div>
     </section>
 
@@ -1048,6 +1049,7 @@
         document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('shift-close-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('shift-open-btn').style.display = getRole() ? 'block' : 'none';
         if (!localStorage.getItem('lummu_gh_token')) {
           const t = prompt('Для синхронизации столов нужен GitHub-токен (вводится один раз):');
           if (t && t.trim().startsWith('github_pat_')) localStorage.setItem('lummu_gh_token', t.trim());
@@ -1587,6 +1589,79 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           .catch(e => alert('Отчёт отправлен, но период не обнулён: ' + e));
       }
 
+      // Точка последнего открытия смены (метка shiftOpenAt в журнале)
+      function shiftOpenPoint(log) {
+        let last = null;
+        (log || []).forEach(e => {
+          if (e && e.shiftOpenAt) {
+            const t = new Date(e.shiftOpenAt).getTime();
+            if (!last || t > last.t) last = { t, by: e.openedBy || '—' };
+          }
+        });
+        return last;
+      }
+
+      async function openShift() {
+        const name = prompt('Кто открывает смену? (имя бармена):');
+        if (!name || !name.trim()) return;
+        const clean = name.trim();
+
+        const log = await fetchClosedLog();
+        const lastClose = shiftClosePoint(log);
+        const openMark = shiftOpenPoint(log);
+        if (openMark && openMark.t > lastClose) {
+          if (!confirm(`Смена уже открыта (${openMark.by}). Начать новую — смену закроют на ${openMark.by}?`)) return;
+        }
+
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const date = new Date().toLocaleDateString('ru-RU');
+
+        const d = await tgSend(`🌅 Смена начата — ${date} ${time}\n👤 Бармен: ${clean}`);
+        if (!d.ok) {
+          alert('Не удалось отправить в Telegram: ' + (d.description || 'ошибка'));
+          return;
+        }
+
+        writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean });
+      }
+
+      function writeShiftOpen(entry) {
+        let headers = ghLogHeaders();
+        if (!headers) {
+          const t = prompt('Для сохранения имени бармена нужен GitHub-токен (вводится один раз):');
+          if (!t || !t.trim().startsWith('github_pat_')) {
+            alert('Смена объявлена в Telegram, но имя не сохранено — нужен GitHub-токен.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', t.trim());
+          headers = ghLogHeaders();
+        }
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => {
+            let logArr = [];
+            try {
+              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
+              logArr = JSON.parse(new TextDecoder().decode(bytes));
+            } catch (e) {}
+            logArr.unshift(entry);
+            if (logArr.length > 500) logArr = logArr.slice(0, 500);
+            return fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: 'Открытие смены',
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+                branch: GH_BRANCH,
+                sha: file.sha
+              })
+            });
+          })
+          .then(() => alert('✅ Смена открыта. Имя бармена подставится в итог при закрытии.'))
+          .catch(e => alert('Смена объявлена в Telegram, но не сохранена в журнале: ' + e));
+      }
+  
       // === ЗАКРЫТИЕ СМЕНЫ ===
       function shiftClosePoint(log) {
         let last = 0;
@@ -1603,8 +1678,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         if (getRole() !== 'admin') return;
 
         const log = await fetchClosedLog();
-        const mark = shiftClosePoint(log);
-        const since = mark > 0 ? mark : new Date().setHours(0, 0, 0, 0);
+        const lastClose = shiftClosePoint(log);
+        const openMark = shiftOpenPoint(log);
+        let since = lastClose > 0 ? lastClose : new Date().setHours(0, 0, 0, 0);
+        if (openMark && openMark.t > lastClose) {
+          since = openMark.t; // период считаем с открытия смены
+        }
         const rows = log
           .filter(t => t.closedAt && new Date(t.closedAt).getTime() > since)
           .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
@@ -1632,6 +1711,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
         let text = `🌙 Смена закрыта — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
         text += `🕐 Период: с ${period}\n`;
+        if (openMark && openMark.t === since) {
+          text += `👤 Смена открыта: ${openMark.by}\n`;
+        }
         text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
         text += `🪑 Столов закрыто: ${rows.length}\n`;
         text += `💵 Наличка: ${cash.toLocaleString('ru-RU')} ₽ · 💳 Перевод: ${card.toLocaleString('ru-RU')} ₽\n`;
@@ -1710,6 +1792,8 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
       document.getElementById('shift-close-btn').addEventListener('click', closeShift);
+
+      document.getElementById('shift-open-btn').addEventListener('click', openShift);
 
       document.getElementById('admin-save-github-btn').addEventListener('click', () => {
         if (!confirm('Сохранить текущие правки на GitHub?')) return;
