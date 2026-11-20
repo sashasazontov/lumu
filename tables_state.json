@@ -1,5 +1,27 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "АКЦИИ В ЛУМУ",
+          "price": 2750,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Манго 50% + Освежающая Мята 50%",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "3",
@@ -34,5 +56,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795178617110
+  "updatedAt": 1795178746155
 }
