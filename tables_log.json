@@ -1,5 +1,49 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 216,
+    "orderNo": 4,
+    "items": [
+      {
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "Гараж",
+        "qty": 4
+      },
+      {
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "Редс",
+        "qty": 3
+      },
+      {
+        "name": "Чипсы на выбор (LAYS)",
+        "price": 350,
+        "size": "",
+        "note": "Рибай",
+        "qty": 1
+      },
+      {
+        "name": "Радуга",
+        "price": 299,
+        "size": "60 мл",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Пилот",
+        "price": 299,
+        "size": "60 мл",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-20T23:16:36.670Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "6",
     "lastMsgId": 193,
     "orderNo": 2,
