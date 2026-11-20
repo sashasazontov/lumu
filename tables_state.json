@@ -1,5 +1,20 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": 182,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "1",
@@ -57,5 +72,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795183858649
+  "updatedAt": 1795186320534
 }
