@@ -1,5 +1,28 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 189,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Fly girl",
+        "price": 299,
+        "size": "60 мл",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Кальян Премиум",
+        "price": 2500,
+        "size": "",
+        "note": "Голубика Лимон и Мята 50% + Арбуз Виноград и Чернослив 50%",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-20T15:01:29.997Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "1",
     "lastMsgId": null,
     "orderNo": 1,
