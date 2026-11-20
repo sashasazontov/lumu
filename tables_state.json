@@ -1,41 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "1",
-      "lastMsgId": 160,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    },
-    {
-      "table": "2",
-      "lastMsgId": 161,
-      "orderNo": 2,
-      "items": [
-        {
-          "name": "Pepsi",
-          "price": 220,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Сервировка и предоставление посуды для еды, принесённой с собой",
-          "price": 400,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3",
@@ -70,5 +34,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795172116045
+  "updatedAt": 1795172817089
 }
