@@ -322,6 +322,75 @@
         }
         .tobacco-chip.tobacco-photo { padding-right: 12px; }
 
+        .mix-btn {
+            margin-top: 8px;
+            width: 100%;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .mix-btn:hover { background: var(--accent-green); color: #000; }
+
+        #mix-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        #mix-panel {
+            background: var(--card-dark);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 480px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        #mix-panel h3 { color: var(--accent); margin-bottom: 8px; }
+        .mix-hint { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px; }
+        #mix-flavors { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .mix-flavor {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 10px 5px 5px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .mix-flavor img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+        .mix-flavor.sel {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(46,204,113,0.1);
+        }
+        .mix-weight-row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0; font-size: 0.9rem;
+        }
+        .mix-weight-row input[type=range] { flex: 1; accent-color: var(--accent); }
+        #mix-preview {
+            color: var(--accent); font-size: 0.9rem;
+            margin: 10px 0; min-height: 1.2em;
+        }
+        .mix-primary {
+            width: 100%; padding: 12px;
+            background: var(--accent-gradient); color: #000;
+            border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+        }
+        .mix-ghost {
+            width: 100%; margin-top: 8px; padding: 10px;
+            background: none; border: 1px solid #444; color: var(--text-muted);
+            border-radius: 8px; cursor: pointer;
+        }
+
         #cart-container {
             padding: 1.5rem 1rem;
             background: var(--card-dark);
@@ -1817,7 +1886,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             .join('');
 
           document.querySelector('.items-grid').innerHTML = menu.items.map(it => `
-            <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}">
+            <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}" data-id="${it.id}">
               <div class="item-img-wrapper">
                 <div class="img-placeholder">${it.title}</div>
                 <img src="${it.img}" alt="${it.title}" class="item-img"
@@ -1842,6 +1911,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
                   ${it.sold ? 'Нет в наличии' : 'В корзину'}
                 </button>` : ''}
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
+                ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
               </div>
             </article>`).join('');
         } catch (err) {
@@ -1882,6 +1952,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           return;
         }
 
+       const mixBtn = e.target.closest('.mix-btn');
+        if (mixBtn) {
+          openMixBuilder(mixBtn.dataset.id);
+          return;
+        }
+  
         const tabBtn = e.target.closest('.tobacco-btn');
         if (tabBtn) {
           const target = document.querySelector('.cat-btn[data-category="tobacco"]');
@@ -2166,12 +2242,106 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
       });
 
-            // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
+     // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
       setInterval(async () => {
         const changed = await pullRemoteState();
         if (changed && tablesPage.style.display !== 'none') renderTables();
       }, 20000);
-        
+
+      // === КОНСТРУКТОР МИКСОВ ===
+      const mixOverlay = document.createElement('div');
+      mixOverlay.id = 'mix-overlay';
+      document.body.appendChild(mixOverlay);
+      mixOverlay.addEventListener('click', (ev) => {
+        if (ev.target === mixOverlay) closeMixBuilder();
+      });
+
+      let mixItemId = null;
+      let mixSelected = [];
+
+      function closeMixBuilder() {
+        mixOverlay.style.display = 'none';
+      }
+
+      function openMixBuilder(itemId) {
+        const it = menuItems.find(i => i.id === itemId);
+        if (!it || !it.list || !it.list.length) return;
+        mixItemId = itemId;
+        mixSelected = [];
+        renderMixBuilder(it);
+        mixOverlay.style.display = 'flex';
+      }
+
+      function renderMixBuilder(it) {
+        const flavors = it.list.map(l => typeof l === 'string' ? { name: l } : l);
+        mixOverlay.innerHTML = `
+          <div id="mix-panel">
+            <h3>🧪 Конструктор микса</h3>
+            <p class="mix-hint">Выберите до трёх вкусов и задайте пропорции — заметка подставится автоматически.</p>
+            <div id="mix-flavors">
+              ${flavors.map((f, fi) => `
+                <div class="mix-flavor ${mixSelected.some(s => s.name === f.name) ? 'sel' : ''}" data-mix-i="${fi}">
+                  ${f.img ? `<img src="${f.img}" alt="" onerror="this.style.display='none'">` : ''}
+                  <span>${esc(f.name)}</span>
+                </div>`).join('')}
+            </div>
+            <div id="mix-weights"></div>
+            <div id="mix-preview"></div>
+            <button id="mix-apply-btn" class="mix-primary">Заполнить заметку</button>
+            <button id="mix-close-btn" class="mix-ghost">← Закрыть</button>
+          </div>`;
+
+        mixOverlay.querySelectorAll('.mix-flavor').forEach(el => {
+          el.onclick = () => {
+            const f = flavors[+el.dataset.mixI];
+            const i = mixSelected.findIndex(s => s.name === f.name);
+            if (i >= 0) mixSelected.splice(i, 1);
+            else if (mixSelected.length < 3) mixSelected.push({ name: f.name, weight: 1 });
+            else return;
+            renderMixBuilder(it);
+          };
+        });
+        mixOverlay.querySelector('#mix-close-btn').onclick = closeMixBuilder;
+        mixOverlay.querySelector('#mix-apply-btn').onclick = applyMix;
+        renderMixWeights();
+      }
+
+      function renderMixWeights() {
+        const box = mixOverlay.querySelector('#mix-weights');
+        const prev = mixOverlay.querySelector('#mix-preview');
+        if (!mixSelected.length) { box.innerHTML = ''; prev.textContent = ''; return; }
+        box.innerHTML = mixSelected.map((s, i) => `
+          <div class="mix-weight-row">
+            <span style="flex:1;">${esc(s.name)}</span>
+            <input type="range" min="0" max="100" value="${s.weight}" data-w="${i}">
+            <b style="min-width:38px; text-align:right;">${s.weight}%</b>
+          </div>`).join('');
+        box.querySelectorAll('input[type=range]').forEach(r => {
+          r.oninput = () => {
+            mixSelected[+r.dataset.w].weight = +r.value;
+            const total = mixSelected.reduce((acc, x) => acc + x.weight, 0) || 1;
+            mixSelected.forEach(x => { x.norm = Math.round(x.weight / total * 100); });
+            const sum = mixSelected.reduce((acc, x) => acc + x.norm, 0);
+            mixSelected[mixSelected.length - 1].norm += 100 - sum; // поправка на округление
+            prev.textContent = 'Микс: ' + mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
+            box.querySelectorAll('b').forEach((b, i) => { b.textContent = mixSelected[i].norm + '%'; });
+          };
+          r.dispatchEvent(new Event('input'));
+        });
+      }
+
+      function applyMix() {
+        if (!mixSelected.length) return;
+        const card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
+        const input = card ? card.querySelector('.tobacco-input') : null;
+        if (!input) return;
+        const text = mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
+        input.value = text;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        closeMixBuilder();
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+   
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
         if (deferredPrompt) {
