@@ -2466,17 +2466,31 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       }
 
       function applyMix() {
-        if (!mixSelected.length) return;
-        const card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
-        const input = card ? card.querySelector('.tobacco-input') : null;
-        if (!input) return;
+        if (!mixSelected.length) {
+          alert('Сначала выберите хотя бы один вкус.');
+          return;
+        }
+        let card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
+        if (!card) return;
+
+        let input = card.querySelector('.tobacco-input');
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'tobacco-input';
+          input.placeholder = 'Вкусы и пожелания';
+          const cartBtn = card.querySelector('.add-to-cart-btn');
+          if (cartBtn) card.querySelector('.item-info').insertBefore(input, cartBtn);
+          else card.querySelector('.item-info').appendChild(input);
+        }
+
         const text = mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
         input.value = text;
         input.dispatchEvent(new Event('input', { bubbles: true }));
         closeMixBuilder();
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-   
+
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
         if (deferredPrompt) {
