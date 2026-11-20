@@ -1,20 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "5",
-      "lastMsgId": null,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян от двух вкусов",
-          "price": 2000,
-          "size": "",
-          "note": "Маракуйя 80% + Энергетик 20%",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3",
@@ -49,5 +34,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795177758608
+  "updatedAt": 1795178617110
 }
