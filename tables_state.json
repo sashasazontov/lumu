@@ -2,7 +2,7 @@
   "tables": [
     {
       "table": "6",
-      "lastMsgId": null,
+      "lastMsgId": 207,
       "orderNo": 1,
       "items": [
         {
@@ -17,6 +17,34 @@
           "price": 2500,
           "size": "",
           "note": "Напиток Кола 50% + Грейпфрут 50%",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Гараж",
+          "qty": 2
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Редс",
+          "qty": 2
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "Рибай",
           "qty": 1
         }
       ]
@@ -40,5 +68,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795196261923
+  "updatedAt": 1795210494582
 }
