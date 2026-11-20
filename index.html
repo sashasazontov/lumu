@@ -2295,7 +2295,10 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       // --- Оформление заказа: с QR — сразу в стол, без — выбор из списка ---
       checkoutBtn.addEventListener('click', () => {
         if (cart.length === 0) return;
+        const isStaff = getRole() !== '';
         const qrTable = getQrTable();
+
+        // Гость с QR — заказ идёт только в его стол, список не показываем
         if (qrTable) {
           let idx = tables.findIndex(t => t.table === qrTable);
           if (idx === -1) {
@@ -2304,10 +2307,26 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             idx = tables.length - 1;
           }
           sendToTable(idx);
-        } else {
+          return;
+        }
+
+        // Персонал — выбор из всех столов
+        if (isStaff) {
           buildTableChooser();
           window.scrollTo({ top: 0 });
+          return;
         }
+
+        // Гость без QR — спрашиваем только его стол
+        const num = prompt('За каким столом вы находитесь? Введите номер стола (например, 12):');
+        if (!num || !num.trim()) return;
+        let idx = tables.findIndex(t => t.table === num.trim());
+        if (idx === -1) {
+          tables.push({ table: num.trim(), lastMsgId: null, orderNo: 0, items: [] });
+          saveTables();
+          idx = tables.length - 1;
+        }
+        sendToTable(idx);
       });
 
      // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
@@ -2326,9 +2345,10 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
       function buildCallPanel() {
         const qrTable = getQrTable();
-        const tablesOptions = tables.length
+        const isStaff = getRole() !== '';
+        const tablesOptions = isStaff && tables.length
           ? tables.map(t => `<button class="call-table-btn" data-t="${esc(t.table)}">🪑 Стол ${esc(t.table)}${t.items.length ? ' — заказ уже есть' : ''}</button>`).join('')
-          : '<p class="call-hint">Активных столов пока нет — укажите номер вручную.</p>';
+          : '<p class="call-hint">Укажите номер вашего стола вручную.</p>';        
 
         callOverlay.innerHTML = `
           <div id="call-panel">
