@@ -371,6 +371,12 @@
             color: var(--accent-green);
             background: rgba(46,204,113,0.1);
         }
+       .mix-flavor.sold-out { opacity: 0.45; text-decoration: line-through; }
+        .mix-sold-toggle {
+            background: none; border: none; cursor: pointer;
+            font-size: 0.9rem; padding: 0 2px;
+        }
+        
         .mix-weight-row {
             display: flex; align-items: center; gap: 8px;
             padding: 6px 0; font-size: 0.9rem;
@@ -1196,6 +1202,75 @@
       }
       const GH_LOG = 'tables_log.json';
 
+     // === СТОП-ЛИСТ ВКУСОВ ===
+      const FLAVOR_FILE = 'flavors_state.json';
+      let soldFlavors = [];
+      try {
+        soldFlavors = JSON.parse(localStorage.getItem('lummu_sold_flavors')) || [];
+      } catch (e) { soldFlavors = []; }
+
+      let flavorPushTimer = null;
+      function saveFlavorState() {
+        localStorage.setItem('lummu_sold_flavors', JSON.stringify(soldFlavors));
+        clearTimeout(flavorPushTimer);
+        flavorPushTimer = setTimeout(pushRemoteFlavorState, 1500);
+      }
+
+      async function pushRemoteFlavorState() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify({ soldFlavors, updatedAt: Date.now() }, null, 2))));
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+            const api = `https://api.github.com/repos/${GH_REPO}/contents/${FLAVOR_FILE}`;
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Стоп-лист вкусов', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          } else {
+            const api = `${TG_API}/gh/repos/${GH_REPO}/contents/${FLAVOR_FILE}`;
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api + `?key=${SECRET}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Стоп-лист вкусов', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          }
+        } catch (e) {}
+      }
+
+      async function pullRemoteFlavorState() {
+        try {
+          let remote = null;
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${FLAVOR_FILE}?ref=${GH_BRANCH}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) {
+              const file = await r.json();
+              remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+            }
+          }
+          if (!remote) {
+            const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + FLAVOR_FILE + '?t=' + Date.now());
+            if (r.ok) remote = await r.json();
+          }
+          if (remote && (remote.updatedAt || 0) > Number(localStorage.getItem('lummu_flavors_stamp') || 0)) {
+            soldFlavors = remote.soldFlavors || [];
+            localStorage.setItem('lummu_sold_flavors', JSON.stringify(soldFlavors));
+            localStorage.setItem('lummu_flavors_stamp', String(remote.updatedAt));
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+      pullRemoteFlavorState();
+
       function ghLogHeaders() {
         const t = localStorage.getItem('lummu_gh_token');
         return t ? { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' } : null;
@@ -1291,6 +1366,32 @@
         top.forEach(([name, v], i) => {
           text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
         });
+
+    // Оплаты: наличка/перевод за период и за предыдущий такой же
+        const paySplit = (rows) => {
+          let cash = 0, card = 0;
+          rows.forEach(t => {
+            const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+            if ((t.pay || '').includes('Наличка')) cash += total;
+            else if ((t.pay || '').includes('Перевод')) card += total;
+          });
+          return { cash, card };
+        };
+        const cur = paySplit(week);
+        const curTotal = cur.cash + cur.card;
+        const prevFrom = since - (now - since);
+        const prevRows = log.filter(t => {
+          const ts = new Date(t.closedAt).getTime();
+          return ts > prevFrom && ts <= since;
+        });
+        const prev = paySplit(prevRows);
+        const prevTotal = prev.cash + prev.card;
+        const pct = (part, total) => total ? Math.round(part / total * 100) : 0;
+        text += `\n💳 Оплаты: 💵 наличка ${cur.cash.toLocaleString('ru-RU')} ₽ (${pct(cur.cash, curTotal)}%) · 💳 перевод ${cur.card.toLocaleString('ru-RU')} ₽ (${pct(cur.card, curTotal)}%)`;
+        if (prevRows.length) {
+          text += `\n↩ Прошлый период: 💵 ${prev.cash.toLocaleString('ru-RU')} ₽ (${pct(prev.cash, prevTotal)}%) · 💳 ${prev.card.toLocaleString('ru-RU')} ₽ (${pct(prev.card, prevTotal)}%)`;
+        }
+
         return text;
       }
 
@@ -2330,10 +2431,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       });
 
      // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
-      setInterval(async () => {
+       setInterval(async () => {
         const changed = await pullRemoteState();
         if (changed && tablesPage.style.display !== 'none') renderTables();
+        await pullRemoteFlavorState();
       }, 20000);
+
 
       // === ВЫЗОВ КАЛЬЯНЩИКА ===
       const callOverlay = document.createElement('div');
@@ -2441,16 +2544,30 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       }
 
       function renderMixBuilder(it) {
-        const flavors = it.list.map(l => typeof l === 'string' ? { name: l } : l);
+        const isAdmin = getRole() === 'admin';
+        const allFlavors = it.list.map(l => typeof l === 'string' ? { name: l } : l);
+        const flavors = isAdmin ? allFlavors : allFlavors.filter(f => !soldFlavors.includes(f.name));
+        if (!flavors.length) {
+          mixOverlay.innerHTML = `
+            <div id="mix-panel">
+              <h3>🧪 Конструктор микса</h3>
+              <p class="mix-hint">Вкусы уточняйте у персонала — сейчас обновляем ассортимент.</p>
+              <button id="mix-close-btn" class="mix-ghost">← Закрыть</button>
+            </div>`;
+          mixOverlay.querySelector('#mix-close-btn').onclick = closeMixBuilder;
+          return;
+        }
+
         mixOverlay.innerHTML = `
           <div id="mix-panel">
             <h3>🧪 Конструктор микса</h3>
             <p class="mix-hint">Выберите до трёх вкусов и задайте пропорции — заметка подставится автоматически.</p>
             <div id="mix-flavors">
               ${flavors.map((f, fi) => `
-                <div class="mix-flavor ${mixSelected.some(s => s.name === f.name) ? 'sel' : ''}" data-mix-i="${fi}">
+                <div class="mix-flavor ${mixSelected.some(s => s.name === f.name) ? 'sel' : ''} ${soldFlavors.includes(f.name) ? 'sold-out' : ''}" data-mix-i="${fi}">
                   ${f.img ? `<img src="${f.img}" alt="" onerror="this.style.display='none'">` : ''}
                   <span>${esc(f.name)}</span>
+                  ${isAdmin ? `<button class="mix-sold-toggle" data-flavor="${esc(f.name)}" title="Стоп-лист / вернуть">${soldFlavors.includes(f.name) ? '↩' : '⛔'}</button>` : ''}
                 </div>`).join('')}
             </div>
             <div id="mix-weights"></div>
@@ -2469,6 +2586,22 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             renderMixBuilder(it);
           };
         });
+
+        mixOverlay.querySelectorAll('.mix-sold-toggle').forEach(btn => {
+          btn.onclick = (ev) => {
+            ev.stopPropagation();
+            const name = btn.dataset.flavor;
+            if (soldFlavors.includes(name)) {
+              soldFlavors = soldFlavors.filter(n => n !== name);
+            } else {
+              soldFlavors.push(name);
+            }
+            saveFlavorState();
+            renderMixBuilder(it);
+          };
+        });
+
+          
         mixOverlay.querySelector('#mix-close-btn').onclick = closeMixBuilder;
         mixOverlay.querySelector('#mix-apply-btn').onclick = applyMix;
         renderMixWeights();
