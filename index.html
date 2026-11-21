@@ -1117,6 +1117,8 @@
             <input data-field="note" value="${esc(it.note || '')}">
             <label>Ссылка на фото</label>
             <input data-field="img" value="${esc(it.img || '')}">
+            <label>Вкусы табака (каждый с новой строки; с фото — «Название | ссылка на фото»)</label>
+            <textarea data-field="list" rows="3">${(it.list || []).map(l => typeof l === 'string' ? l : (l.name + (l.img ? ' | ' + l.img : ''))).join('\n')}</textarea>
             <div class="admin-row" style="margin-top: 8px;">
               <div><label><input type="checkbox" data-field="promo" ${it.promo ? 'checked' : ''}> Акция</label></div>
               <div><label><input type="checkbox" data-field="sold" ${it.sold ? 'checked' : ''}> Распродано</label></div>
@@ -1139,9 +1141,15 @@
         if (!card || !field) return;
         const it = adminItems[+card.dataset.index];
         if (field === 'price') it.price = e.target.value === '' ? null : Number(e.target.value);
+        else if (field === 'list') {
+          it.list = e.target.value.split('\n').map(s => s.trim()).filter(Boolean).map(s => {
+            const [name, img] = s.split('|').map(x => x.trim());
+            return img ? { name, img } : name;
+          });
+        }
         else if (e.target.type === 'checkbox') it[field] = e.target.checked;
         else it[field] = e.target.value;
-      });
+      });     
 
       document.getElementById('admin-cat-list').addEventListener('input', (e) => {
         const ci = e.target.dataset.catIndex;
