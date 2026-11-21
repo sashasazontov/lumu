@@ -31,15 +31,7 @@
       "table": "4",
       "lastMsgId": 226,
       "orderNo": 3,
-      "items": [
-        {
-          "name": "Кальян Стандарт",
-          "price": 1700,
-          "size": "",
-          "note": "Dark Side — Персик 100%",
-          "qty": 3
-        }
-      ]
+      "items": []
     }
   ],
   "closedTables": [
@@ -104,5 +96,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795285230513
+  "updatedAt": 1795288089842
 }
