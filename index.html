@@ -1141,10 +1141,15 @@
         if (!card || !field) return;
         const it = adminItems[+card.dataset.index];
         if (field === 'price') it.price = e.target.value === '' ? null : Number(e.target.value);
-        else if (field === 'list') {
+                else if (field === 'list') {
           it.list = e.target.value.split('\n').map(s => s.trim()).filter(Boolean).map(s => {
-             const [name, img, price] = s.split('|').map(x => x.trim());
-             return { name, ...(img ? { img } : {}), ...(price ? { price: Number(price) } : {}) };
+            const parts = s.split('|').map(x => x.trim()).filter(Boolean);
+            const entry = { name: parts[0] || '' };
+            const rest = parts.slice(1);
+            if (rest.length && /^https?:\/\//.test(rest[0])) entry.img = rest.shift();
+            const nums = rest.filter(x => /^\d+$/.test(x));
+            if (nums.length) entry.price = Number(nums[nums.length - 1]);
+            return entry;
           });
         }
 
