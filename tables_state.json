@@ -5,6 +5,34 @@
       "lastMsgId": 207,
       "orderNo": 1,
       "items": []
+    },
+    {
+      "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Пряная малина",
+          "price": 399,
+          "size": "700 мл",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Тархун Ананас",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Ананас Ментол Киви 50% + Грейпфрут 50%",
+          "qty": 1
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -69,5 +97,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795216603781
+  "updatedAt": 1795265755302
 }
