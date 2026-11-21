@@ -31,35 +31,35 @@
           "price": 449,
           "size": "",
           "note": "",
-          "qty": 2
+          "qty": 1
         },
         {
           "name": "Оливки",
           "price": 390,
           "size": "",
           "note": "",
-          "qty": 2
+          "qty": 1
         },
         {
           "name": "Coca‑Cola",
           "price": 220,
           "size": "",
           "note": "",
-          "qty": 8
+          "qty": 4
         },
         {
           "name": "Adrenaline Б",
           "price": 339,
           "size": "",
           "note": "",
-          "qty": 6
+          "qty": 3
         },
         {
           "name": "Red Bull Б",
           "price": 449,
           "size": "",
           "note": "",
-          "qty": 2
+          "qty": 1
         },
         {
           "name": "Вино красное",
@@ -191,5 +191,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795295200844
+  "updatedAt": 1795295234016
 }
