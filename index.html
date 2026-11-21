@@ -2725,11 +2725,13 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             mixSelected.forEach(x => { x.norm = Math.round(x.weight / total * 100); });
             const sum = mixSelected.reduce((acc, x) => acc + x.norm, 0);
             mixSelected[mixSelected.length - 1].norm += 100 - sum; // поправка на округление
-            const priced = mixSelected.filter(x => x.norm > 0 && x.price).map(x => x.price);
             const it0 = menuItems.find(i => i.id === mixItemId);
-            const p = priced.length ? Math.max(...priced) : (it0 ? it0.price : null);
+            const base = it0 && typeof it0.price === 'number' ? it0.price : 0;
+            const surcharge = mixSelected.filter(x => x.norm > 0 && x.price).reduce((s, x) => s + x.price, 0);
+            const p = (base + surcharge) || null;
             prev.textContent = 'Микс: ' + mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ')
-              + (p ? ` · 💵 ${p.toLocaleString('ru-RU')} ₽` : '');            
+              + (p ? ` · 💵 ${p.toLocaleString('ru-RU')} ₽` : '');
+
             box.querySelectorAll('b').forEach((b, i) => { b.textContent = mixSelected[i].norm + '%'; });
           };
           r.dispatchEvent(new Event('input'));
@@ -2749,11 +2751,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           const it = menuItems.find(i => i.id === mixItemId);
           closeMixBuilder();
           if (it) {
-            const prices = mixSelected.filter(x => x.norm > 0 && x.price).map(x => x.price);
-            addItemToCart(it, text, prices.length ? Math.max(...prices) : undefined);
+            const surcharge = mixSelected.filter(x => x.norm > 0 && x.price).reduce((s, x) => s + x.price, 0);
+            addItemToCart(it, text, (typeof it.price === 'number' ? it.price : 0) + surcharge || undefined);
           }
           return;
         }
+
 
 
         // Обычный режим: подставить вкус в заметку карточки
