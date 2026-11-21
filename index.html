@@ -2197,8 +2197,10 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
                 </button>` : ''}
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
                 ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
+                ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
+                ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
               </div>
-            </article>`).join('');  
+            </article>`).join('');
             
           updateCartButtons();
         } catch (err) {
@@ -2234,6 +2236,17 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           return;
         }
 
+        const soldBtn = e.target.closest('.item-sold-toggle');
+        if (soldBtn) {
+          const id = soldBtn.dataset.id;
+          if (soldItems.includes(id)) soldItems = soldItems.filter(x => x !== id);
+          else soldItems.push(id);
+          saveItemState();
+          soldBtn.textContent = soldItems.includes(id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист';
+          updateCartButtons();
+          return;
+        }
+          
         const addBtn = e.target.closest('.add-to-cart-btn');
         if (addBtn) {
           if (addBtn.disabled) return;
@@ -2271,16 +2284,19 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         document.querySelectorAll('.add-to-cart-btn[data-id]').forEach(btn => {
           const it = menuItems.find(i => i.id === btn.dataset.id);
           if (!it) return;
+          const sold = it.sold || isItemSold(it.id);
           const qty = cart
             .filter(c => c.name === it.title && c.size === (it.size || ''))
             .reduce((s, c) => s + c.qty, 0);
-          if (qty > 0 && !it.sold) {
+          if (qty > 0 && !sold) {
             btn.textContent = `В корзине: ${qty} · добавить ещё`;
           } else {
-            btn.textContent = it.sold ? 'Нет в наличии' : 'В корзину';
+            btn.textContent = sold ? 'Нет в наличии' : 'В корзину';
           }
+          btn.disabled = sold;
         });
       }
+
   
       // --- Обновление корзины ---
       function updateCart() {
@@ -2583,6 +2599,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         const changed = await pullRemoteState();
         if (changed && tablesPage.style.display !== 'none') renderTables();
         await pullRemoteFlavorState();
+        await pullRemoteItemState();
       }, 20000);
 
 
