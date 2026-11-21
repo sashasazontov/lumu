@@ -66,18 +66,32 @@
           "price": 2499,
           "size": "0.75 л",
           "note": "",
-          "qty": 2
+          "qty": 1
         }
       ]
     },
     {
-      "table": "1",
-      "lastMsgId": null,
+      "table": "5",
+      "lastMsgId": 258,
       "orderNo": 1,
       "items": [
         {
-          "name": "Вильям-Кола",
-          "price": 399,
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Budd",
+          "qty": 6
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Мохито в банке",
+          "price": 250,
           "size": "",
           "note": "",
           "qty": 1
@@ -177,5 +191,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795294616000
+  "updatedAt": 1795294638416
 }
