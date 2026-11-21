@@ -1397,7 +1397,8 @@
         return text;
       }
 
-      async function maybeSendWeekly() {
+        async function maybeSendWeekly() {
+        if (getRole() !== 'admin') return; // автосводка — только с устройства админа
         const last = Number(localStorage.getItem('lummu_weekly_sent') || 0);
         if (Date.now() - last < WEEKLY_MS) return;
         const text = await collectWeekStats();
