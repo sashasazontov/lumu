@@ -1222,6 +1222,24 @@
           "name": "Musthave-Вишнёвый Сок"
         },
         {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
           "name": "Musthave-Освежающая Мята"
         },
         {
@@ -1250,7 +1268,10 @@
           "price": 200
         },
         {
-          "name": "Dark Side — Ананас Ментол Киви",
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
           "price": 200
         }
       ]
@@ -1386,6 +1407,24 @@
           "name": "Musthave-Вишнёвый Сок"
         },
         {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
           "name": "Musthave-Освежающая Мята"
         },
         {
@@ -1414,7 +1453,10 @@
           "price": 200
         },
         {
-          "name": "Dark Side — Ананас Ментол Киви",
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
           "price": 200
         }
       ]
@@ -1425,20 +1467,63 @@
       "title": "Musthave",
       "img": "https://htreviews.org/uploads/objects/1/757da412fb7f6edc87056b86e19a472b9b96fe23.webp",
       "list": [
-        "Musthave — Мандарин Апельсин",
-        "Musthave — Арбуз",
-        "Musthave — Мандарин",
-        "Musthave — Клубника Лимон Арбуз",
-        "Musthave — Киви, Яблоко и Лайм",
-        "Musthave — Голубика Лимон и Мята",
-        "Musthave — Лесные Ягоды",
-        "Musthave — Арбуз Виноград и Чернослив",
-        "Musthave — Дыня",
-        "Musthave — Напиток Кола",
-        "Musthave — Яблочные Леденцы",
-        "Musthave — Барбарисовые Конфеты",
-        "Musthave — Вишнёвый Сок",
-        "Musthave — Освежающая Мята"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        }
       ]
     },
     {
@@ -1447,11 +1532,29 @@
       "title": "Dark Side",
       "img": "https://i.ytimg.com/vi/IKx9uAz7Yso/maxresdefault.jpg",
       "list": [
-        "Dark Side — Грейпфрут",
-        "Dark Side — Сладкий виноград",
-        "Dark Side — Манго",
-        "Dark Side — Персик",
-        "Dark Side — Ананас Ментол Киви"
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
       ]
     },
     {
