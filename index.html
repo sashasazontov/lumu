@@ -2168,6 +2168,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           document.querySelector('.categories').innerHTML = menu.categories
             .map(c => `<button class="cat-btn" data-category="${c.id}">${c.title}</button>`)
             .join('');
+    
 
           document.querySelector('.items-grid').innerHTML = menu.items.map(it => `
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}" data-id="${it.id}">
@@ -2197,7 +2198,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
                 ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
               </div>
-            </article>`).join('');
+            </article>`).join('');  
+            
+          updateCartButtons();
         } catch (err) {
           console.error('Не удалось загрузить menu.json:', err);
         }
@@ -2263,6 +2266,22 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
       });
 
+      // Счётчик на кнопках «В корзину»
+      function updateCartButtons() {
+        document.querySelectorAll('.add-to-cart-btn[data-id]').forEach(btn => {
+          const it = menuItems.find(i => i.id === btn.dataset.id);
+          if (!it) return;
+          const qty = cart
+            .filter(c => c.name === it.title && c.size === (it.size || ''))
+            .reduce((s, c) => s + c.qty, 0);
+          if (qty > 0 && !it.sold) {
+            btn.textContent = `В корзине: ${qty} · добавить ещё`;
+          } else {
+            btn.textContent = it.sold ? 'Нет в наличии' : 'В корзину';
+          }
+        });
+      }
+  
       // --- Обновление корзины ---
       function updateCart() {
         const count = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -2311,6 +2330,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
         checkoutBtn.disabled = count === 0;
         localStorage.setItem('lummu_cart', JSON.stringify(cart));
+        updateCartButtons();
       }
 
       updateCart();
