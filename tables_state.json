@@ -1,8 +1,9 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "2",
-      "lastMsgId": null,
+      "lastMsgId": 243,
       "orderNo": 1,
       "items": [
         {
@@ -26,10 +27,10 @@
           "note": "Мельник",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-21T19:21:13.917Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "2",
       "lastMsgId": 216,
@@ -91,5 +92,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795288685879
+  "updatedAt": 1795288875421
 }
