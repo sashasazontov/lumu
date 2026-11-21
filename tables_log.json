@@ -1,5 +1,35 @@
 [
   {
+    "table": "5",
+    "lastMsgId": 258,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "Budd",
+        "qty": 6
+      },
+      {
+        "name": "Чипсы на выбор (LAYS)",
+        "price": 350,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Мохито в банке",
+        "price": 250,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-21T23:55:31.963Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "6",
     "lastMsgId": null,
     "orderNo": 1,
