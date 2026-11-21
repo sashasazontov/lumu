@@ -885,7 +885,8 @@
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": true
     },
     {
       "id": "gin",
@@ -950,7 +951,8 @@
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": true
     },
     {
       "id": "suhari",
@@ -1002,7 +1004,8 @@
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": true
     },
     {
       "id": "pickles",
