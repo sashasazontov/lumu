@@ -1,5 +1,42 @@
 [
   {
+    "table": "6",
+    "lastMsgId": null,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "АКЦИИ В ЛУМУ",
+        "price": 1794,
+        "size": "",
+        "note": "б-53 б-52 -флаг России Пилот",
+        "qty": 2
+      },
+      {
+        "name": "Кальян от двух вкусов",
+        "price": 2000,
+        "size": "",
+        "note": "Musthave-Ананасовые колечки 33% + Musthave-Мандарин 33% + Musthave-Освежающая Мята 34%",
+        "qty": 1
+      },
+      {
+        "name": "Lipton",
+        "price": 250,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Fly girl",
+        "price": 299,
+        "size": "60 мл",
+        "note": "",
+        "qty": 2
+      }
+    ],
+    "closedAt": "2026-11-21T23:54:01.844Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "1",
     "lastMsgId": 271,
     "orderNo": 1,
