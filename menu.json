@@ -1214,23 +1214,23 @@
         },
         {
           "name": "Dark Side — Грейпфрут",
-          "img": "200"
+          "price": 200
         },
         {
           "name": "Dark Side — Сладкий виноград",
-          "img": "200"
+          "price": 200
         },
         {
           "name": "Dark Side — Манго",
-          "img": "200"
+          "price": 200
         },
         {
           "name": "Dark Side — Персик",
-          "img": "200"
+          "price": 200
         },
         {
           "name": "Dark Side — Ананас Ментол Киви",
-          "img": "200"
+          "price": 200
         }
       ]
     },
