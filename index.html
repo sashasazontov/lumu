@@ -1369,7 +1369,7 @@
             const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${FLAVOR_FILE}?ref=${GH_BRANCH}`, {
               headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
             });
-            if (r.ok) {
+            if (r.ok) { 
               const file = await r.json();
               remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
             }
