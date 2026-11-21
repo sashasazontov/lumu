@@ -132,9 +132,7 @@
           "qty": 1
         }
       ]
-    }
-  ],
-  "closedTables": [
+    },
     {
       "table": "5",
       "lastMsgId": 258,
@@ -164,7 +162,9 @@
       ],
       "closedAt": "2026-11-21T21:18:56.509Z",
       "pay": "💳 Перевод"
-    },
+    }
+  ],
+  "closedTables": [
     {
       "table": "2",
       "lastMsgId": 243,
@@ -256,5 +256,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795301889204
+  "updatedAt": 1795304428744
 }
