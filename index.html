@@ -2237,6 +2237,53 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       navAdminBtn.addEventListener('click', showAdmin);
       document.getElementById('back-from-admin-btn').addEventListener('click', showMenu);
 
+// === СЧАСТЛИВЫЕ ЧАСЫ ===
+// days: 0=воскресенье ... 6=суббота; from/to — часы (to не включается)
+// discount — процент скидки; categories — id категорий из menu.json (не задано = на всё)
+const HAPPY_HOURS = [
+  { title: 'Счастливые часы', discount: 20, days: [1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookah'] },
+  { title: 'Ночные кальяны',  discount: 15, days: [5, 6],          from: 22, to: 24, categories: ['hookah'] }
+];
+
+function isHappyActive(rule) {
+  // считаем время по Москве, а не по устройству гостя
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+  const day = now.getDay();
+  const hour = now.getHours() + now.getMinutes() / 60;
+  const inDay = rule.from <= rule.to
+    ? hour >= rule.from && hour < rule.to
+    : hour >= rule.from || hour < rule.to; // интервал через полночь
+  return rule.days.includes(day) && inDay;
+}
+
+function happyRuleFor(it) {
+  for (const r of HAPPY_HOURS) {
+    if (!isHappyActive(r)) continue;
+    if (r.categories && !r.categories.includes(it.category)) continue;
+    if (r.items && !r.items.includes(it.id)) continue;
+    return r;
+  }
+  return null;
+}
+
+function happyPriceFor(it) {
+  const r = happyRuleFor(it);
+  if (!r || typeof it.price !== 'number') return null;
+  return Math.round(it.price * (100 - r.discount) / 100);
+}
+
+function priceHtml(it) {
+  if (typeof it.price !== 'number') return '';
+  const hp = happyPriceFor(it);
+  const r = happyRuleFor(it);
+  const size = it.size ? ` (${it.size})` : '';
+  if (hp !== null && hp < it.price) {
+    return `<div class="item-price"><s style="opacity:.55">${it.price} ₽</s> ${hp} ₽${size}
+      <span style="color:var(--accent-green); font-size:.8rem;">${r.title} −${r.discount}%</span></div>`;
+  }
+  return `<div class="item-price">${it.price} ₽${size}</div>`;
+}
+        
       // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
@@ -2269,7 +2316,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
                 <img src="${l.img}" alt="${esc(l.name)}" onerror="this.style.display='none'">
                 <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;
                     }).join('')}</div>` : ''}
-                ${it.price ? `<div class="item-price">${it.price} ₽${it.size ? ` (${it.size})` : ''}</div>` : ''}
+                ${priceHtml(it)}
                 ${it.note ? `<input type="text" class="tobacco-input" placeholder="${it.note}">` : ''}
                 ${it.price ? `<button class="add-to-cart-btn" data-id="${it.id}" ${it.sold ? 'disabled' : ''}>
                   ${it.sold ? 'Нет в наличии' : 'В корзину'}
@@ -2291,7 +2338,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
       // --- Добавление позиции в корзину (общая для всех путей) ---
       function addItemToCart(it, note, priceOverride) {
-        const p = (typeof priceOverride === 'number' && priceOverride > 0) ? priceOverride : it.price;
+         const p = (typeof priceOverride === 'number' && priceOverride > 0)
+         ? priceOverride
+         : (happyPriceFor(it) || it.price);
         const existing = cart.find(item =>
           item.name === it.title && item.size === (it.size || '') && item.note === note
         );
@@ -2895,12 +2944,11 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           closeMixBuilder();
           if (it) {
             const surcharge = mixSelected.filter(x => x.norm > 0 && x.price).reduce((s, x) => s + x.price, 0);
-            addItemToCart(it, text, (typeof it.price === 'number' ? it.price : 0) + surcharge || undefined);
+            const base = happyPriceFor(it) !== null ? happyPriceFor(it) : (typeof it.price === 'number' ? it.price : 0);
+            addItemToCart(it, text, base + surcharge || undefined);
           }
           return;
         }
-
-
 
         // Обычный режим: подставить вкус в заметку карточки
         let card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
