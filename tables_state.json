@@ -1,5 +1,76 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "3-постоянники",
+      "lastMsgId": 252,
+      "orderNo": 2,
+      "items": [
+        {
+          "name": "Виски",
+          "price": 279,
+          "size": "50 мл",
+          "note": "",
+          "qty": 14
+        },
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Мандарин 100%",
+          "qty": 2
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "",
+          "qty": 4
+        },
+        {
+          "name": "Сыр",
+          "price": 449,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Оливки",
+          "price": 390,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Coca‑Cola",
+          "price": 220,
+          "size": "",
+          "note": "",
+          "qty": 8
+        },
+        {
+          "name": "Adrenaline Б",
+          "price": 339,
+          "size": "",
+          "note": "",
+          "qty": 6
+        },
+        {
+          "name": "Red Bull Б",
+          "price": 449,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Вино красное",
+          "price": 2499,
+          "size": "0.75 л",
+          "note": "",
+          "qty": 2
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "2",
@@ -92,5 +163,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795288875421
+  "updatedAt": 1795294345878
 }
