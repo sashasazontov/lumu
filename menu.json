@@ -2,55 +2,55 @@
   "categories": [
     {
       "id": "all",
-      "title": "Все"
+      "title": "Всё"
     },
     {
       "id": "promos",
-      "title": "Акции"
+      "title": "🔥 Акции"
     },
     {
       "id": "non-alc-drinks",
-      "title": "Безалкогольные напитки"
+      "title": "🥤 Лимонады и соки"
     },
     {
       "id": "teas",
-      "title": "Чаи"
+      "title": "🍵 Чаи"
     },
     {
       "id": "sodas",
-      "title": "Газировки и энергетики"
+      "title": "⚡ Газировки и энергетики"
     },
     {
       "id": "alc-beer",
-      "title": "Алкогольные напитки (пиво)"
+      "title": "🍺 Пиво"
     },
     {
       "id": "cocktails",
-      "title": "Коктейли"
+      "title": "🍹 Коктейли"
     },
     {
       "id": "shots",
-      "title": "Шоты"
+      "title": "🥃 Шоты"
     },
     {
       "id": "hard-liquor",
-      "title": "Алкоголь"
+      "title": "🥃 Крепкий алкоголь"
     },
     {
       "id": "snacks",
-      "title": "Закуски и соленья"
+      "title": "🍟 Закуски"
     },
     {
       "id": "hookahs",
-      "title": "Кальяны"
+      "title": "💨 Кальяны"
     },
     {
       "id": "tobacco",
-      "title": "Табаки"
+      "title": "🌿 Табаки"
     },
     {
       "id": "dop",
-      "title": "Дополнительное"
+      "title": "📋 Доп. услуги"
     }
   ],
   "items": [
