@@ -1119,6 +1119,24 @@
           "name": "Musthave-Вишнёвый Сок"
         },
         {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
           "name": "Musthave-Освежающая Мята"
         },
         {
@@ -1147,7 +1165,10 @@
           "price": 200
         },
         {
-          "name": "Dark Side — Ананас Ментол Киви",
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
           "price": 200
         }
       ]
