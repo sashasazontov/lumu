@@ -1246,6 +1246,74 @@
       }
       const GH_LOG = 'tables_log.json';
 
+     // === СТОП-ЛИСТ ПОЗИЦИЙ ===
+      const ITEM_STATE_FILE = 'items_state.json';
+      let soldItems = [];
+      try {
+        soldItems = JSON.parse(localStorage.getItem('lummu_sold_items')) || [];
+      } catch (e) { soldItems = []; }
+
+      let itemPushTimer = null;
+      function saveItemState() {
+        localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
+        clearTimeout(itemPushTimer);
+        itemPushTimer = setTimeout(pushRemoteItemState, 1500);
+      }
+
+      function isItemSold(id) { return soldItems.includes(id); }
+
+      async function pushRemoteItemState() {
+        const token = localStorage.getItem('lummu_gh_token');
+        if (!token) return;
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(soldItems, null, 2))));
+        try {
+          const api = `https://api.github.com/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}`;
+          const r = await fetch(api + `?ref=${GH_BRANCH}`, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+          });
+          const file = await r.json();
+          await fetch(api, {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: 'Обновление стоп-листа позиций',
+              content,
+              branch: GH_BRANCH,
+              sha: file && file.sha
+            })
+          });
+        } catch (e) {}
+      }
+
+      async function pullRemoteItemState() {
+        const token = localStorage.getItem('lummu_gh_token');
+        try {
+          let remote = null;
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}?ref=${GH_BRANCH}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) {
+              const file = await r.json();
+              remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+            }
+          }
+          if (!remote) {
+            const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + ITEM_STATE_FILE + '?t=' + Date.now());
+            if (r.ok) remote = await r.json();
+          }
+          if (Array.isArray(remote)) {
+            soldItems = remote;
+            localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
+            updateCartButtons();
+          }
+        } catch (e) {}
+      }
+        
      // === СТОП-ЛИСТ ВКУСОВ ===
       const FLAVOR_FILE = 'flavors_state.json';
       let soldFlavors = [];
@@ -2196,7 +2264,6 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
                   ${it.sold ? 'Нет в наличии' : 'В корзину'}
                 </button>` : ''}
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
-                ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
                 ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
                 ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
               </div>
