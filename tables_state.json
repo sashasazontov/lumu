@@ -1,5 +1,34 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "2",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Арбуз 100%",
+          "qty": 1
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Стелла алко",
+          "qty": 1
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Мельник",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "2",
@@ -62,5 +91,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795288656881
+  "updatedAt": 1795288685879
 }
