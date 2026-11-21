@@ -8,43 +8,36 @@
     },
     {
       "table": "1",
-      "lastMsgId": null,
-      "orderNo": 1,
+      "lastMsgId": 229,
+      "orderNo": 2,
       "items": [
         {
-          "name": "Пряная малина",
-          "price": 399,
-          "size": "700 мл",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Кальян Премиум",
-          "price": 2500,
+          "name": "Кальян Стандарт",
+          "price": 1500,
           "size": "",
-          "note": "Ананас Ментол Киви 50% + Грейпфрут 50%",
+          "note": "Musthave-Арбуз 100%",
           "qty": 1
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Мельник, Стелла а",
+          "qty": 2
         }
       ]
     },
     {
       "table": "4",
-      "lastMsgId": null,
-      "orderNo": 1,
+      "lastMsgId": 226,
+      "orderNo": 3,
       "items": [
         {
           "name": "Кальян Стандарт",
           "price": 1700,
           "size": "",
           "note": "Dark Side — Персик 100%",
-          "qty": 1
+          "qty": 3
         }
       ]
     }
@@ -111,5 +104,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795273210704
+  "updatedAt": 1795285230513
 }
