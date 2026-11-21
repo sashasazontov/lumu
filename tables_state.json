@@ -69,6 +69,20 @@
           "qty": 2
         }
       ]
+    },
+    {
+      "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Вильям-Кола",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -163,5 +177,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795294432740
+  "updatedAt": 1795294616000
 }
