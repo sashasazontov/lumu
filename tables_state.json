@@ -3,7 +3,7 @@
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
-      "orderNo": 4,
+      "orderNo": 5,
       "items": [
         {
           "name": "Виски",
@@ -74,14 +74,7 @@
           "size": "700 мл",
           "note": "",
           "qty": 1
-        }
-      ]
-    },
-    {
-      "table": "6",
-      "lastMsgId": null,
-      "orderNo": 1,
-      "items": [
+        },
         {
           "name": "Мохито классический алко",
           "price": 399,
@@ -90,6 +83,12 @@
           "qty": 1
         }
       ]
+    },
+    {
+      "table": "6",
+      "lastMsgId": 267,
+      "orderNo": 1,
+      "items": []
     }
   ],
   "closedTables": [
@@ -214,5 +213,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795300141791
+  "updatedAt": 1795300202785
 }
