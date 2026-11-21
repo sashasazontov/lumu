@@ -745,6 +745,34 @@
             .tobacco-input { font-size: 0.85rem; padding: 8px; }
             .categories { gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
+
+        /* Строка категорий: одна линия, прокрутка вбок */
+        .categories {
+            display: flex;
+            gap: 8px;
+            padding: 12px 1rem 4px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            flex: 0 0 auto;
+            padding: 9px 16px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .cat-btn.active {
+            background: var(--accent-gradient);
+            color: #000;
+            border-color: transparent;
+            font-weight: 700;
+        }
     </style>
 </head>
 
