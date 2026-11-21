@@ -120,20 +120,6 @@
       ]
     },
     {
-      "table": "1",
-      "lastMsgId": null,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян от двух вкусов",
-          "price": 2000,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 50% + Musthave-Арбуз 50%",
-          "qty": 2
-        }
-      ]
-    },
-    {
       "table": "5",
       "lastMsgId": 258,
       "orderNo": 1,
@@ -256,5 +242,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795304471962
+  "updatedAt": 1795304535608
 }
