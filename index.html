@@ -774,6 +774,34 @@
         font-weight: 600;
         text-align: center;
     }
+    #search-row {
+        display: flex;
+        gap: 8px;
+        padding: 12px 1rem 0;
+        max-width: 480px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    #menu-search {
+        flex: 1;
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 999px;
+        color: var(--text-main);
+        font-size: 0.95rem;
+        outline: none;
+    }
+    #menu-search::placeholder { color: #777; }
+    #menu-search:focus { border-color: var(--accent); }
+    #search-clear {
+        padding: 0 14px;
+        background: none;
+        border: 1px solid #444;
+        color: var(--text-muted);
+        border-radius: 999px;
+        cursor: pointer;
+    }
 
     </style>
 </head>
@@ -850,6 +878,11 @@
         </div>
     </section>
 
+    <div id="search-row" style="display: none;">
+        <input type="text" id="menu-search" placeholder="🔍 Поиск по меню…">
+        <button id="search-clear" style="display: none;">✕</button>
+    </div>
+    
     <div class="categories" style="display: none;"></div>
 
     <main class="items-grid" style="display: none;"></main>
@@ -1053,7 +1086,7 @@
       const rulesPage    = document.getElementById('rules-page');
       const navMenuBtn   = document.getElementById('nav-menu-btn');
       const navCartBtn   = document.getElementById('nav-cart-btn');
-      const menuElements = document.querySelectorAll('.categories, .items-grid');
+      const menuElements = document.querySelectorAll('.categories, .items-grid, #search-row');
       const headerNav    = document.getElementById('header-nav');
       const tablesPage   = document.getElementById('tables-page');
       const navTablesBtn = document.getElementById('nav-tables-btn');
@@ -2369,6 +2402,54 @@ function updateHappyBanner() {
   b.style.display = html ? 'block' : 'none';
 }
         
+      // === ПОИСК ПО МЕНЮ ===
+      let currentCat = 'all';
+      let searchQuery = '';
+
+      function applyFilters() {
+        const q = searchQuery.trim().toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('.item-card').forEach(card => {
+          const it = menuItems.find(i => i.id === card.dataset.id);
+          const matchCat = currentCat === 'all' || card.dataset.category === currentCat;
+          let matchText = true;
+          if (q && it) {
+            const hay = [
+              it.title || '',
+              it.desc || '',
+              it.size || '',
+              ...(it.list || []).map(l => typeof l === 'string' ? l : l.name)
+            ].join(' ').toLowerCase();
+            matchText = hay.includes(q);
+          }
+          card.style.display = (matchCat && matchText) ? 'flex' : 'none';
+          if (matchCat && matchText) visible++;
+        });
+
+        const grid = document.querySelector('.items-grid');
+        const oldHint = document.getElementById('search-empty');
+        if (oldHint) oldHint.remove();
+        if (q && visible === 0) {
+          grid.insertAdjacentHTML('beforeend',
+            '<p id="search-empty" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">Ничего не нашлось. Попробуйте другое слово 🙂</p>');
+        }
+      }
+
+      document.getElementById('menu-search').addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        document.getElementById('search-clear').style.display = searchQuery ? 'block' : 'none';
+        applyFilters();
+      });
+
+      document.getElementById('search-clear').addEventListener('click', () => {
+        const inp = document.getElementById('menu-search');
+        inp.value = '';
+        searchQuery = '';
+        document.getElementById('search-clear').style.display = 'none';
+        applyFilters();
+        inp.focus();
+      });
+        
       // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
@@ -2442,13 +2523,11 @@ function updateHappyBanner() {
         if (cat) {
           document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
           cat.classList.add('active');
-          const c = cat.dataset.category;
-          document.querySelectorAll('.item-card').forEach(card => {
-            card.style.display = (c === 'all' || card.dataset.category === c) ? 'flex' : 'none';
-          });
+          currentCat = cat.dataset.category;
+          applyFilters();
           return;
         }
-
+      
         const soldBtn = e.target.closest('.item-sold-toggle');
         if (soldBtn) {
           const id = soldBtn.dataset.id;
