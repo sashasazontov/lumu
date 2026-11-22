@@ -1221,23 +1221,17 @@
       let adminItems = [];
       const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-      function showAdmin() {
-        const ADMIN_PASSWORD = 'Sasha2009';
-        const STAFF_PASSWORD = 'Barman2026';
-        if (getRole() === '') {
-          const pass = prompt('Пароль администратора или персонала:');
-          if (pass === ADMIN_PASSWORD) sessionStorage.setItem('lummu_role', 'admin');
-          else if (pass === STAFF_PASSWORD) sessionStorage.setItem('lummu_role', 'staff');
-          else return;
-        }
-        if (getRole() === 'staff') { showTables(); return; } // бармен — сразу к столам
+      async function showAdmin() {
+        const role = await askRole();
+        if (!role) return;
+        if (role === 'staff') { showTables(); return; } // бармен — сразу к столам
         hideAll();
         adminPage.style.display = 'flex';
         headerNav.style.display = 'flex';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
         renderAdmin();
-      }
+      }     
 
       function renderAdmin() {
         const list = document.getElementById('admin-list');
