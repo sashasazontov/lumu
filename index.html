@@ -2585,7 +2585,8 @@ function updateHappyBanner() {
           console.error('Не удалось загрузить menu.json:', err);
         }
       }
-
+        
+      showHero()
       loadMenu();
       pullRemoteState();
       updateHappyBanner();
