@@ -1622,6 +1622,12 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": []
+    },
+    {
+      "id": "item-1795310786453",
+      "title": "Вода Baikal",
+      "category": "sodas",
+      "price": 199
     }
   ]
 }
