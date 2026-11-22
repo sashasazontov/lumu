@@ -1,5 +1,20 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": 281,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян Премиум",
+          "price": 2700,
+          "size": "",
+          "note": "Musthave-Напиток Кола 50% + Dark Side — Сладкий виноград 50%",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -245,5 +260,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795310593789
+  "updatedAt": 1795328909217
 }
