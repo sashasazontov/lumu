@@ -834,6 +834,30 @@
     }
     #hero-page .hero-content { position: relative; z-index: 2; }
 
+       .promo-item {
+        border: 1px solid rgba(46,204,113,0.3);
+        background: rgba(46,204,113,0.05);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+    }
+    .promo-item-title {
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .promo-item p {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        margin: 0;
+    }
+    .promo-item small {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+    }
+       
     </style>
 </head>
 
@@ -860,6 +884,7 @@
                 <button id="open-menu-btn">Открыть меню →</button>
                 <button id="open-rules-btn">Правила посещения</button>
                 <button id="open-contacts-btn">Контакты</button>
+                <button id="open-promos-btn" style="background: transparent; color: var(--accent-green); border: 1px solid var(--accent-green);">🎁 Акции</button>
                 <button id="install-btn" style="display: none; background: transparent; color: var(--text-main); border: 1px solid #444;">📲 Установить приложение</button>
             </div>
             <div class="hero-features">
@@ -868,6 +893,29 @@
             </div>
         </div>
     </section>
+
+        <!-- АКЦИИ -->
+    <section id="promos-page" style="display: none;">
+        <div class="rules-box">
+            <h2>🎁 Акции и предложения</h2>
+            <div id="promos-happy"></div>
+            <div class="promo-item">
+<div class="promo-item-title">🎄 Чай в подарок</div>
+    <p>Закажите кальян на фруктовой чаше — чай «Пряная малина» в подарок. Спрашивайте у бармена.</p>
+    <small>🕐 Ежедневно с 20:00 до 22:00</small>
+</div>
+            <div class="promo-item">
+                <div class="promo-item-title">⭐ Скидка за отзыв</div>
+                <p>Оставьте отзыв на Яндекс.Картах — покажите бармену и получите скидку 5% на следующий визит.</p>
+            </div>
+            <div class="promo-item">
+                <div class="promo-item-title">🎂 Именинникам</div>
+                <p>В день рождения — приятный бонус от заведения. Не забудьте паспорт 🙂</p>
+            </div>
+            <button id="back-from-promos-btn">← Назад</button>
+        </div>
+    </section>
+
 
     <!-- ЭКРАН ПРАВИЛ -->
     <section id="rules-page" style="display: none;">
@@ -1128,6 +1176,7 @@
       const adminPage    = document.getElementById('admin-page');
       const navAdminBtn  = document.getElementById('nav-admin-btn');
       const contactsPage = document.getElementById('contacts-page'); 
+      const promosPage = document.getElementById('promos-page');
 
       function setActiveNav(active) {
         navMenuBtn.classList.toggle('active', active === 'menu');
@@ -1137,6 +1186,7 @@
       function hideAll() {
         stopSnow();
         contactsPage.style.display = 'none';
+        promosPage.style.display = 'none';
         adminPage.style.display = 'none';
         tablesPage.style.display = 'none';
         heroPage.style.display = 'none';
@@ -1176,6 +1226,29 @@
         headerNav.style.display = 'flex';
       }
 
+      function showPromos() {
+        hideAll();
+        promosPage.style.display = 'flex';
+        headerNav.style.display = 'flex';
+
+        // Живой блок счастливых часов из HAPPY_HOURS
+        const box = document.getElementById('promos-happy');
+        const daysRu = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        const catName = (r) => {
+          if (!r.categories) return 'всё меню';
+          return r.categories.map(id =>
+            (menuCategories.find(c => c.id === id) || {}).title || 'выбранные позиции'
+          ).join(', ');
+        };
+        const items = HAPPY_HOURS.map(r => `
+          <div class="promo-item">
+            <div class="promo-item-title">🔥 ${r.title} — −${r.discount}%</div>
+            <p>Скидка на ${catName(r)}</p>
+            <small>${r.days.map(d => daysRu[d]).join(', ')} · с ${r.from}:00 до ${String(r.to).padStart(2, '0')}:00</small>
+          </div>`).join('');
+        box.innerHTML = items;
+      }
+        
       // === РОЛИ ===
 
       function getRole() {
@@ -2370,7 +2443,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       document.getElementById('open-rules-btn').addEventListener('click', showRules);
       document.getElementById('back-from-rules-btn').addEventListener('click', showHero);
       document.getElementById('open-contacts-btn').addEventListener('click', showContacts);     // ← добавить
-      document.getElementById('back-from-contacts-btn').addEventListener('click', showHero);    // ← добавить
+      document.getElementById('back-from-contacts-btn').addEventListener('click', showHero); 
+      document.getElementById('open-promos-btn').addEventListener('click', showPromos);
+      document.getElementById('back-from-promos-btn').addEventListener('click', showHero);
       navTablesBtn.addEventListener('click', showTables);
       document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
       navAdminBtn.addEventListener('click', showAdmin);
