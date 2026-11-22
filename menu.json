@@ -1635,6 +1635,13 @@
       "title": "Вода без газа Bonvida ",
       "category": "sodas",
       "price": 199
+    },
+    {
+      "id": "item-1795388973237",
+      "title": "Jagermeister",
+      "category": "hard-liquor",
+      "price": 329,
+      "size": "50 мл"
     }
   ]
 }
