@@ -1251,12 +1251,36 @@
         
       // === РОЛИ ===
 
+           // Роль живёт 2 минуты — потом сайт просит пароль заново
+      const ROLE_TTL = 2 * 60 * 1000;
+
       function getRole() {
         try {
           const r = JSON.parse(sessionStorage.getItem('lummu_role') || 'null');
-          if (r && r.role) return r.role;
+          if (r && r.role && Date.now() - r.ts < ROLE_TTL) return r.role;
+          if (r) sessionStorage.removeItem('lummu_role'); // просрочилось — стираем
         } catch (e) {}
         return '';
+      }
+
+      async function askRole() {
+        const have = getRole();
+        if (have) return have;
+        const pass = prompt('Пароль персонала или администратора:');
+        if (!pass) return '';
+        let role = '';
+        try {
+          const r = await fetch(`${TG_API}/auth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pass: pass.trim() })
+          }).then(x => x.json());
+          role = r.role || '';
+        } catch (e) {
+          role = '';
+        }
+        if (role) sessionStorage.setItem('lummu_role', JSON.stringify({ role, ts: Date.now() }));
+        return role;
       }
 
       async function askRole() {
