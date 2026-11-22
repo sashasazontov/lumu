@@ -83,12 +83,6 @@
           "qty": 1
         }
       ]
-    },
-    {
-      "table": "3",
-      "lastMsgId": 274,
-      "orderNo": 1,
-      "items": []
     }
   ],
   "closedTables": [
@@ -250,5 +244,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795306802401
+  "updatedAt": 1795306853424
 }
