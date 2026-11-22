@@ -7,6 +7,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#15151a">
     <link rel="apple-touch-icon" href="icon-512.png">
+    <link rel="icon" href="icon-512.png">
     <style>
         :root {
             --bg-dark: #15151a;
@@ -2552,9 +2553,9 @@ function updateHappyBanner() {
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}" data-id="${it.id}">
               <div class="item-img-wrapper">
                 <div class="img-placeholder">${it.title}</div>
-                <img src="${it.img}" alt="${it.title}" class="item-img"
+                ${it.img ? `<img src="${it.img}" alt="${it.title}" class="item-img"
                      onload="this.classList.add('loaded')"
-                     onerror="this.classList.add('error')">
+                     onerror="this.classList.add('error')">` : ''}
                 ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
                 ${it.sold ? '<span class="sold-badge">Распродано</span>' : ''}
               </div>
