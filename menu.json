@@ -1641,7 +1641,8 @@
       "title": "Jagermeister",
       "category": "hard-liquor",
       "price": 329,
-      "size": "50 мл"
+      "size": "50 мл",
+      "desc": "Jagermeister - 50 мл"
     }
   ]
 }
