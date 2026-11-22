@@ -93,10 +93,100 @@
       "price": 300,
       "size": "",
       "img": "https://images.unsplash.com/photo-1600210481019-37bd1c76906d?q=80&w=800&auto=format&fit=crop",
-      "note": "какой вкус ?",
+      "note": "",
       "promo": true,
-      "tobaccoBtn": false,
-      "list": []
+      "tobaccoBtn": true,
+      "list": [
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
+      ]
     },
     {
       "id": "tarkhun-ananas",
@@ -1190,7 +1280,7 @@
       "size": "",
       "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru-1793642307180.png",
       "note": "Ваши два вкуса: например, вишня + мята",
-      "promo": false,
+      "promo": true,
       "tobaccoBtn": true,
       "list": [
         {
