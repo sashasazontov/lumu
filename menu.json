@@ -1625,7 +1625,13 @@
     },
     {
       "id": "item-1795310786453",
-      "title": "Вода Baikal",
+      "title": "Новая позиция",
+      "category": "all",
+      "price": 0
+    },
+    {
+      "id": "item-1795310916349",
+      "title": "Вода с\\г",
       "category": "sodas",
       "price": 199
     }
