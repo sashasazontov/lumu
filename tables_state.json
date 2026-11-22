@@ -2,9 +2,30 @@
   "tables": [
     {
       "table": "1",
-      "lastMsgId": 281,
+      "lastMsgId": 283,
       "orderNo": 1,
       "items": []
+    },
+    {
+      "table": "6",
+      "lastMsgId": 282,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Ром-Кола",
+          "price": 379,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Кальян Премиум",
+          "price": 2000,
+          "size": "",
+          "note": "Musthave-Клубника Лимон Арбуз 100%",
+          "qty": 1
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -252,5 +273,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795329041721
+  "updatedAt": 1795356507291
 }
