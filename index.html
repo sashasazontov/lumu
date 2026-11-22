@@ -762,6 +762,18 @@
         color: var(--accent-blue);
         text-decoration: none;
     }
+    #happy-banner {
+        margin: 14px auto 0;
+        max-width: 480px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: rgba(240,168,72,0.12);
+        border: 1px solid var(--accent-green);
+        color: var(--text-main);
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-align: center;
+    }
 
     </style>
 </head>
@@ -781,6 +793,7 @@
             <p class="hero-tagline">Кальянная в Домодедово</p>
             <p class="hero-text">Атмосферное место для вечерних посиделок:
                премиум-кальяны, авторские коктейли, шоты и вкусные чаи.</p>
+            <div id="happy-banner" style="display: none;"></div>
             <div class="hero-buttons">
                 <button id="open-menu-btn">Открыть меню →</button>
                 <button id="open-rules-btn">Правила посещения</button>
@@ -2271,6 +2284,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         headerNav.style.display = 'none';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
+        updateHappyBanner(); 
       }
 
       navMenuBtn.addEventListener('click', showMenu);
@@ -2331,6 +2345,28 @@ function priceHtml(it) {
   }
   return `<div class="item-price">${it.price} ₽${size}</div>`;
 }
+
+function happyBannerHtml() {
+  const active = HAPPY_HOURS.filter(isHappyActive);
+  if (!active.length) return '';
+  const catName = (r) => {
+    if (!r.categories) return 'всё меню';
+    return r.categories.map(id =>
+      (menuCategories.find(c => c.id === id) || {}).title || 'выбранные позиции'
+    ).join(', ');
+  };
+  return '🔥 ' + active
+    .map(r => `${r.title}: −${r.discount}% на ${catName(r)}`)
+    .join(' · ');
+}
+
+function updateHappyBanner() {
+  const b = document.getElementById('happy-banner');
+  if (!b) return;
+  const html = happyBannerHtml();
+  b.innerHTML = html;
+  b.style.display = html ? 'block' : 'none';
+}
         
       // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
@@ -2383,6 +2419,7 @@ function priceHtml(it) {
 
       loadMenu();
       pullRemoteState();
+      updateHappyBanner();
 
       // --- Добавление позиции в корзину (общая для всех путей) ---
       function addItemToCart(it, note, priceOverride) {
