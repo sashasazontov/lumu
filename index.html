@@ -1172,8 +1172,15 @@
       }
 
       // === РОЛИ ===
+      const ROLE_TTL = 12 * 60 * 60 * 1000; // 12 часов
+
       function getRole() {
-        return sessionStorage.getItem('lummu_role') || '';
+        try {
+          const r = JSON.parse(localStorage.getItem('lummu_role') || 'null');
+          if (r && r.role && Date.now() - r.at < ROLE_TTL) return r.role;
+          if (r) localStorage.removeItem('lummu_role');
+        } catch (e) {}
+        return '';
       }
 
       async function askRole() {
@@ -1191,10 +1198,10 @@
         } catch (e) {
           role = '';
         }
-        if (role) sessionStorage.setItem('lummu_role', role);
+        if (role) localStorage.setItem('lummu_role', JSON.stringify({ role, at: Date.now() }));
         return role;
       }
-        
+
       async function showTables() {
         const role = await askRole();
         if (!role) return;
@@ -1215,6 +1222,18 @@
         }
         renderTables();
         pullRemoteState().then(ch => { if (ch) renderTables(); });
+      }
+
+      async function showAdmin() {
+        const role = await askRole();
+        if (!role) return;
+        if (role === 'staff') { showTables(); return; } // бармен — сразу к столам
+        hideAll();
+        adminPage.style.display = 'flex';
+        headerNav.style.display = 'flex';
+        navMenuBtn.classList.remove('active');
+        navCartBtn.classList.remove('active');
+        renderAdmin();
       }
 
       // === РЕДАКТОР МЕНЮ ===
