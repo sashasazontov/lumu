@@ -879,7 +879,7 @@
       "category": "hard-liquor",
       "title": "Водка",
       "desc": "Белуга 50 мл.",
-      "price": 220,
+      "price": 279,
       "size": "50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
@@ -893,7 +893,7 @@
       "category": "hard-liquor",
       "title": "Джин",
       "desc": "Barrister 50 мл.",
-      "price": 249,
+      "price": 279,
       "size": "50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
@@ -944,9 +944,9 @@
       "id": "cognac",
       "category": "hard-liquor",
       "title": "Коньяк",
-      "desc": "Ной 3* 0.5 л.",
-      "price": 2499,
-      "size": "0.5 л",
+      "desc": "Ной 3* 50 мл",
+      "price": 279,
+      "size": " 50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
       "promo": false,
@@ -1625,13 +1625,7 @@
     },
     {
       "id": "item-1795310786453",
-      "title": "Новая позиция",
-      "category": "all",
-      "price": 0
-    },
-    {
-      "id": "item-1795310916349",
-      "title": "Вода с\\г",
+      "title": "Вода Baikal",
       "category": "sodas",
       "price": 199
     }
