@@ -2602,10 +2602,7 @@ function updateHappyBanner() {
           }, { threshold: 0.1 });
           document.querySelectorAll('.item-card').forEach(c => io.observe(c));
 
-          if (!('IntersectionObserver' in window)) {
-            document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
-
-          if (!('IntersectionObserver' in window)) document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
+         if (!('IntersectionObserver' in window)) document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
         } catch (err) {
           console.error('Не удалось загрузить menu.json:', err);
         }
