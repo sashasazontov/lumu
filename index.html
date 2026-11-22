@@ -753,7 +753,7 @@
             border-color: transparent;
             font-weight: 700;
         }
-       .contact-row {
+     .contact-row {
         margin: 10px 0;
         font-size: 0.95rem;
         color: var(--text-main);
@@ -762,6 +762,13 @@
         color: var(--accent-blue);
         text-decoration: none;
     }
+    .open-status {
+        margin-top: 6px;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+    .open-status.open { color: var(--accent-green); }
+    .open-status.closed { color: var(--text-muted); }
     #happy-banner {
         margin: 14px auto 0;
         max-width: 480px;
@@ -774,6 +781,7 @@
         font-weight: 600;
         text-align: center;
     }
+     
     #search-row {
         display: flex;
         gap: 8px;
@@ -802,6 +810,13 @@
         border-radius: 999px;
         cursor: pointer;
     }
+    .hero-hours {
+        margin-top: 0.75rem;
+        color: var(--text-main);
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
 
     </style>
 </head>
@@ -821,6 +836,8 @@
             <p class="hero-tagline">Кальянная в Домодедово</p>
             <p class="hero-text">Атмосферное место для вечерних посиделок:
                премиум-кальяны, авторские коктейли, шоты и вкусные чаи.</p>
+            <p class="hero-hours">🕐 Вс-Чт 16:00–02:00 · Пн-Сб 16:00–04:00</p>
+            <p class="open-status"></p>
             <div id="happy-banner" style="display: none;"></div>
             <div class="hero-buttons">
                 <button id="open-menu-btn">Открыть меню →</button>
@@ -2319,6 +2336,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
         updateHappyBanner(); 
+        updateOpenStatus();      
       }
 
       navMenuBtn.addEventListener('click', showMenu);
@@ -2332,6 +2350,26 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
       navAdminBtn.addEventListener('click', showAdmin);
       document.getElementById('back-from-admin-btn').addEventListener('click', showMenu);
+
+function updateOpenStatus() {
+  const el = document.querySelector('.open-status');
+  if (!el) return;
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+  const day = now.getDay();
+  const t = now.getHours() * 60 + now.getMinutes();
+  // Пн-Сб (1-6): 16:00–04:00, Вс-Чт (0,2-4): 16:00–02:00
+  const isWeekend = [5, 6].includes(day);
+  const openMin = 16 * 60;
+  const closeMin = isWeekend ? 4 * 60 : 2 * 60; // 04:00 или 02:00
+  const isOpen = t >= openMin || t < closeMin;  // открыто после 16:00 и до закрытия ночью
+  if (isOpen) {
+    el.textContent = '● Сейчас открыто';
+    el.className = 'open-status open';
+  } else {
+    el.textContent = '● Сейчас закрыто · откроемся в 16:00';
+    el.className = 'open-status closed';
+  }
+}
 
 // === СЧАСТЛИВЫЕ ЧАСЫ ===
 // days: 0=воскресенье ... 6=суббота; from/to — часы (to не включается)
