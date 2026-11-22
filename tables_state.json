@@ -1,20 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "1",
-      "lastMsgId": 280,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -260,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795310575954
+  "updatedAt": 1795310593789
 }
