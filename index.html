@@ -1237,6 +1237,7 @@
     // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
       const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
       const TG_CHAT  = '-1003907000620';
+      const TG_CHAT_STOP =  '-5034065390'; // ← сюда ID второй группы (для стоп-листа)
 
       function tgSend(text) {
           
@@ -1246,6 +1247,15 @@
           body: JSON.stringify({ chat_id: TG_CHAT, text })
         }).then(r => r.json());
       }
+
+    function tgSendStop(text) {
+        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ chat_id: TG_CHAT_STOP, text })
+        }).then(r => r.json()).catch(() => null);
+    }
+        
       const GH_LOG = 'tables_log.json';
 
      // === СТОП-ЛИСТ ПОЗИЦИЙ ===
@@ -2371,6 +2381,12 @@ function priceHtml(it) {
           saveItemState();
           soldBtn.textContent = soldItems.includes(id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист';
           updateCartButtons();
+          const it = menuItems.find(i => i.id === id);
+          const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+          tgSendStop(
+            (soldItems.includes(id) ? '⛔ В стоп-лист: ' : '↩ Вернули в продажу: ')
+            + (it ? it.title : id) + '\n🕐 ' + time
+          );
           return;
         }
           
@@ -2880,7 +2896,7 @@ function priceHtml(it) {
           };
         });
 
-        mixOverlay.querySelectorAll('.mix-sold-toggle').forEach(btn => {
+         mixOverlay.querySelectorAll('.mix-sold-toggle').forEach(btn => {
           btn.onclick = (ev) => {
             ev.stopPropagation();
             const name = btn.dataset.flavor;
@@ -2891,10 +2907,14 @@ function priceHtml(it) {
             }
             saveFlavorState();
             renderMixBuilder(it);
+            const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            tgSendStop(
+              (soldFlavors.includes(name) ? '⛔ Вкус в стоп-лист: ' : '↩ Вкус вернули: ')
+              + esc(name) + '\n🧪 ' + esc(it.title) + '\n🕐 ' + time
+            );
           };
-        });
-
-          
+        });      
+        
         mixOverlay.querySelector('#mix-close-btn').onclick = closeMixBuilder;
         mixOverlay.querySelector('#mix-apply-btn').onclick = applyMix;
         renderMixWeights();
