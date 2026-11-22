@@ -1628,6 +1628,12 @@
       "title": "Вода Baikal",
       "category": "sodas",
       "price": 199
+    },
+    {
+      "id": "item-1795311669862",
+      "title": "Вода с\\г",
+      "category": "sodas",
+      "price": 199
     }
   ]
 }
