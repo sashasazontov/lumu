@@ -1172,13 +1172,11 @@
       }
 
       // === РОЛИ ===
-      const ROLE_TTL = 12 * 60 * 60 * 1000; // 12 часов
 
       function getRole() {
         try {
-          const r = JSON.parse(localStorage.getItem('lummu_role') || 'null');
-          if (r && r.role && Date.now() - r.at < ROLE_TTL) return r.role;
-          if (r) localStorage.removeItem('lummu_role');
+          const r = JSON.parse(sessionStorage.getItem('lummu_role') || 'null');
+          if (r && r.role) return r.role;
         } catch (e) {}
         return '';
       }
@@ -1198,7 +1196,7 @@
         } catch (e) {
           role = '';
         }
-        if (role) localStorage.setItem('lummu_role', JSON.stringify({ role, at: Date.now() }));
+        if (role) sessionStorage.setItem('lummu_role', role);
         return role;
       }
 
@@ -1683,30 +1681,9 @@
 
       // === ЦВЕТ СЕЗОНА ===
       function applySeasonTheme() {
-        const now = new Date();
-        const md = (now.getMonth() + 1) * 100 + now.getDate(); // например, 1215 = 15 декабря
-        let theme = null;
-        if (md >= 1121 || md <= 114) {
-          theme = { name: 'новогодний', accent: '#e8564f', blue: '#d63b3b', green: '#f0a848',
-                    grad: 'linear-gradient(135deg, #d63b3b 0%, #f0a848 100%)' };
-        } else if (md >= 210 && md <= 214)  {
-          theme = { name: 'валентинов день', accent: '#ff6b9d', blue: '#e84a8a', green: '#ff8fab',
-                    grad: 'linear-gradient(135deg, #e84a8a 0%, #ff8fab 100%)' };
-        } else if (md >= 301 && md <= 309) {
-          theme = { name: '8 марта', accent: '#f78fb3', blue: '#e962a5', green: '#ffc1d4',
-                    grad: 'linear-gradient(135deg, #e962a5 0%, #ffc1d4 100%)' };
-        }
-        if (theme) {
-          const r = document.documentElement.style;
-          r.setProperty('--accent', theme.accent);
-          r.setProperty('--accent-blue', theme.blue);
-          r.setProperty('--accent-green', theme.green);
-          r.setProperty('--accent-gradient', theme.grad);
-        }
-        console.log('Тема сезона:', theme ? theme.name : 'обычная');
-        currentSeason = theme ? theme.name : null;
+        // Тема сезона отключена — снег остаётся, цвета базовые
+        currentSeason = null;
       }
-      applySeasonTheme(); 
 
       // === ЭКСПОРТ ВЫРУЧКИ ===
       document.getElementById('export-report-btn').addEventListener('click', async () => {
@@ -2379,7 +2356,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         navCartBtn.classList.remove('active');
         updateHappyBanner(); 
         updateOpenStatus();
-        if (currentSeason) startSnow(); else stopSnow();
+        startSnow();   
       }
 
       navMenuBtn.addEventListener('click', showMenu);
