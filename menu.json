@@ -93,7 +93,7 @@
       "price": 300,
       "size": "",
       "img": "https://images.unsplash.com/photo-1600210481019-37bd1c76906d?q=80&w=800&auto=format&fit=crop",
-      "note": "",
+      "note": "какой вкус ?",
       "promo": true,
       "tobaccoBtn": false,
       "list": []
@@ -353,7 +353,7 @@
       "price": 250,
       "size": "",
       "img": "https://images.unsplash.com/photo-1513263515901-685c0b564282?q=80&w=800&auto=format&fit=crop",
-      "note": "",
+      "note": "Какой Липтон? (Малина / Персик)",
       "promo": false,
       "tobaccoBtn": false,
       "list": []
@@ -366,7 +366,7 @@
       "price": 250,
       "size": "",
       "img": "https://images.unsplash.com/photo-1513263515901-685c0b564282?q=80&w=800&auto=format&fit=crop",
-      "note": "",
+      "note": "Какое Мохито? (Клубника / Голубика)",
       "promo": false,
       "tobaccoBtn": false,
       "list": []
@@ -665,7 +665,7 @@
       "price": 320,
       "size": "",
       "img": "https://i.ibb.co/kssrKdyP/IMG-20261106-042857-199.jpg",
-      "note": "",
+      "note": "Ваше пиво:",
       "promo": false,
       "tobaccoBtn": false,
       "list": []
@@ -962,7 +962,7 @@
       "id": "suhari",
       "category": "snacks",
       "title": "Сухари",
-      "desc": "С сыром, с крабом.",
+      "desc": "Краб, Сыр, Томаты, ",
       "price": 300,
       "size": "",
       "img": "https://images.unsplash.com/photo-1512621776951-a571dfab8cfd?q=80&w=800&auto=format&fit=crop",
@@ -975,7 +975,7 @@
       "id": "chips-lays",
       "category": "snacks",
       "title": "Чипсы на выбор (LAYS)",
-      "desc": "С сыром, Стейк Рибай, С огурцом, с крабом.",
+      "desc": "Сыр, Стейк Рибай, Огурец, Краб,",
       "price": 350,
       "size": "",
       "img": "https://images.unsplash.com/photo-1512621776951-a571dfab8cfd?q=80&w=800&auto=format&fit=crop",
