@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лу-Му — печатное меню</title>
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --muted: #555;
+            --line: #d8d8d8;
+            --accent: #0aa5c9;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            color: var(--ink);
+            background: #f2f2f2;
+            line-height: 1.4;
+        }
+
+        /* Панель управления — не печатается */
+        .toolbar {
+            background: #fff;
+            padding: 14px 18px;
+            text-align: center;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .toolbar button {
+            padding: 10px 24px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .toolbar button:hover { opacity: 0.9; }
+        .toolbar .hint {
+            display: block;
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        /* Лист */
+        .sheet {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 28px 32px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        }
+
+        .menu-head {
+            text-align: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--ink);
+            padding-bottom: 14px;
+        }
+        .menu-head h1 {
+            font-size: 2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        .menu-head .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+        .menu-head .meta {
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+
+        .cat-block { margin-bottom: 26px; }
+        .cat-block h2 {
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1.5px solid var(--ink);
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* Две колонки позиций */
+        .items-cols {
+            column-count: 2;
+            column-gap: 32px;
+        }
+        .item-line {
+            break-inside: avoid;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px dotted var(--line);
+        }
+        .item-line .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .item-line .name { font-weight: 600; }
+        .item-line .price { font-weight: 700; white-space: nowrap; }
+        .item-line .size {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+        .item-line .desc {
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-top: 2px;
+        }
+        .item-line .flavors {
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        .item-line .promo-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            background: #2ecc71;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .item-line.sold .name::after {
+            content: ' — нет в наличии';
+            color: #c0392b;
+            font-weight: 400;
+            font-size: 0.82rem;
+        }
+
+        .menu-foot {
+            margin-top: 30px;
+            padding-top: 12px;
+            border-top: 2px solid var(--ink);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+        .menu-foot p { margin: 3px 0; }
+
+        /* Печать */
+        @media print {
+            body { background: #fff; }
+            .toolbar { display: none; }
+            .sheet {
+                max-width: none;
+                margin: 0;
+                padding: 12mm 14mm;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button onclick="window.print()">🖨 Печать / Сохранить как PDF</button>
+        <span class="hint">В диалоге печати выберите «Сохранить как PDF», формат А4, поля — по умолчанию.</span>
+    </div>
+
+    <div class="sheet" id="sheet">Загружаем меню…</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            let data;
+            try {
+                data = await fetch('menu.json?v=' + Date.now()).then(r => r.json());
+            } catch (e) {
+                document.getElementById('sheet').textContent = 'Не удалось загрузить menu.json';
+                return;
+            }
+
+            const itemsByCat = {};
+            data.items.forEach(it => {
+                (itemsByCat[it.category] = itemsByCat[it.category] || []).push(it);
+            });
+
+            const esc = s => String(s || '')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+            const cats = data.categories.filter(c => c.id !== 'all');
+
+            const html = cats.map(cat => {
+                const items = (itemsByCat[cat.id] || []);
+                if (!items.length) return '';
+
+                const lines = items.map(it => {
+                    const price = (typeof it.price === 'number' && it.price > 0)
+                        ? it.price + ' ₽' : '';
+                    const size = it.size ? `<span class="size"> · ${esc(it.size)}</span>` : '';
+                    const desc = it.desc ? `<div class="desc">${esc(it.desc)}</div>` : '';
+                    const flavors = (it.list && it.list.length)
+                        ? `<div class="flavors">${it.list.map(l =>
+                              typeof l === 'string' ? esc(l) : esc(l.name)
+                          ).join(' · ')}</div>` : '';
+                    const promo = it.promo ? '<span class="promo-tag">Акция</span>' : '';
+                    const sold = it.sold ? ' sold' : '';
+                    return `
+                        <div class="item-line${sold}">
+                            <div class="row">
+                                <span class="name">${esc(it.title)}${promo}</span>
+                                <span class="price">${price}${size}</span>
+                            </div>
+                            ${desc}${flavors}
+                        </div>`;
+                }).join('');
+
+                return `
+                    <div class="cat-block">
+                        <h2>${esc(cat.title)}</h2>
+                        <div class="items-cols">${lines}</div>
+                    </div>`;
+            }).join('');
+
+            const now = new Date().toLocaleDateString('ru-RU');
+            document.getElementById('sheet').innerHTML = `
+                <div class="menu-head">
+                    <h1>Лу-Му</h1>
+                    <div class="sub">Кальянная · Домодедово, мкр. Авиационный,
+                        просп. Академика Туполева, 2</div>
+                    <div class="sub">Вс-Чт 16:00–02:00 · Пн-Сб 16:00–04:00 ·
+                        +7 (915) 212-86-10</div>
+                    <div class="meta">Меню на ${now}</div>
+                </div>
+                ${html}
+                <div class="menu-foot">
+                    <p>Чрезмерное употребление алкоголя вредит вашему здоровью.</p>
+                    <p>Продажа алкоголя лицам младше 18 лет запрещена.</p>
+                    <p>lumu — сайт: sashasazontov.github.io/lumu</p>
+                </div>`;
+        });
+    </script>
+</body>
+</html>
