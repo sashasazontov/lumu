@@ -2,62 +2,62 @@
   "categories": [
     {
       "id": "all",
-      "title": "Все"
+      "title": "Всё"
     },
     {
       "id": "promos",
-      "title": "Акции"
+      "title": "🔥 Акции"
     },
     {
       "id": "non-alc-drinks",
-      "title": "Безалкогольные напитки"
+      "title": "🥤 Лимонады и соки"
     },
     {
       "id": "teas",
-      "title": "Чаи"
+      "title": "🍵 Чаи"
     },
     {
       "id": "sodas",
-      "title": "Газировки и энергетики"
+      "title": "⚡ Газировки и энергетики"
     },
     {
       "id": "alc-beer",
-      "title": "Алкогольные напитки (пиво)"
+      "title": "🍺 Пиво"
     },
     {
       "id": "cocktails",
-      "title": "Коктейли"
+      "title": "🍹 Коктейли"
     },
     {
       "id": "shots",
-      "title": "Шоты"
+      "title": "🥃 Шоты"
     },
     {
       "id": "hard-liquor",
-      "title": "Алкоголь"
+      "title": "🥃 Крепкий алкоголь"
     },
     {
       "id": "snacks",
-      "title": "Закуски и соленья"
+      "title": "🍟 Закуски"
     },
     {
       "id": "hookahs",
-      "title": "Кальяны"
+      "title": "💨 Кальяны"
     },
     {
       "id": "tobacco",
-      "title": "Табаки"
+      "title": "🌿 Табаки"
     },
     {
       "id": "dop",
-      "title": "Дополнительное"
+      "title": "📋 Доп. услуги"
     }
   ],
   "items": [
     {
       "id": "promo-shots",
       "category": "promos",
-      "title": "АКЦИИ В ЛУМУ",
+      "title": "АКЦИИ В ЛУМУ ШОТ",
       "desc": "Закажите 6 шотов на двоих — получите 2 шота бесплатно.",
       "price": 1794,
       "size": "",
@@ -71,7 +71,7 @@
     {
       "id": "promo-tea",
       "category": "promos",
-      "title": "АКЦИИ В ЛУМУ",
+      "title": "АКЦИИ В ЛУМУ  ЧАЙ",
       "desc": "Закажите кальян премиум — получите любой авторский чай всего за 250 ₽.",
       "price": 2750,
       "size": "",
@@ -84,7 +84,7 @@
     {
       "id": "promo-bowl",
       "category": "promos",
-      "title": "АКЦИИ В ЛУМУ",
+      "title": "АКЦИИ В ЛУМУ ЧАША",
       "desc": "Вечерний бонус: после 22:00 при заказе 2 коктейлей и 2 шотов — замена чаши всего за 50% стоимости.",
       "price": 300,
       "size": "",
@@ -400,7 +400,7 @@
       "desc": "Тонизирующий напиток 0.47 л.",
       "price": 449,
       "size": "",
-      "img": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=800&auto=format&fit=crop",
+      "img": "",
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
@@ -413,7 +413,7 @@
       "desc": "Тонизирующий напиток 0.33 л.",
       "price": 349,
       "size": "",
-      "img": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=800&auto=format&fit=crop",
+      "img": "",
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
@@ -878,21 +878,22 @@
       "id": "vodka",
       "category": "hard-liquor",
       "title": "Водка",
-      "desc": "Царская 50 мл.",
-      "price": 220,
+      "desc": "Белуга 50 мл.",
+      "price": 279,
       "size": "50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": false
     },
     {
       "id": "gin",
       "category": "hard-liquor",
       "title": "Джин",
       "desc": "Barrister 50 мл.",
-      "price": 249,
+      "price": 279,
       "size": "50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
@@ -943,14 +944,15 @@
       "id": "cognac",
       "category": "hard-liquor",
       "title": "Коньяк",
-      "desc": "Ной 3* 0.5 л.",
-      "price": 2499,
-      "size": "0.5 л",
+      "desc": "Ной 3* 50 мл",
+      "price": 279,
+      "size": " 50 мл",
       "img": "https://images.unsplash.com/photo-1555448248-2571418a0b3b?q=80&w=800&auto=format&fit=crop",
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": false
     },
     {
       "id": "suhari",
@@ -1002,7 +1004,8 @@
       "note": "",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "sold": false
     },
     {
       "id": "pickles",
@@ -1082,12 +1085,96 @@
       "tobaccoBtn": true,
       "sold": false,
       "list": [
-        "Мандарин Апельсин", "Арбуз", "Мандарин", "Клубника Лимон Арбуз",
-        "Киви, Яблоко и Лайм", "Голубика Лимон и Мята", "Лесные Ягоды",
-        "Арбуз Виноград и Чернослив", "Дыня", "Напиток Кола",
-        "Яблочные Леденцы", "Барбарисовые Конфеты", "Вишнёвый Сок", "Освежающая Мята",
-        "Грейпфрут", "Сладкий виноград", "Манго", "Персик", "Ананас Ментол Киви",
-        "Энергетик", "Шипучка яблоко", "Маракуйя"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
       ]
     },
     {
@@ -1102,12 +1189,95 @@
       "promo": false,
       "tobaccoBtn": true,
       "list": [
-        "Мандарин Апельсин", "Арбуз", "Мандарин", "Клубника Лимон Арбуз",
-        "Киви, Яблоко и Лайм", "Голубика Лимон и Мята", "Лесные Ягоды",
-        "Арбуз Виноград и Чернослив", "Дыня", "Напиток Кола",
-        "Яблочные Леденцы", "Барбарисовые Конфеты", "Вишнёвый Сок", "Освежающая Мята",
-        "Грейпфрут", "Сладкий виноград", "Манго", "Персик", "Ананас Ментол Киви",
-        "Энергетик", "Шипучка яблоко", "Маракуйя"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
       ]
     },
     {
@@ -1122,12 +1292,74 @@
       "promo": false,
       "tobaccoBtn": true,
       "list": [
-        "Мандарин Апельсин", "Арбуз", "Мандарин", "Клубника Лимон Арбуз",
-        "Киви, Яблоко и Лайм", "Голубика Лимон и Мята", "Лесные Ягоды",
-        "Арбуз Виноград и Чернослив", "Дыня", "Напиток Кола",
-        "Яблочные Леденцы", "Барбарисовые Конфеты", "Вишнёвый Сок", "Освежающая Мята",
-        "Грейпфрут", "Сладкий виноград", "Манго", "Персик", "Ананас Ментол Киви",
-        "Энергетик", "Шипучка яблоко", "Маракуйя"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Ананас Ментол Киви",
+          "price": 200
+        }
       ]
     },
     {
@@ -1142,35 +1374,160 @@
       "promo": false,
       "tobaccoBtn": true,
       "list": [
-        "Мандарин Апельсин", "Арбуз", "Мандарин", "Клубника Лимон Арбуз",
-        "Киви, Яблоко и Лайм", "Голубика Лимон и Мята", "Лесные Ягоды",
-        "Арбуз Виноград и Чернослив", "Дыня", "Напиток Кола",
-        "Яблочные Леденцы", "Барбарисовые Конфеты", "Вишнёвый Сок", "Освежающая Мята",
-        "Грейпфрут", "Сладкий виноград", "Манго", "Персик", "Ананас Ментол Киви",
-        "Энергетик", "Шипучка яблоко", "Маракуйя"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
       ]
     },
-
     {
       "id": "tobacco-musthave",
       "category": "tobacco",
       "title": "Musthave",
       "img": "https://htreviews.org/uploads/objects/1/757da412fb7f6edc87056b86e19a472b9b96fe23.webp",
       "list": [
-        "Musthave — Мандарин Апельсин",
-        "Musthave — Арбуз",
-        "Musthave — Мандарин",
-        "Musthave — Клубника Лимон Арбуз",
-        "Musthave — Киви, Яблоко и Лайм",
-        "Musthave — Голубика Лимон и Мята",
-        "Musthave — Лесные Ягоды",
-        "Musthave — Арбуз Виноград и Чернослив",
-        "Musthave — Дыня",
-        "Musthave — Напиток Кола",
-        "Musthave — Яблочные Леденцы",
-        "Musthave — Барбарисовые Конфеты",
-        "Musthave — Вишнёвый Сок",
-        "Musthave — Освежающая Мята"
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        }
       ]
     },
     {
@@ -1179,11 +1536,29 @@
       "title": "Dark Side",
       "img": "https://i.ytimg.com/vi/IKx9uAz7Yso/maxresdefault.jpg",
       "list": [
-        "Dark Side — Грейпфрут",
-        "Dark Side — Сладкий виноград",
-        "Dark Side — Манго",
-        "Dark Side — Персик",
-        "Dark Side — Ананас Ментол Киви"
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        }
       ]
     },
     {
@@ -1248,6 +1623,18 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": []
+    },
+    {
+      "id": "item-1795310786453",
+      "title": "Вода Baikal",
+      "category": "sodas",
+      "price": 199
+    },
+    {
+      "id": "item-1795311818077",
+      "title": "Вода с\\г",
+      "category": "sodas",
+      "price": 199
     }
   ]
 }
