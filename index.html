@@ -107,9 +107,10 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                        box-shadow 0.3s ease,
-                        border-color 0.3s ease;
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                        box-shadow 0.3s ease, border-color 0.3s ease;
             display: flex;
             flex-direction: column;
             border: 7.5px solid rgba(46, 204, 113, 0.25);
@@ -120,6 +121,10 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5),
                         0 0 25px rgba(10, 165, 201, 0.3);
             border-color: rgba(46, 204, 113, 0.6);
+        }
+        .item-card.reveal {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         #nav-admin-btn {
@@ -2583,8 +2588,24 @@ function updateHappyBanner() {
                 ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
               </div>
             </article>`).join('');
-            
+
           updateCartButtons();
+
+          // Плавное появление карточек при скролле
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((en, i) => {
+              if (en.isIntersecting) {
+                setTimeout(() => en.target.classList.add('reveal'), (i % 6) * 70);
+                io.unobserve(en.target);
+              }
+            });
+          }, { threshold: 0.1 });
+          document.querySelectorAll('.item-card').forEach(c => io.observe(c));
+
+          if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
+
+          if (!('IntersectionObserver' in window)) document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
         } catch (err) {
           console.error('Не удалось загрузить menu.json:', err);
         }
