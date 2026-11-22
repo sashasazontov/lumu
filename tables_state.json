@@ -88,15 +88,7 @@
       "table": "3",
       "lastMsgId": 274,
       "orderNo": 1,
-      "items": [
-        {
-          "name": "АКЦИИ В ЛУМУ",
-          "price": 1794,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ]
+      "items": []
     }
   ],
   "closedTables": [
@@ -258,5 +250,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795306431517
+  "updatedAt": 1795306802401
 }
