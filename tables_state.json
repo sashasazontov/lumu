@@ -45,7 +45,7 @@
           "price": 220,
           "size": "",
           "note": "",
-          "qty": 4
+          "qty": 8
         },
         {
           "name": "Adrenaline Б",
@@ -244,5 +244,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795306853424
+  "updatedAt": 1795309046793
 }
