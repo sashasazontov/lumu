@@ -1594,10 +1594,10 @@
         const now = new Date();
         const md = (now.getMonth() + 1) * 100 + now.getDate(); // например, 1215 = 15 декабря
         let theme = null;
-        if (true) {
+        if (md >= 1215 || md <= 114) {
           theme = { name: 'новогодний', accent: '#e8564f', blue: '#d63b3b', green: '#f0a848',
                     grad: 'linear-gradient(135deg, #d63b3b 0%, #f0a848 100%)' };
-        } else if (md >= 210 && md <= 214) {
+        } else if (true) {
           theme = { name: 'валентинов день', accent: '#ff6b9d', blue: '#e84a8a', green: '#ff8fab',
                     grad: 'linear-gradient(135deg, #e84a8a 0%, #ff8fab 100%)' };
         } else if (md >= 301 && md <= 309) {
