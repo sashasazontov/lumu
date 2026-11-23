@@ -1,6 +1,30 @@
 [
   {
     "table": "6",
+    "lastMsgId": 303,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Pepsi",
+        "price": 250,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Кальян Премиум",
+        "price": 2500,
+        "size": "",
+        "note": "Musthave-Арбуз Виноград и Чернослив 100%",
+        "qty": 1
+      }
+    ],
+    "discount": 50,
+    "closedAt": "2026-11-23T01:55:06.097Z",
+    "pay": "💳 Перевод"
+  },
+  {
+    "table": "6",
     "lastMsgId": 300,
     "orderNo": 1,
     "items": [
