@@ -1,31 +1,23 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
-      "table": "6",
-      "lastMsgId": 303,
+      "table": "1",
+      "lastMsgId": 305,
       "orderNo": 1,
       "items": [
         {
-          "name": "Pepsi",
-          "price": 250,
+          "name": "Кальян от двух вкусов",
+          "price": 2000,
           "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Арбуз Виноград и Чернослив 100%",
+          "note": "Musthave-Арбуз 100%",
           "qty": 1
         }
       ],
       "discount": 50,
-      "closedAt": "2026-11-23T01:54:08.619Z",
+      "closedAt": "2026-11-23T01:56:06.606Z",
       "pay": "💵 Наличка"
-    }
-  ],
-  "closedTables": [
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -270,5 +262,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795398899491
+  "updatedAt": 1795398968703
 }
