@@ -2566,6 +2566,7 @@
 
          const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n` +
           (t.discount ? ` скидка ${t.discount}%\n` : '') +
+          (t.guests ? `👥 Гостей за столом: ${t.guests}\n` : '') +
           `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
              
           const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
