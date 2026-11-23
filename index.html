@@ -1916,7 +1916,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         (log || []).forEach(e => {
           if (e && e.shiftOpenAt) {
             const t = new Date(e.shiftOpenAt).getTime();
-            if (!last || t > last.t) last = { t, by: e.openedBy || '—' };
+            if (!last || t > last.t) last = { t, by: e.openedBy || '—', startCash: Number(e.startCash) || 0 };
           }
         });
         return last;
@@ -1927,6 +1927,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         if (!name || !name.trim()) return;
         const clean = name.trim();
 
+        const boxRaw = prompt('💵 Размен в кассе на начало смены? (число ₽; пусто — 0)', '');
+        const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);
+          
         const log = await fetchClosedLog();
         const lastClose = shiftClosePoint(log);
         const openMark = shiftOpenPoint(log);
@@ -1937,13 +1940,13 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const date = new Date().toLocaleDateString('ru-RU');
 
-        const d = await tgSend(`🌅 Смена начата — ${date} ${time}\n👤 Бармен: ${clean}`);
+        const d = await tgSend(`🌅 Смена начата — ${date} ${time}\n👤 Бармен: ${clean}\n💵 Размен в кассе: ${startCash.toLocaleString('ru-RU')} ₽`);
         if (!d.ok) {
           alert('Не удалось отправить в Telegram: ' + (d.description || 'ошибка'));
           return;
         }
 
-        writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean });
+       writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash });
       }
 
       function writeShiftOpen(entry) {
@@ -2030,6 +2033,30 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           });
         });
 
+        // Сверка кассы: размен + наличка по системе vs сколько в ящике
+        const startCash = (openMark && openMark.startCash) || 0;
+        const expected = Math.round(startCash + cash);
+        let inBox = null, diff = 0;
+        const boxRaw = prompt(`💵 Сколько сейчас в ящике? (ожидалось: размен ${startCash.toLocaleString('ru-RU')} + наличка ${cash.toLocaleString('ru-RU')} = ${expected.toLocaleString('ru-RU')} ₽; пусто — не сверять)`, '');
+        if (boxRaw && boxRaw.trim() !== '') {
+          const inBoxNum = Number(String(boxRaw).replace(/\s/g, '').replace(',', '.'));
+          if (!isNaN(inBoxNum)) {
+            inBox = inBoxNum;
+            diff = Math.round(inBoxNum - expected);
+            const dTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            if (diff !== 0) {
+              tgSend(`⚠️ Разница кассы — ${dTime}\n\n` +
+                `🧮 Ожидалось в ящике: ${expected.toLocaleString('ru-RU')} ₽ (размен ${startCash.toLocaleString('ru-RU')} + наличка ${cash.toLocaleString('ru-RU')})\n` +
+                `💵 В ящике: ${Math.round(inBoxNum).toLocaleString('ru-RU')} ₽\n` +
+                (diff > 0
+                  ? `📈 Излишек: ${diff.toLocaleString('ru-RU')} ₽`
+                  : `📉 Недостача: ${Math.abs(diff).toLocaleString('ru-RU')} ₽`));
+            } else {
+              tgSend(`✅ Касса сошлась — ${dTime}: в ящике ${expected.toLocaleString('ru-RU')} ₽`);
+            }
+          }
+        }
+     
         let text = `🌙 Смена закрыта — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
         text += `🕐 Период: с ${period}\n`;
         if (openMark && openMark.t === since) {
@@ -2038,6 +2065,12 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
         text += `🪑 Столов закрыто: ${rows.length}\n`;
         text += `💵 Наличка: ${cash.toLocaleString('ru-RU')} ₽ · 💳 Перевод: ${card.toLocaleString('ru-RU')} ₽\n`;
+        if (openMark) {
+        text += `🧮 Размен на старте: ${startCash.toLocaleString('ru-RU')} ₽ · Ожидалось в ящике: ${expected.toLocaleString('ru-RU')} ₽\n`;
+        }
+        if (typeof inBox === 'number' && !isNaN(inBox)) {       
+        text += `🧮 В ящике: ${Math.round(inBox).toLocaleString('ru-RU')} ₽${diff !== 0 ? ' (разница ' + diff.toLocaleString('ru-RU') + ' ₽)' : ''}\n`;
+        }
         if (rows.length) {
           text += `📈 Средний чек стола: ${Math.round(revenue / rows.length).toLocaleString('ru-RU')} ₽\n`;
           const top = Object.entries(byItem).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
