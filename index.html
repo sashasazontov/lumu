@@ -1714,7 +1714,7 @@
         const paySplit = (rows) => {
           let cash = 0, card = 0;
           rows.forEach(t => {
-            const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+            const total = tableTotal(t);
             if ((t.pay || '').includes('Наличка')) cash += total;
             else if ((t.pay || '').includes('Перевод')) card += total;
           });
@@ -1770,7 +1770,7 @@
         let revenue = 0;
         rows.forEach(t => {
           const d = new Date(t.closedAt);
-          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const total = tableTotal(t);
           revenue += total;
           const items = t.items.map(i =>
             `${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`).join('; ');
@@ -1831,7 +1831,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
         rows.forEach(t => {
           const d = new Date(t.closedAt);
-          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const total = tableTotal(t);
           revenue += total;
           const pay = (t.pay || '').replace('💵 ', '').replace('💳 ', '');
           text += `— ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })} · Стол ${t.table} · ${pay}\n`;
@@ -2019,10 +2019,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         let revenue = 0, cash = 0, card = 0;
         const byItem = {};
         rows.forEach(t => {
-          const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
-          revenue += total;
-          if ((t.pay || '').includes('Наличка')) cash += total;
-          else if ((t.pay || '').includes('Перевод')) card += total;
+          revenue += tableTotal(t);
+          if ((t.pay || '').includes('Наличка')) cash += tableTotal(t);
+          else if ((t.pay || '').includes('Перевод')) card += tableTotal(t);
           t.items.forEach(i => {
             const key = i.name + (i.size ? ' (' + i.size + ')' : '');
             byItem[key] = byItem[key] || { qty: 0, sum: 0 };
@@ -2194,7 +2193,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
 
         tables.forEach((t, idx) => {
-          const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const const tTotal = tableTotal(t); 
           const lines = t.items
             .map(i => `• ${esc(i.name)}${i.size ? ' (' + esc(i.size) + ')' : ''}${i.note ? ' — ' + esc(i.note) : ''} ×${i.qty}`)
             .join('<br>');
@@ -2242,7 +2241,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
 
         closedTables.forEach((t, idx) => {
-          const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+          const tTotal = tableTotal(t);
           const lines = t.items
             .map(i => `• ${esc(i.name)}${i.size ? ' (' + esc(i.size) + ')' : ''}${i.note ? ' — ' + esc(i.note) : ''} ×${i.qty}`)
             .join('<br>');
@@ -2877,7 +2876,7 @@ function updateHappyBanner() {
 
         if (tables.length) {
           tables.forEach((t, idx) => {
-            const tTotal = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+            const tTotal = tableTotal(t);
 
             const row = document.createElement('div');
             row.style.cssText = 'display:flex; gap:8px; margin-bottom:8px;';
