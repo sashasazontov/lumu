@@ -1,5 +1,41 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": 316,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Вильям-Кола",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Вильям-Кола",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Сет Орешник",
+          "price": 650,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -245,5 +281,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795401958888
+  "updatedAt": 1795402002374
 }
