@@ -3257,7 +3257,7 @@ function updateHappyBanner() {
         const tbl = getQrTable();
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const total = (typeof p === 'number' ? p : it.price) * (existing ? existing.qty : 1);
-        tgSend(
+        tgSendStop(
           '🛒 Добавили в корзину: ' + it.title
           + (it.size ? ' (' + it.size + ')' : '')
           + (note ? ' — ' + note : '')
