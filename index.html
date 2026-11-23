@@ -3581,8 +3581,23 @@ function updateHappyBanner() {
               stockCounts[i.id] = Math.max(n - i.qty, 0);
               const it0 = menuItems.find(x => x.id === i.id);
               if (it0) applyStockAutoState(it0);
+
+              // автосписание вкусов из заметки микса
+              const note = i.note || '';
+              if (!note) return;
+              note.split('+')
+                .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
+                .filter(Boolean)
+                .forEach(name => {
+                  const fn = flavorStockOf(i.id, name);
+                  if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
+                  flavorStock[name] = Math.max(fn - 1, 0);
+                  applyFlavorAutoState(i.id, name);
+                });
             });
+
             saveStockState();
+            saveFlavorStockState();
             updateCartButtons();
             alert(isNew
               ? `✅ Новый заказ отправлен! Стол ${table.table}`
