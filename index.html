@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#15151a">
     <link rel="apple-touch-icon" href="icon-512.png">
     <link rel="icon" href="icon-512.png">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-dark: #15151a;
@@ -1756,7 +1757,7 @@
         currentSeason = null;
       }
 
-      // === ЭКСПОРТ ВЫРУЧКИ ===
+      // === ЭКСПОРТ ВЫРУЧКИ (Excel .xlsx, при недоступности библиотеки — CSV) ===
       document.getElementById('export-report-btn').addEventListener('click', async () => {
         if (getRole() !== 'admin') return;
         const days = Number(prompt('За сколько дней выгрузить отчёт?', '30'));
@@ -1764,9 +1765,10 @@
 
         const log = await fetchClosedLog();
         const since = Date.now() - days * 24 * 60 * 60 * 1000;
-        const rows = log.filter(t => t.closedAt && new Date(t.closedAt).getTime() >= since);
+        const rows = log.filter(t => t.closedAt && new Date(t.closedAt).getTime() >= since)
+          .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
 
-        const csv = [['Дата', 'Время', 'Стол', 'Оплата', 'Состав заказа', 'Сумма, ₽']];
+        const data = [['Дата', 'Время', 'Стол', 'Оплата', 'Состав заказа', 'Сумма, ₽']];
         let revenue = 0;
         rows.forEach(t => {
           const d = new Date(t.closedAt);
@@ -1774,7 +1776,7 @@
           revenue += total;
           const items = t.items.map(i =>
             `${i.name}${i.size ? ' (' + i.size + ')' : ''}${i.note ? ' — ' + i.note : ''} ×${i.qty}`).join('; ');
-          csv.push([
+          data.push([
             d.toLocaleDateString('ru-RU'),
             d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
             'Стол ' + t.table,
@@ -1783,29 +1785,42 @@
             total
           ]);
         });
-        csv.push(['', '', '', 'Итого:', rows.length + ' столов', revenue]);
+        data.push(['', '', '', 'Итого:', rows.length + ' столов', revenue]);
 
-        const text = csv.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n').replace(/₽/g, 'руб.');
+        const fileName = 'lumu_report_' + new Date().toISOString().slice(0, 10);
 
-function toCp1251Bytes(str) {
-  const extra = { 'Ё': 0xA8, 'ё': 0xB8, '—': 0x97, '–': 0x96, '«': 0xAB, '»': 0xBB, '№': 0xB9 };
-  const out = [];
-  for (const ch of str) {
-    const code = ch.codePointAt(0);
-    if (code < 128) out.push(code);
-    else if (extra[ch] !== undefined) out.push(extra[ch]);
-    else if (code >= 0x0410 && code <= 0x044F) out.push(code - 0x0410 + 0xC0);
-    else out.push(63);
-  }
-  return out;
-}
+        if (typeof XLSX === 'undefined') {
+          // Библиотека не загрузилась (нет сети) — старый надёжный CSV
+          const csv = data.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n').replace(/₽/g, 'руб.');
+          function toCp1251Bytes(str) {
+            const extra = { 'Ё': 0xA8, 'ё': 0xB8, '—': 0x97, '–': 0x96, '«': 0xAB, '»': 0xBB, '№': 0xB9 };
+            const out = [];
+            for (const ch of str) {
+              const code = ch.codePointAt(0);
+              if (code < 128) out.push(code);
+              else if (extra[ch] !== undefined) out.push(extra[ch]);
+              else if (code >= 0x0410 && code <= 0x044F) out.push(code - 0x0410 + 0xC0);
+              else out.push(63);
+            }
+            return out;
+          }
+          const blob = new Blob([new Uint8Array(toCp1251Bytes(csv))], { type: 'text/csv' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = fileName + '.csv';
+          a.click();
+          URL.revokeObjectURL(a.href);
+          if (!rows.length) alert('За последние ' + days + ' дн. закрытых столов нет — файл пустой.');
+          return;
+        }
 
-const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'lumu_report_' + new Date().toISOString().slice(0, 10) + '.csv'; 
-        a.click();
-        URL.revokeObjectURL(a.href);
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [
+          { wch: 11 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 60 }, { wch: 10 }
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
+        XLSX.writeFile(wb, fileName + '.xlsx');
         if (!rows.length) alert('За последние ' + days + ' дн. закрытых столов нет — файл пустой.');
       });
 
