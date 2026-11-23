@@ -2,6 +2,46 @@
   "tables": [],
   "closedTables": [
     {
+      "table": "3",
+      "lastMsgId": 346,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Musthave-Лесные Ягоды 100%",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-23T04:26:09.167Z",
+      "pay": "💳 Перевод"
+    },
+    {
+      "table": "2",
+      "lastMsgId": 345,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Fanta",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Джин",
+          "price": 279,
+          "size": "50 мл",
+          "note": "",
+          "qty": 7
+        }
+      ],
+      "discount": 10,
+      "closedAt": "2026-11-23T04:25:40.520Z",
+      "pay": "💳 Перевод"
+    },
+    {
       "table": "1",
       "lastMsgId": 343,
       "orderNo": 1,
@@ -268,5 +308,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407919077
+  "updatedAt": 1795407970669
 }
