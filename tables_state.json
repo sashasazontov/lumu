@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": 391,
@@ -12,25 +13,9 @@
           "note": "",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
-    {
-      "table": "1",
-      "lastMsgId": 388,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Оплошность гостя",
-          "price": 1000,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
       ],
-      "guests": 56,
-      "closedAt": "2026-11-23T13:49:42.703Z",
+      "guests": 4,
+      "closedAt": "2026-11-23T13:55:11.655Z",
       "pay": "💵 Наличка"
     },
     {
@@ -277,5 +262,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795442044747
+  "updatedAt": 1795442113168
 }
