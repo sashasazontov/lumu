@@ -27,6 +27,27 @@
           "qty": 1
         }
       ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": 366,
+      "orderNo": 2,
+      "items": [
+        {
+          "name": "Сухари",
+          "price": 300,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Тархун Ананас",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -298,5 +319,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795411401766
+  "updatedAt": 1795411435590
 }
