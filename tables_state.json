@@ -1,20 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "1",
-      "lastMsgId": 299,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян Премиум",
-          "price": 2700,
-          "size": "",
-          "note": "Dark Side — Redberry 100%",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -260,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795398683427
+  "updatedAt": 1795398747349
 }
