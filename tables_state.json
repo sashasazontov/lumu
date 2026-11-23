@@ -1,9 +1,8 @@
 {
-  "tables": [],
-  "closedTables": [
+  "tables": [
     {
       "table": "3",
-      "lastMsgId": 339,
+      "lastMsgId": 340,
       "orderNo": 1,
       "items": [
         {
@@ -36,9 +35,11 @@
         }
       ],
       "discount": 10,
-      "closedAt": "2026-11-23T04:19:44.559Z",
+      "closedAt": "2026-11-23T04:20:22.335Z",
       "pay": "💵 Наличка"
-    },
+    }
+  ],
+  "closedTables": [
     {
       "table": "2",
       "lastMsgId": 337,
@@ -315,5 +316,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407586075
+  "updatedAt": 1795407650845
 }
