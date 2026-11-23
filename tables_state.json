@@ -2,6 +2,23 @@
   "tables": [],
   "closedTables": [
     {
+      "table": "1",
+      "lastMsgId": 386,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Оплошность гостя",
+          "price": 1000,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ],
+      "guests": 4,
+      "closedAt": "2026-11-23T13:48:51.751Z",
+      "pay": "💵 Наличка"
+    },
+    {
       "table": "3-постоянники",
       "lastMsgId": 252,
       "orderNo": 5,
@@ -245,5 +262,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795441678459
+  "updatedAt": 1795441733263
 }
