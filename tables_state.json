@@ -1,8 +1,9 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "11",
-      "lastMsgId": 330,
+      "lastMsgId": 334,
       "orderNo": 1,
       "items": [
         {
@@ -19,11 +20,13 @@
           "note": "",
           "qty": 1
         }
-      ]
+      ],
+      "closedAt": "2026-11-23T04:14:08.199Z",
+      "pay": "💳 Перевод"
     },
     {
       "table": "12",
-      "lastMsgId": null,
+      "lastMsgId": 333,
       "orderNo": 1,
       "items": [
         {
@@ -33,10 +36,10 @@
           "note": "",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-23T04:14:04.447Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -281,5 +284,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407200299
+  "updatedAt": 1795407271655
 }
