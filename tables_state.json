@@ -1,20 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "4",
-      "lastMsgId": 382,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Оплошность гостя",
-          "price": 1000,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -260,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795441638603
+  "updatedAt": 1795441678459
 }
