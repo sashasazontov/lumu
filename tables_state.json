@@ -2,23 +2,6 @@
   "tables": [],
   "closedTables": [
     {
-      "table": "1",
-      "lastMsgId": 305,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян от двух вкусов",
-          "price": 2000,
-          "size": "",
-          "note": "Musthave-Арбуз 100%",
-          "qty": 1
-        }
-      ],
-      "discount": 50,
-      "closedAt": "2026-11-23T01:56:06.606Z",
-      "pay": "💵 Наличка"
-    },
-    {
       "table": "3-постоянники",
       "lastMsgId": 252,
       "orderNo": 5,
@@ -262,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795398968703
+  "updatedAt": 1795401508167
 }
