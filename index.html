@@ -17,7 +17,7 @@
             --accent-blue: #0aa5c9;
             --accent-green: #2ecc71;
             --accent-gradient: linear-gradient(135deg, #0aa5c9 0%, #2ecc71 100%);
-            --text-main: #e8e8eb;
+            --text-main: #e8e8eb;// null
             --text-muted: #a5a5ad;
             --photo-ratio: 1.4;
         }
@@ -1703,12 +1703,34 @@
         clearTimeout(flavorStockPushTimer);
         flavorStockPushTimer = setTimeout(pushRemoteFlavorStockState, 1500);
       }
- 
-      // null = учёт не ведётся, число = сколько порций осталось
-      function flavorStockOf(itemId, name) {
-        const n = flavorStock[itemId + '||' + name];
-        return (typeof n === 'number' && n >= 0) ? n : null;
+
+      // Разовый перенос старых ключей «кальян||вкус» на общие ключи по имени вкуса
+      function migrateFlavorStock() {
+        let changed = false;
+        Object.keys(flavorStock).forEach(k => {
+          if (k.includes('||')) {
+            const name = k.split('||')[1];
+            if (typeof flavorStock[name] === 'number') {
+              flavorStock[name] = Math.min(flavorStock[name], flavorStock[k]);
+            } else {
+              flavorStock[name] = flavorStock[k];
+            }
+            delete flavorStock[k];
+            changed = true;
+          }
+        });
+        if (changed) {
+          localStorage.setItem('lummu_flavor_stock', JSON.stringify(flavorStock));
+          saveFlavorStockState();
+        }
       }
+      migrateFlavorStock();
+        
+         // null = учёт не ведётся, число = сколько порций осталось (общее для всех кальянов с этим вкусом)
+      function flavorStockOf(itemId, name) {
+        const n = flavorStock[name];
+        return (typeof n === 'number' && n >= 0) ? n : null;
+      }  
 
       function applyFlavorAutoState(itemId, name) {
         const n = flavorStockOf(itemId, name);
@@ -1776,10 +1798,12 @@
               && (remote.updatedAt || 0) > Number(localStorage.getItem('lummu_flavor_stock_stamp') || 0)
               && (remote.updatedAt || 0) > lastFlavorStockSave) {
             flavorStock = remote.stock || {};
+            migrateFlavorStock();
             localStorage.setItem('lummu_flavor_stock', JSON.stringify(flavorStock));
             localStorage.setItem('lummu_flavor_stock_stamp', String(remote.updatedAt));
             return true;
           }
+
         } catch (e) {}
         return false;
       }
@@ -3828,7 +3852,7 @@ function updateHappyBanner() {
             if (raw === null) return;
             const n = parseInt(String(raw).replace(/\D/g, ''), 10);
             if (isNaN(n) || n < 0) return;
-            flavorStock[btn.dataset.iid + '||' + btn.dataset.name] = n;
+           flavorStock[btn.dataset.name] = n;           
             saveFlavorStockState();
             applyFlavorAutoState(btn.dataset.iid, btn.dataset.name);
             renderMixBuilder(it);
@@ -3838,7 +3862,7 @@ function updateHappyBanner() {
         mixOverlay.querySelectorAll('.flstock-btn').forEach(btn => {
           btn.onclick = (ev) => {
             ev.stopPropagation();
-            const key = btn.dataset.iid + '||' + btn.dataset.name;
+            const key = btn.dataset.name;           
             const n = flavorStockOf(btn.dataset.iid, btn.dataset.name);
             if (n === null) return;
             flavorStock[key] = Math.max(n + (btn.hasAttribute('data-inc') ? 1 : -1), 0);
@@ -3851,7 +3875,7 @@ function updateHappyBanner() {
         mixOverlay.querySelectorAll('.flstock-x').forEach(btn => {
           btn.onclick = (ev) => {
             ev.stopPropagation();
-            delete flavorStock[btn.dataset.iid + '||' + btn.dataset.name];
+            delete flavorStock[btn.dataset.name];
             saveFlavorStockState();
             renderMixBuilder(it);
           };
