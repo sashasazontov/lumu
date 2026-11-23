@@ -1513,10 +1513,10 @@
 
       async function pullRemoteItemState() {
         const token = localStorage.getItem('lummu_gh_token');
-        try { 
+        try {
           let remote = null;
           if (token) {
-            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}?ref=${GH_BRANCH}`, {
+           const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
               headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
             });
             if (r.ok) {
@@ -1525,20 +1525,20 @@
             }
           }
           if (!remote) {
-            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}?ref=${GH_BRANCH}&key=${SECRET}`);
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
             if (r.ok) {
               const file = await r.json();
               remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
             }
           }
- 
+
           if (Array.isArray(remote)) {
             soldItems = remote;
             localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
             updateCartButtons();
           }
         } catch (e) {}
-      }
+      }    
         
      // === СТОП-ЛИСТ ВКУСОВ ===
       const FLAVOR_FILE = 'flavors_state.json';
@@ -1655,7 +1655,7 @@
 
       async function fetchClosedLog() {
         try {
-          const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}`);
+          const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
           if (!r.ok) return closedTables;
           const file = await r.json();
           return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
