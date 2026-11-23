@@ -2211,29 +2211,43 @@
           headers = ghLogHeaders();
         }
         const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
-        fetch(api + `?ref=${GH_BRANCH}`, { headers })
-          .then(r => r.json())
-          .then(file => {
-            let logArr = [];
-            try {
-              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
-              logArr = JSON.parse(new TextDecoder().decode(bytes));
-            } catch (e) {}
-            logArr.unshift({ shiftCloseAt: new Date().toISOString() });
-            if (logArr.length > 500) logArr = logArr.slice(0, 500);
-            return fetch(api, {
-              method: 'PUT',
-              headers: { ...headers, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: 'Закрытие смены',
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
-                branch: GH_BRANCH,
-                sha: file.sha
-              })
-            });
+        const entry = { shiftCloseAt: new Date().toISOString() };
+
+        const putLog = (logArr, sha, attempts) =>
+          fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'Закрытие смены',
+              content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+              branch: GH_BRANCH,
+              sha
+            })
           })
+          .then(r => { if (!r.ok) throw new Error('conflict ' + r.status); })
           .then(() => alert('✅ Смена закрыта, итоги в Telegram. Следующая смена начнёт считать с нуля.'))
-          .catch(e => alert('Отчёт отправлен, но смена не отмечена: ' + e));
+          .catch(e => {
+            if (attempts > 0) {
+              // кто-то записал в журнал раньше — перечитываем свежий и пробуем снова
+              return fetchClosedLog().then(fresh => {
+                const arr = (Array.isArray(fresh) ? fresh : []).slice();
+                arr.unshift(entry);
+                return putLog(arr.slice(0, 500), lastLogSha, attempts - 1);
+              });
+            }
+            alert('Отчёт отправлен, но смена не отмечена: ' + e);
+          });
+
+        // быстрый путь: журнал уже прочитан в closeShift — PUT сразу
+        if (lastLogSha && Array.isArray(lastLogData)) {
+          return putLog([entry, ...lastLogData].slice(0, 500), lastLogSha, 1);
+        }
+        // кэша нет — читаем журнал и пишем с одной повторной попыткой
+        return fetchClosedLog().then(arr => {
+          const fresh = (Array.isArray(arr) ? arr : []).slice();
+          fresh.unshift(entry);
+          return putLog(fresh.slice(0, 500), lastLogSha, 1);
+        });
       }
 
       // === КНОПКА СВОДКИ ===
