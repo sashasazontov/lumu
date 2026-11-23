@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": 322,
@@ -12,10 +13,10 @@
           "note": "",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-23T03:20:10.195Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -260,5 +261,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795403973401
+  "updatedAt": 1795404011709
 }
