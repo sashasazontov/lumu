@@ -2,6 +2,22 @@
   "tables": [
     {
       "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Jagermeister",
+          "price": 329,
+          "size": "50 мл",
+          "note": "",
+          "qty": 7
+        }
+      ]
+    }
+  ],
+  "closedTables": [
+    {
+      "table": "1",
       "lastMsgId": 370,
       "orderNo": 1,
       "items": [
@@ -12,10 +28,10 @@
           "note": "",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-23T05:38:29.162Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "2",
       "lastMsgId": 366,
@@ -337,5 +353,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795412305075
+  "updatedAt": 1795412373019
 }
