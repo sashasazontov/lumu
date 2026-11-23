@@ -1,3 +1,5 @@
 [
-  { "shiftOpenAt": "2026-11-23T00:39:00.000Z", "openedBy": "Саша", "startCash": 0 }
+  { "shiftOpenAt": "2026-11-23T00:39:00.000Z", "openedBy": "Саша", "startCash": 0 },
+  { "weekResetAt": "2026-11-23T06:41:00.000Z" }
 ]
+
