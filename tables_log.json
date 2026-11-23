@@ -1,5 +1,21 @@
 [
   {
+    "table": "12",
+    "lastMsgId": null,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Ром-Кола",
+        "price": 379,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-23T04:14:04.447Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-23T04:12:11.470Z",
     "openedBy": "sasha",
     "startCash": 13650
