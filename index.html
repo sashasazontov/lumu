@@ -3127,7 +3127,17 @@ function updateHappyBanner() {
       }
 
       let checkoutBusy = false; // замок от двойного тапа по «Оформить»
+        
+      let checkoutBatchId = null; // метка текущего заказа: защита от задвоения при повторной отправке
+      let checkoutAdded = null;   // снимок корзины на момент первой попытки
 
+ function clearCart() {
+        cart.length = 0;
+        checkoutBatchId = null;
+        checkoutAdded = null;
+        updateCart();
+      }
+        
       function sendToTable(idx) {
         if (checkoutBusy) return;
         if (cart.length === 0) return;
@@ -3139,21 +3149,29 @@ function updateHappyBanner() {
         const originalText = checkoutBtn.textContent;
         checkoutBtn.textContent = 'Отправка...';
         
-        // Сливаем позиции корзины с заказом стола и запоминаем, что добавилось
-        const added = [];
-        cart.forEach(newItem => {
-          const match = table.items.find(old =>
-            old.name === newItem.name &&
-            old.size === newItem.size &&
-            old.note === newItem.note
-          );
-          if (match) {
-            match.qty += newItem.qty;
-          } else {
-            table.items.push({ ...newItem });
-          }
-          added.push({ ...newItem });
-        });
+        // Метка заказа: при повторной попытке отправки позиции не вливаются второй раз
+        if (!checkoutBatchId) {
+          checkoutBatchId = 'b' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
+          checkoutAdded = cart.map(i => ({ ...i, batchId: checkoutBatchId }));
+        }
+        const added = checkoutAdded;
+
+        if (!table.items.some(i => i.batchId === checkoutBatchId)) {
+          cart.forEach(newItem => {
+            const match = table.items.find(old =>
+              !old.batchId &&
+              old.name === newItem.name &&
+              old.size === newItem.size &&
+              old.note === newItem.note
+            );
+            if (match) {
+              match.qty += newItem.qty;
+              match.batchId = checkoutBatchId;
+            } else {
+              table.items.push({ ...newItem, batchId: checkoutBatchId });
+            }
+          });
+        }
 
         const grandTotal = table.items.reduce((s, i) => s + i.price * i.qty, 0);
         table.orderNo += 1;
@@ -3204,8 +3222,7 @@ function updateHappyBanner() {
             alert(isNew
               ? `✅ Новый заказ отправлен! Стол ${table.table}`
               : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
-            cart.length = 0;
-            updateCart();
+            clearCart();
             const chooser = cartContainer.querySelector('.table-chooser');
             if (chooser) chooser.style.display = 'none';
             showMenu();
@@ -3218,8 +3235,7 @@ function updateHappyBanner() {
                 table.lastMsgId = d2.result.message_id;
                 saveTables();
                 alert(`⚠️ Старое сообщение не найдено — заказ стола ${table.table} отправлен заново.`);
-                cart.length = 0;
-                updateCart();
+                clearCart();
                 showMenu();
               } else {
                 alert('Не удалось отправить: ' + (d2.description || 'неизвестная ошибка'));
@@ -3227,8 +3243,7 @@ function updateHappyBanner() {
             });
           } else if (!isNew && (data.description || '').includes('message is not modified')) {
             saveTables();
-            cart.length = 0;
-            updateCart();
+            clearCart();
             showMenu();
           } else {
             console.error('Ошибка Telegram:', data);
