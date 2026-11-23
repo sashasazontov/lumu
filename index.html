@@ -2763,8 +2763,14 @@ function updateHappyBanner() {
         return shiftStatusCache.open === true;
       }
         
-          // --- Добавление позиции в корзину (общая для всех путей) ---
+      // --- Добавление позиции в корзину (общая для всех путей) ---
+      let lastAddClick = 0; // защита от двойного клика / случайного двойного тапа
+
       async function addItemToCart(it, note, priceOverride) {
+        const now = Date.now();
+        if (now - lastAddClick < 1000) return; // повторный клик раньше секунды — игнорируем
+        lastAddClick = now;
+
         const open = await isShiftOpenNow();
         if (!open) {
           alert('Смена ещё не открыта 🌅 Заказы принимаются после открытия смены барменом.');
@@ -2780,7 +2786,7 @@ function updateHappyBanner() {
         else cart.push({ name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });
         updateCart();
         showCart();
-      }
+      }         
 
       // === ДЕЛЕГИРОВАНИЕ КЛИКОВ ===
       document.addEventListener('click', (e) => {
