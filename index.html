@@ -1619,6 +1619,26 @@
         return t ? { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' } : null;
       }
 
+      const WEEKLY_MS = 7 * 24 * 60 * 60 * 1000;
+
+      let lastLogSha = null;
+      let lastLogData = null; // последний прочитанный журнал — для быстрой записи без GET
+
+      async function fetchClosedLog() {
+        try {
+          const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+          if (!r.ok) return closedTables;
+          const file = await r.json();
+          lastLogSha = file.sha || null;
+          const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+          const arr = Array.isArray(data) ? data : (data && Array.isArray(data.log) ? data.log : []);
+          lastLogData = arr;
+          return arr;
+        } catch (e) {
+          return closedTables;
+        }
+      }
+        
       function logClosedToGithub(closed) {
         let headers = ghLogHeaders();
         if (!headers) {
@@ -3051,6 +3071,19 @@ function updateHappyBanner() {
         chooser.appendChild(cancelBtn);
       }
 
+      let checkoutBusy = false; // замок от двойного тапа по «Оформить»
+
+      function sendToTable(idx) {
+        if (checkoutBusy) return;
+        if (cart.length === 0) return;
+        const table = tables[idx];
+        if (!table) return;
+
+        checkoutBusy = true;
+        checkoutBtn.disabled = true;
+        const originalText = checkoutBtn.textContent;
+        checkoutBtn.textContent = 'Отправка...';
+        
       // --- Отправка / обновление заказа конкретного стола ---
       function sendToTable(idx) {
         if (cart.length === 0) return;
@@ -3161,7 +3194,9 @@ function updateHappyBanner() {
           console.error(err);
           alert('Ошибка сети. Попробуйте ещё раз.');
         })
-        .finally(() => {
+
+          .finally(() => {
+          checkoutBusy = false;
           checkoutBtn.disabled = false;
           checkoutBtn.textContent = originalText;
         });
