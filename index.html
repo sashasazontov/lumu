@@ -980,11 +980,12 @@
 
     <!-- ПАНЕЛЬ УПРАВЛЕНИЯ СТОЛАМИ -->
     <section id="tables-page" style="display: none;">
-        <div class="tables-box">
+        <div class="tables-box">weekly-report-btn').style.display
             <h2>Столы</h2>
             <div id="tables-list"></div>
             <button id="back-from-tables-btn">← Назад</button>
             <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
+            <button id="purchase-list-btn" style="display: none;">🛒 Что закупать</button>
             <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
             <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
             <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
@@ -1366,6 +1367,7 @@
         navCartBtn.classList.remove('active');
         const admin = role === 'admin';
         document.getElementById('weekly-report-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('purchase-list-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('shift-close-btn').style.display = 'block';
@@ -1606,6 +1608,7 @@
           }
 
           if (Array.isArray(remote)) {
+            updatePurchaseBtn();
             soldItems = remote;
             localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
             updateCartButtons();
@@ -1679,6 +1682,7 @@
             soldFlavors = remote.soldFlavors || [];
             localStorage.setItem('lummu_sold_flavors', JSON.stringify(soldFlavors));
             localStorage.setItem('lummu_flavors_stamp', String(remote.updatedAt));
+            updatePurchaseBtn();
             return true;
           }
         } catch (e) {}
@@ -1738,10 +1742,12 @@
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         if (n === 0 && !soldFlavors.includes(name)) {
           soldFlavors.push(name);
+          markPurchase('flavor:' + name);
           saveFlavorState();
           tgSendStop('⛔ Закончился вкус: ' + name + '\n🧪 ' + (it0 ? it0.title : '') + '\n🕐 ' + time);
         } else if (n > 0 && soldFlavors.includes(name)) {
           soldFlavors = soldFlavors.filter(x => x !== name);
+          unmarkPurchase('flavor:' + name);
           saveFlavorState();
           tgSendStop('↩ Вкус вернули (пополнение): ' + name + '\n🧪 ' + (it0 ? it0.title : '') + '\n🕐 ' + time);
         }
@@ -1822,6 +1828,36 @@
         </span>`;
       }
 
+      // === СПИСОК ЗАКУПКИ ===
+      let purchaseTimes = {};
+      try {
+        purchaseTimes = JSON.parse(localStorage.getItem('lummu_purchase_log')) || {};
+      } catch (e) { purchaseTimes = {}; }
+
+      function savePurchaseLog() {
+        localStorage.setItem('lummu_purchase_log', JSON.stringify(purchaseTimes));
+      }
+
+      // когда позиция или вкус уходят в стоп-лист — запоминаем время
+      function markPurchase(key) {
+        purchaseTimes[key] = new Date().toISOString();
+        savePurchaseLog();
+        updatePurchaseBtn();
+      }
+      function unmarkPurchase(key) {
+        delete purchaseTimes[key];
+        savePurchaseLog();
+        updatePurchaseBtn();
+      }
+
+      function updatePurchaseBtn() {
+        const btn = document.getElementById('purchase-list-btn');
+        if (!btn) return;
+        const n = soldItems.length + soldFlavors.length;
+        btn.textContent = n ? `🛒 Что закупать (${n})` : '🛒 Что закупать';
+      }
+      updatePurchaseBtn();
+        
       // === ОСТАТКИ ПОЗИЦИЙ (видны только админу) ===
       const STOCK_FILE = 'stock_state.json';
       let stockCounts = {};
@@ -1846,16 +1882,18 @@
         const n = stockOf(it.id);
         if (n === 0 && !soldItems.includes(it.id)) {
           soldItems.push(it.id);
+          markPurchase('item:' + it.id);
           saveItemState();
           const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
           tgSendStop('⛔ Автостоп (закончилось): ' + it.title + '\n🕐 ' + time);
         } else if (n > 0 && soldItems.includes(it.id)) {
           soldItems = soldItems.filter(x => x !== it.id);
+          unmarkPurchase('item:' + it.id);
           saveItemState();
           const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
           tgSendStop('↩ Вернули в продажу (пополнение): ' + it.title + '\n🕐 ' + time);
         }
-      }
+      }     
 
       async function pushRemoteStockState() {
         const content = btoa(unescape(encodeURIComponent(JSON.stringify({ stock: stockCounts, updatedAt: Date.now() }, null, 2))));
@@ -2543,6 +2581,30 @@
           alert(d.ok ? '📊 Сводка отправлена в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка')));
       });
 
+      document.getElementById('purchase-list-btn').addEventListener('click', async () => {
+        if (getRole() !== 'admin') return;
+        if (!soldItems.length && !soldFlavors.length) {
+          alert('Список пуст — всё в наличии 🎉');
+          return;
+        }
+        const when = (key) => {
+          const t = purchaseTimes[key];
+          return t ? new Date(t).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+        };
+        let text = `🛒 Список закупки — ${new Date().toLocaleDateString('ru-RU')}`;
+        if (soldItems.length) {
+          text += `\n\n📦 Позиции:\n` + soldItems.map(id => {
+            const it = menuItems.find(i => i.id === id);
+            return `• ${it ? it.title : id} — с ${when('item:' + id)}`;
+          }).join('\n');
+        }
+        if (soldFlavors.length) {
+          text += `\n\n🍃 Вкусы табака:\n` + soldFlavors.map(f => `• ${f} — с ${when('flavor:' + f)}`).join('\n');
+        }
+        const d = await tgSend(text);
+        alert(d.ok ? '🛒 Список отправлен в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка'));
+      });
+        
       document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
       document.getElementById('shift-close-btn').addEventListener('click', closeShift);
@@ -3273,8 +3335,13 @@ function updateHappyBanner() {
         const soldBtn = e.target.closest('.item-sold-toggle');
         if (soldBtn) {
           const id = soldBtn.dataset.id;
-          if (soldItems.includes(id)) soldItems = soldItems.filter(x => x !== id);
-          else soldItems.push(id);
+          if (soldItems.includes(id)) {
+            soldItems = soldItems.filter(x => x !== id);
+            unmarkPurchase('item:' + id);
+          } else {
+            soldItems.push(id);
+            markPurchase('item:' + id);
+          }
           saveItemState();
           soldBtn.textContent = soldItems.includes(id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист';
           updateCartButtons();
@@ -3841,14 +3908,16 @@ function updateHappyBanner() {
           };
         });
 
-         mixOverlay.querySelectorAll('.mix-sold-toggle').forEach(btn => {
+        mixOverlay.querySelectorAll('.mix-sold-toggle').forEach(btn => {
           btn.onclick = (ev) => {
             ev.stopPropagation();
             const name = btn.dataset.flavor;
             if (soldFlavors.includes(name)) {
               soldFlavors = soldFlavors.filter(n => n !== name);
+              unmarkPurchase('flavor:' + name);
             } else {
               soldFlavors.push(name);
+              markPurchase('flavor:' + name);
             }
             saveFlavorState();
             renderMixBuilder(it);
@@ -3858,7 +3927,7 @@ function updateHappyBanner() {
               + esc(name) + '\n🧪 ' + esc(it.title) + '\n🕐 ' + time
             );
           };
-        });      
+        });    
 
         mixOverlay.querySelectorAll('.flstock-enable').forEach(btn => {
           btn.onclick = (ev) => {
