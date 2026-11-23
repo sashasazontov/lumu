@@ -1,5 +1,21 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 316,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Вильям-Кола",
+        "price": 399,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-23T02:47:32.946Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "shiftOpenAt": "2026-11-23T02:45:43.172Z",
     "openedBy": "Cfif",
     "startCash": 13650
