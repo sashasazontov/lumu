@@ -1,6 +1,23 @@
 [
   {
     "table": "4",
+    "lastMsgId": 385,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Оплошность гостя",
+        "price": 1000,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "guests": 2,
+    "closedAt": "2026-11-23T13:47:36.367Z",
+    "pay": "💵 Наличка"
+  },
+  {
+    "table": "4",
     "lastMsgId": 384,
     "orderNo": 1,
     "items": [
