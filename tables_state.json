@@ -1,20 +1,6 @@
 {
   "tables": [
     {
-      "table": "1",
-      "lastMsgId": 358,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Pepsi",
-          "price": 250,
-          "size": "",
-          "note": "",
-          "qty": 5
-        }
-      ]
-    },
-    {
       "table": "2",
       "lastMsgId": 359,
       "orderNo": 1,
@@ -34,9 +20,39 @@
           "qty": 1
         }
       ]
+    },
+    {
+      "table": "3",
+      "lastMsgId": 360,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Сет Орешник",
+          "price": 650,
+          "size": "",
+          "note": "",
+          "qty": 5
+        }
+      ]
     }
   ],
   "closedTables": [
+    {
+      "table": "1",
+      "lastMsgId": 358,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Pepsi",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 5
+        }
+      ],
+      "closedAt": "2026-11-23T04:36:25.984Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -281,5 +297,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795408470072
+  "updatedAt": 1795408587485
 }
