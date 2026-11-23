@@ -1096,8 +1096,35 @@
         pushTimer = setTimeout(doPushRemoteState, 1500);
       }
 
+      // Склейка дублей: по номеру стола оставляем самую полную версию
+      function dedupeTables(arr) {
+        const seen = new Map();
+        (arr || []).forEach(t => {
+          const key = String(t.table || '');
+          const prev = seen.get(key);
+          if (!prev) { seen.set(key, t); return; }
+          const newer = (t.items || []).length > (prev.items || []).length ||
+            ((t.items || []).length === (prev.items || []).length && String(t.closedAt || '') > String(prev.closedAt || ''));
+          if (newer) seen.set(key, t);
+        });
+        return [...seen.values()];
+      }
+
+      // Склейка дублей в архиве: одно закрытие не должно встречаться дважды
+      function dedupeClosed(arr) {
+        const seen = new Set();
+        return (arr || []).filter(t => {
+          const key = String(t.table || '') + '|' + String(t.closedAt || '');
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+        
         async function doPushRemoteState() {
         const token = localStorage.getItem('lummu_gh_token');
+        tables = dedupeTables(tables);
+        closedTables = dedupeClosed(closedTables);
         const payload = JSON.stringify({ tables, closedTables, updatedAt: Date.now() }, null, 2);
         const content = btoa(unescape(encodeURIComponent(payload)));
         const body = JSON.stringify({
@@ -1154,8 +1181,8 @@
           }
           const localStamp = Number(localStorage.getItem('lummu_tables_stamp') || 0);
           if ((remote.updatedAt || 0) > localStamp) {
-            tables = remote.tables || [];
-            closedTables = remote.closedTables || [];
+            tables = dedupeTables(remote.tables || []);
+            closedTables = dedupeClosed(remote.closedTables || []);
             localStorage.setItem('lummu_tables', JSON.stringify(tables));
             localStorage.setItem('lummu_closed', JSON.stringify(closedTables));
             localStorage.setItem('lummu_tables_stamp', String(remote.updatedAt || Date.now()));
@@ -3084,16 +3111,6 @@ function updateHappyBanner() {
         const originalText = checkoutBtn.textContent;
         checkoutBtn.textContent = 'Отправка...';
         
-      // --- Отправка / обновление заказа конкретного стола ---
-      function sendToTable(idx) {
-        if (cart.length === 0) return;
-        const table = tables[idx];
-        if (!table) return;
-
-        checkoutBtn.disabled = true;
-        const originalText = checkoutBtn.textContent;
-        checkoutBtn.textContent = 'Отправка...';
-
         // Сливаем позиции корзины с заказом стола и запоминаем, что добавилось
         const added = [];
         cart.forEach(newItem => {
