@@ -1,5 +1,43 @@
 [
   {
+    "table": "3",
+    "lastMsgId": 339,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Вильям-Кола",
+        "price": 399,
+        "size": "",
+        "note": "",
+        "qty": 8
+      },
+      {
+        "name": "Джин-Тоник",
+        "price": 379,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Джин",
+        "price": 279,
+        "size": "50 мл",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "Кальян Премиум",
+        "price": 2700,
+        "size": "",
+        "note": "Dark Side — Redberry 100%",
+        "qty": 3
+      }
+    ],
+    "discount": 10,
+    "closedAt": "2026-11-23T04:19:44.559Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "1",
     "lastMsgId": 336,
     "orderNo": 1,
