@@ -981,15 +981,31 @@
     <!-- ПАНЕЛЬ УПРАВЛЕНИЯ СТОЛАМИ -->
     <section id="tables-page" style="display: none;">
         <div class="tables-box">
-            <h2>Столы</h2>
-            <div id="tables-list"></div>
+            <div class="table-tabs">
+                <button class="table-tab active" data-tab="active">🪑 Столы</button>
+                <button class="table-tab" data-tab="closed">📁 Архив</button>
+                <button class="table-tab" data-tab="shift">📊 Смена</button>
+            </div>
+
+            <div id="tab-active">
+                <div id="tables-list"></div>
+            </div>
+
+            <div id="tab-closed" style="display: none;">
+                <div id="closed-list"></div>
+            </div>
+
+            <div id="tab-shift" style="display: none;">
+                <p class="empty-hint">Смена, сводки и закупка — всё здесь.</p>
+                <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
+                <button id="purchase-list-btn" style="display: none;">🛒 Что закупать</button>
+                <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
+                <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
+                <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
+                <button id="shift-open-btn" style="display: none;">🌅 Открыть смену</button>
+            </div>
+
             <button id="back-from-tables-btn">← Назад</button>
-            <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
-            <button id="purchase-list-btn" style="display: none;">🛒 Что закупать</button>
-            <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
-            <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
-            <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
-            <button id="shift-open-btn" style="display: none;">🌅 Открыть смену</button>
         </div>
     </section>
 
@@ -1376,6 +1392,7 @@
           const t = prompt('Для синхронизации столов нужен GitHub-токен (вводится один раз):');
           if (t && t.trim().startsWith('github_pat_')) localStorage.setItem('lummu_gh_token', t.trim());
         }
+        switchTableTab('active');
         renderTables();
         pullRemoteState().then(ch => { if (ch) renderTables(); });
       }
@@ -2746,9 +2763,13 @@
           }
         });
 
-        // --- Архив ---
-        if (closedTables.length) {
-          list.insertAdjacentHTML('beforeend', '<h4 style="margin: 16px 0 10px; color: var(--text-muted);">Закрытые столы</h4>');
+                // --- Архив: отдельный таб ---
+        const closedList = document.getElementById('closed-list');
+        closedList.innerHTML = '';
+        const closedTabBtn = document.querySelector('.table-tab[data-tab="closed"]');
+        if (closedTabBtn) closedTabBtn.textContent = closedTables.length ? '📁 Архив (' + closedTables.length + ')' : '📁 Архив';
+        if (!closedTables.length) {
+          closedList.innerHTML = '<p class="empty-hint">Архив пуст — закрытые столы появятся здесь.</p>';
         }
 
         closedTables.forEach((t, idx) => {
@@ -2780,7 +2801,7 @@
               renderTables();
             }
           };
-          list.appendChild(card);
+         closedList.appendChild(card);
           if (getRole() !== 'admin') {
             const tot = card.querySelector('.table-total');
             if (tot) tot.style.display = 'none';
@@ -2961,6 +2982,16 @@
       document.getElementById('back-from-contacts-btn').addEventListener('click', showHero); 
       document.getElementById('open-promos-btn').addEventListener('click', showPromos);
       document.getElementById('back-from-promos-btn').addEventListener('click', showHero);
+      function switchTableTab(tab) {
+        document.querySelectorAll('.table-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.getElementById('tab-active').style.display = tab === 'active' ? 'block' : 'none';
+        document.getElementById('tab-closed').style.display = tab === 'closed' ? 'block' : 'none';
+        document.getElementById('tab-shift').style.display = tab === 'shift' ? 'block' : 'none';
+      }
+      document.querySelectorAll('.table-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchTableTab(btn.dataset.tab));
+      });
+
       navTablesBtn.addEventListener('click', showTables);
       document.getElementById('back-from-tables-btn').addEventListener('click', showMenu);
       navAdminBtn.addEventListener('click', showAdmin);
@@ -3775,7 +3806,7 @@ function updateHappyBanner() {
         sendToTable(idx);
       });
 
-     // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
+    // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
        setInterval(async () => {
         const changed = await pullRemoteState();
         if (changed && tablesPage.style.display !== 'none') renderTables();
@@ -3784,7 +3815,6 @@ function updateHappyBanner() {
         await pullRemoteFlavorStockState(); 
         await pullRemoteStockState();
       }, 20000);
-
 
       // === ВЫЗОВ КАЛЬЯНЩИКА ===
       const callOverlay = document.createElement('div');
