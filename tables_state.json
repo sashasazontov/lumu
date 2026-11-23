@@ -1,45 +1,35 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": 336,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Вильям-Кола",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": 337,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Jagermeister",
+          "price": 329,
+          "size": "50 мл",
+          "note": "",
+          "qty": 14
+        }
+      ]
+    }
+  ],
   "closedTables": [
-    {
-      "table": "11",
-      "lastMsgId": 334,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян Стандарт",
-          "price": 1500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1
-        },
-        {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T04:14:08.199Z",
-      "pay": "💳 Перевод"
-    },
-    {
-      "table": "12",
-      "lastMsgId": 333,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Ром-Кола",
-          "price": 379,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T04:14:04.447Z",
-      "pay": "💵 Наличка"
-    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -284,5 +274,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407271655
+  "updatedAt": 1795407379286
 }
