@@ -1,18 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "1",
-      "lastMsgId": 362,
-      "orderNo": 1,
-      "items": []
-    },
-    {
-      "table": "2",
-      "lastMsgId": 361,
-      "orderNo": 1,
-      "items": []
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -258,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795409781852
+  "updatedAt": 1795409821380
 }
