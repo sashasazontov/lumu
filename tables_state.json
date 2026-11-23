@@ -3,20 +3,10 @@
     {
       "table": "a",
       "lastMsgId": 405,
-      "orderNo": 1,
-      "items": [
-        {
-          "id": "tea-black",
-          "name": "Чёрный чай",
-          "price": 299,
-          "size": "700 мл",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwtvgnpn-v4pt"
-        }
-      ]
+      "orderNo": 3,
+      "items": []
     }
   ],
   "closedTables": [],
-  "updatedAt": 1795475010949
+  "updatedAt": 1795475185928
 }
