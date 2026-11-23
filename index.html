@@ -1511,12 +1511,12 @@
         } catch (e) {}
       }
 
-      async function pullRemoteItemState() {
+           async function pullRemoteItemState() {
         const token = localStorage.getItem('lummu_gh_token');
         try {
           let remote = null;
           if (token) {
-           const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${ITEM_STATE_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`, {
               headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
             });
             if (r.ok) {
@@ -1538,7 +1538,7 @@
             updateCartButtons();
           }
         } catch (e) {}
-      }    
+      }
         
      // === СТОП-ЛИСТ ВКУСОВ ===
       const FLAVOR_FILE = 'flavors_state.json';
