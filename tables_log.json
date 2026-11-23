@@ -1,26 +1,5 @@
 [
   {
-    "table": "3",
-    "lastMsgId": 346,
-    "orderNo": 1,
-    "items": [
-      {
-        "name": "Кальян Премиум",
-        "price": 2500,
-        "size": "",
-        "note": "Musthave-Лесные Ягоды 100%",
-        "qty": 1
-      }
-    ],
-    "closedAt": "2026-11-23T04:26:09.167Z",
-    "pay": "💳 Перевод"
-  },
-  {
-    "shiftOpenAt": "2026-11-23T04:25:03.138Z",
-    "openedBy": "sasha",
-    "startCash": 13650
-  },
-  {
     "weekResetAt": "2026-11-23T06:50:00.000Z"
   }
 ]
