@@ -2,7 +2,7 @@
   "tables": [
     {
       "table": "1",
-      "lastMsgId": null,
+      "lastMsgId": 391,
       "orderNo": 1,
       "items": [
         {
@@ -277,5 +277,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795441998976
+  "updatedAt": 1795442044747
 }
