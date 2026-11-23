@@ -2,7 +2,7 @@
   "tables": [
     {
       "table": "11",
-      "lastMsgId": null,
+      "lastMsgId": 330,
       "orderNo": 1,
       "items": [
         {
@@ -16,6 +16,20 @@
           "name": "Тархун Ананас",
           "price": 260,
           "size": "250 мл",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "table": "12",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Ром-Кола",
+          "price": 379,
+          "size": "",
           "note": "",
           "qty": 1
         }
@@ -267,5 +281,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407168246
+  "updatedAt": 1795407200299
 }
