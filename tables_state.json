@@ -1,5 +1,34 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "АКЦИИ В ЛУМУ ЧАША",
+          "price": 300,
+          "size": "",
+          "note": "Sebero — Шипучка яблоко 100%",
+          "qty": 1
+        },
+        {
+          "name": "Мохито классический алко",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Ром",
+          "price": 279,
+          "size": "50 мл",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -245,5 +274,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795401508167
+  "updatedAt": 1795401829345
 }
