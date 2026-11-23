@@ -1,77 +1,6 @@
 {
-  "tables": [
-    {
-      "table": "3",
-      "lastMsgId": 340,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Вильям-Кола",
-          "price": 399,
-          "size": "",
-          "note": "",
-          "qty": 8
-        },
-        {
-          "name": "Джин-Тоник",
-          "price": 379,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Джин",
-          "price": 279,
-          "size": "50 мл",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Кальян Премиум",
-          "price": 2700,
-          "size": "",
-          "note": "Dark Side — Redberry 100%",
-          "qty": 3
-        }
-      ],
-      "discount": 10,
-      "closedAt": "2026-11-23T04:20:22.335Z",
-      "pay": "💵 Наличка"
-    }
-  ],
+  "tables": [],
   "closedTables": [
-    {
-      "table": "2",
-      "lastMsgId": 337,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Jagermeister",
-          "price": 329,
-          "size": "50 мл",
-          "note": "",
-          "qty": 14
-        }
-      ],
-      "closedAt": "2026-11-23T04:17:08.215Z",
-      "pay": "💳 Перевод"
-    },
-    {
-      "table": "1",
-      "lastMsgId": 336,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Вильям-Кола",
-          "price": 399,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T04:17:02.823Z",
-      "pay": "💵 Наличка"
-    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -316,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407650845
+  "updatedAt": 1795407764046
 }
