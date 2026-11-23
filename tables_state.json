@@ -1,27 +1,5 @@
 {
-  "tables": [
-    {
-      "table": "Sasha2009.",
-      "lastMsgId": null,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "АКЦИИ В ЛУМУ ШОТ",
-          "price": 1794,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1
-        }
-      ]
-    }
-  ],
+  "tables": [],
   "closedTables": [
     {
       "table": "3-постоянники",
@@ -267,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407020379
+  "updatedAt": 1795407072481
 }
