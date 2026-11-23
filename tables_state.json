@@ -1,12 +1,49 @@
 {
   "tables": [
     {
-      "table": "a",
-      "lastMsgId": 405,
-      "orderNo": 3,
-      "items": []
+      "table": "2",
+      "lastMsgId": 421,
+      "orderNo": 4,
+      "items": [
+        {
+          "id": "promo-shots",
+          "name": "АКЦИИ В ЛУМУ ШОТ",
+          "price": 1794,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwtw0009-ek8f"
+        },
+        {
+          "id": "limonad-classic",
+          "name": "Классический лимонад",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwtw0di3-hmlz"
+        },
+        {
+          "id": "glintwein-alko-free",
+          "name": "Глинтвейн б/а",
+          "price": 590,
+          "size": "700 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwtw0wr7-q14w"
+        },
+        {
+          "id": "limonad-classic",
+          "name": "Классический лимонад",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwtw1atv-5tf1"
+        }
+      ]
     }
   ],
   "closedTables": [],
-  "updatedAt": 1795475185928
+  "updatedAt": 1795476206682
 }
