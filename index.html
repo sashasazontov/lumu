@@ -1925,11 +1925,15 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
 
       async function openShift() {
         const name = prompt('Кто открывает смену? (имя бармена):');
-        if (!name || !name.trim()) return;
+        if (name === null) return; // окно закрыли крестиком — молча выходим
+        if (!name.trim()) {
+          alert('Введите имя бармена — без него смену открыть нельзя.');
+          return;
+        }
         const clean = name.trim();
 
         const boxRaw = prompt('💵 Размен в кассе на начало смены? (число ₽; пусто — 0)', '');
-        const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);
+        const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);     
           
         const log = await fetchClosedLog();
         const lastClose = shiftClosePoint(log);
@@ -1941,7 +1945,14 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const date = new Date().toLocaleDateString('ru-RU');
 
-        const d = await tgSend(`🌅 Смена начата — ${date} ${time}\n👤 Бармен: ${clean}\n💵 Размен в кассе: ${startCash.toLocaleString('ru-RU')} ₽`);
+        let d;
+        try {
+          d = await tgSend(`🌅 Смена начата — ${date} ${time}\n👤 Бармен: ${clean}\n💵 Размен в кассе: ${startCash.toLocaleString('ru-RU')} ₽`);
+        } catch (e) {
+          alert('Ошибка сети при отправке в Telegram: ' + e);
+          return;
+        }
+        
         if (!d.ok) {
           alert('Не удалось отправить в Telegram: ' + (d.description || 'ошибка'));
           return;
