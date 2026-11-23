@@ -1948,6 +1948,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
 
        writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash });
+       shiftStatusCache = { open: null, ts: 0 };
       }
 
       function writeShiftOpen(entry) {
@@ -2096,6 +2097,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             alert('Не удалось отправить: ' + ((results.find(r => !r.ok) || {}).description || 'ошибка'));
           }
         });
+        shiftStatusCache = { open: null, ts: 0 };
       }
 
       function writeShiftClose() {
@@ -2730,12 +2732,36 @@ function updateHappyBanner() {
       updateHappyBanner();
       updateOpenStatus();
       setInterval(updateOpenStatus, 60000); // обновлять каждую минуту
+
+      // === ЗАКАЗ ТОЛЬКО ПРИ ОТКРЫТОЙ СМЕНЕ ===
+      let shiftStatusCache = { open: null, ts: 0 };
+
+      async function isShiftOpenNow() {
+        // кэш на минуту, чтобы не дёргать журнал на каждый клик
+        if (shiftStatusCache.open !== null && Date.now() - shiftStatusCache.ts < 60000) {
+          return shiftStatusCache.open;
+        }
+        try {
+          const log = await fetchClosedLog();
+          const lastClose = shiftClosePoint(log);
+          const openMark = shiftOpenPoint(log);
+          shiftStatusCache = { open: !!(openMark && openMark.t > lastClose), ts: Date.now() };
+        } catch (e) {
+          // сеть подвисла — не блокируем продажи, оставляем прошлое значение
+        }
+        return shiftStatusCache.open === true;
+      }
         
-      // --- Добавление позиции в корзину (общая для всех путей) ---
-      function addItemToCart(it, note, priceOverride) {
-         const p = (typeof priceOverride === 'number' && priceOverride > 0)
-         ? priceOverride
-         : (happyPriceFor(it) || it.price);
+          // --- Добавление позиции в корзину (общая для всех путей) ---
+      async function addItemToCart(it, note, priceOverride) {
+        const open = await isShiftOpenNow();
+        if (!open) {
+          alert('Смена ещё не открыта 🌅 Заказы принимаются после открытия смены барменом.');
+          return;
+        }
+        const p = (typeof priceOverride === 'number' && priceOverride > 0)
+        ? priceOverride
+        : (happyPriceFor(it) || it.price);
         const existing = cart.find(item =>
           item.name === it.title && item.size === (it.size || '') && item.note === note
         );
