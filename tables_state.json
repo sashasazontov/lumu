@@ -1,27 +1,6 @@
 {
   "tables": [
     {
-      "table": "2",
-      "lastMsgId": 366,
-      "orderNo": 2,
-      "items": [
-        {
-          "name": "Сухари",
-          "price": 300,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Тархун Ананас",
-          "price": 260,
-          "size": "250 мл",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    },
-    {
       "table": "4",
       "lastMsgId": 382,
       "orderNo": 1,
@@ -38,57 +17,11 @@
   ],
   "closedTables": [
     {
-      "table": "6",
-      "lastMsgId": 365,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Ром-Кола",
-          "price": 379,
-          "size": "",
-          "note": "",
-          "qty": 2
-        },
-        {
-          "name": "Сухари",
-          "price": 300,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Виски",
-          "price": 279,
-          "size": "50 мл",
-          "note": "",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T05:25:12.577Z",
-      "pay": "💳 Перевод"
-    },
-    {
-      "table": "1",
-      "lastMsgId": 364,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "АКЦИИ В ЛУМУ ШОТ",
-          "price": 1794,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "АКЦИИ В ЛУМУ ЧАША",
-          "price": 500,
-          "size": "",
-          "note": "Dark Side — Redberry 100%",
-          "qty": 1
-        }
-      ],
-      "discount": 10,
-      "closedAt": "2026-11-23T05:22:20.593Z",
+      "table": "2",
+      "lastMsgId": 383,
+      "orderNo": 2,
+      "items": [],
+      "closedAt": "2026-11-23T13:40:11.130Z",
       "pay": "💵 Наличка"
     },
     {
@@ -335,5 +268,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795441165711
+  "updatedAt": 1795441212635
 }
