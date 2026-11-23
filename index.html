@@ -1295,7 +1295,7 @@
         document.getElementById('weekly-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
-        document.getElementById('shift-close-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('shift-close-btn').style.display = 'block';
         document.getElementById('shift-open-btn').style.display = 'block';
         if (!localStorage.getItem('lummu_gh_token')) {
           const t = prompt('Для синхронизации столов нужен GitHub-токен (вводится один раз):');
@@ -1685,15 +1685,14 @@
           t.closedAt && new Date(t.closedAt).getTime() > since);
         if (!week.length) return null;
 
-        const revenue = week.reduce((s, t) =>
-          s + t.items.reduce((x, i) => x + i.price * i.qty, 0), 0);
+        const revenue = week.reduce((s, t) => s + tableTotal(t), 0);        
 
         const byItem = {};
         week.forEach(t => t.items.forEach(i => {
           const key = i.name + (i.size ? ' (' + i.size + ')' : '');
           byItem[key] = byItem[key] || { qty: 0, sum: 0 };
           byItem[key].qty += i.qty;
-          byItem[key].sum += i.price * i.qty;
+          byItem[key].sum += Math.round(i.price * i.qty * (100 - (t.discount || 0)) / 100);
         }));
         const top = Object.entries(byItem)
           .sort((a, b) => b[1].sum - a[1].sum)
@@ -1846,7 +1845,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           const key = i.name + (i.size ? ' (' + i.size + ')' : '');
           byItem[key] = byItem[key] || { qty: 0, sum: 0 };
           byItem[key].qty += i.qty;
-          byItem[key].sum += i.price * i.qty;
+          byItem[key].sum += Math.round(i.price * i.qty * (100 - (t.discount || 0)) / 100);
         }));
         const top = Object.entries(byItem).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
         text += '\n🏆 Топ позиций:\n';
@@ -1997,7 +1996,8 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       }
 
       async function closeShift() {
-        if (getRole() !== 'admin') return;
+        const role = await askRole();
+        if (!role) return;     
 
         const log = await fetchClosedLog();
         const lastClose = shiftClosePoint(log);
@@ -2026,7 +2026,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             const key = i.name + (i.size ? ' (' + i.size + ')' : '');
             byItem[key] = byItem[key] || { qty: 0, sum: 0 };
             byItem[key].qty += i.qty;
-            byItem[key].sum += i.price * i.qty;
+            byItem[key].sum += Math.round(i.price * i.qty * (100 - (t.discount || 0)) / 100);
           });
         });
 
@@ -2193,7 +2193,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         }
 
         tables.forEach((t, idx) => {
-          const const tTotal = tableTotal(t); 
+          const tTotal = tableTotal(t);
           const lines = t.items
             .map(i => `• ${esc(i.name)}${i.size ? ' (' + esc(i.size) + ')' : ''}${i.note ? ' — ' + esc(i.note) : ''} ×${i.qty}`)
             .join('<br>');
