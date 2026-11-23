@@ -1,5 +1,264 @@
 {
-  "tables": [],
-  "closedTables": [],
-  "updatedAt": 1795404062766
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": 358,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Pepsi",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 5
+        }
+      ]
+    }
+  ],
+  "closedTables": [
+    {
+      "table": "3-постоянники",
+      "lastMsgId": 252,
+      "orderNo": 5,
+      "items": [
+        {
+          "name": "Виски",
+          "price": 279,
+          "size": "50 мл",
+          "note": "",
+          "qty": 14
+        },
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Мандарин 100%",
+          "qty": 1
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Сыр",
+          "price": 449,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Оливки",
+          "price": 390,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Coca‑Cola",
+          "price": 220,
+          "size": "",
+          "note": "",
+          "qty": 8
+        },
+        {
+          "name": "Adrenaline Б",
+          "price": 339,
+          "size": "",
+          "note": "",
+          "qty": 5
+        },
+        {
+          "name": "Red Bull Б",
+          "price": 449,
+          "size": "",
+          "note": "",
+          "qty": 4
+        },
+        {
+          "name": "Вино красное",
+          "price": 2499,
+          "size": "0.75 л",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Чёрный чай",
+          "price": 299,
+          "size": "700 мл",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Мохито классический алко",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-22T01:05:22.653Z",
+      "pay": "💵 Наличка"
+    },
+    {
+      "table": "5",
+      "lastMsgId": 258,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Budd",
+          "qty": 6
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Мохито в банке",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-21T23:55:31.963Z",
+      "pay": "💳 Перевод"
+    },
+    {
+      "table": "6",
+      "lastMsgId": 272,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "АКЦИИ В ЛУМУ",
+          "price": 1794,
+          "size": "",
+          "note": "б-53 б-52 -флаг России Пилот",
+          "qty": 2
+        },
+        {
+          "name": "Кальян от двух вкусов",
+          "price": 2000,
+          "size": "",
+          "note": "Musthave-Ананасовые колечки 33% + Musthave-Мандарин 33% + Musthave-Освежающая Мята 34%",
+          "qty": 1
+        },
+        {
+          "name": "Lipton",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Fly girl",
+          "price": 299,
+          "size": "60 мл",
+          "note": "",
+          "qty": 2
+        }
+      ],
+      "closedAt": "2026-11-21T23:54:01.844Z",
+      "pay": "💵 Наличка"
+    },
+    {
+      "table": "2",
+      "lastMsgId": 243,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Арбуз 100%",
+          "qty": 1
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Стелла алко",
+          "qty": 1
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Мельник",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-21T19:21:13.917Z",
+      "pay": "💳 Перевод"
+    },
+    {
+      "table": "2",
+      "lastMsgId": 216,
+      "orderNo": 4,
+      "items": [
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Гараж",
+          "qty": 4
+        },
+        {
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Редс",
+          "qty": 3
+        },
+        {
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "Рибай",
+          "qty": 1
+        },
+        {
+          "name": "Радуга",
+          "price": 299,
+          "size": "60 мл",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Пилот",
+          "price": 299,
+          "size": "60 мл",
+          "note": "",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-20T23:16:36.670Z",
+      "pay": "💵 Наличка"
+    },
+    {
+      "table": "2",
+      "lastMsgId": 114,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Кальян от двух вкусов",
+          "price": 2000,
+          "size": "",
+          "note": "Энергетик, ягодный лимонад",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-18T01:50:19.906Z",
+      "pay": "💳 Перевод"
+    }
+  ],
+  "updatedAt": 1795408417931
 }
