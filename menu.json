@@ -65,11 +65,7 @@
       "note": "Шоты:",
       "promo": true,
       "tobaccoBtn": false,
-      "list": [
-        {
-          "name": "Второй авторский чай — за полцены."
-        }
-      ],
+      "list": [],
       "sold": false
     },
     {
@@ -93,9 +89,9 @@
       "price": 300,
       "size": "",
       "img": "https://images.unsplash.com/photo-1600210481019-37bd1c76906d?q=80&w=800&auto=format&fit=crop",
-      "note": "",
+      "note": "какой вкус ?",
       "promo": true,
-      "tobaccoBtn": true,
+      "tobaccoBtn": false,
       "list": [
         {
           "name": "Musthave-Мандарин Апельсин"
@@ -180,7 +176,8 @@
           "price": 200
         },
         {
-          "name": "Dark Side — Tropic Ray"
+          "name": "Dark Side — Tropic Ray",
+          "price": 200
         },
         {
           "name": "Dark Side — Redberry",
@@ -1280,7 +1277,7 @@
       "size": "",
       "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru-1793642307180.png",
       "note": "Ваши два вкуса: например, вишня + мята",
-      "promo": true,
+      "promo": false,
       "tobaccoBtn": true,
       "list": [
         {
