@@ -1523,6 +1523,7 @@
       const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
       const TG_CHAT  = '-1003907000620';
       const TG_CHAT_STOP =  '-1004475385122'; // ← сюда ID второй группы (для стоп-листа)
+      const TG_CHAT_STOP =  '-1004475385122';
 
       function tgSend(text) {
           
@@ -1538,6 +1539,14 @@
          method: 'POST',
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({ chat_id: TG_CHAT_STOP, text })
+        }).then(r => r.json()).catch(() => null);
+    }
+
+    function tgSendCart(text) {
+        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ chat_id: TG_CHAT_CART, text })
         }).then(r => r.json()).catch(() => null);
     }
         
@@ -3257,7 +3266,7 @@ function updateHappyBanner() {
         const tbl = getQrTable();
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const total = (typeof p === 'number' ? p : it.price) * (existing ? existing.qty : 1);
-        tgSendStop(
+        tgSendCart(
           '🛒 Добавили в корзину: ' + it.title
           + (it.size ? ' (' + it.size + ')' : '')
           + (note ? ' — ' + note : '')
