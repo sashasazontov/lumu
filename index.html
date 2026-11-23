@@ -2126,10 +2126,11 @@
 
         const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`; 
           
-        guestsTotal += Number(t.guests) || 0;
+        let revenue = 0, cash = 0, card = 0, guestsTotal = 0;
         const byItem = {};
         rows.forEach(t => {
           revenue += tableTotal(t);
+          guestsTotal += Number(t.guests) || 0;
           if ((t.pay || '').includes('Наличка')) cash += tableTotal(t);
           else if ((t.pay || '').includes('Перевод')) card += tableTotal(t);
           t.items.forEach(i => {
