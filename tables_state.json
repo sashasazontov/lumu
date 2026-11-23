@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": 364,
@@ -19,10 +20,11 @@
           "note": "Dark Side — Redberry 100%",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "discount": 10,
+      "closedAt": "2026-11-23T05:22:20.593Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -267,5 +269,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795411277081
+  "updatedAt": 1795411342098
 }
