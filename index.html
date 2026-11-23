@@ -17,7 +17,7 @@
             --accent-blue: #0aa5c9;
             --accent-green: #2ecc71;
             --accent-gradient: linear-gradient(135deg, #0aa5c9 0%, #2ecc71 100%);
-            --text-main: #e8e8eb;// null
+            --text-main: #e8e8eb;
             --text-muted: #a5a5ad;
             --photo-ratio: 1.4;
         }
@@ -980,7 +980,7 @@
 
     <!-- ПАНЕЛЬ УПРАВЛЕНИЯ СТОЛАМИ -->
     <section id="tables-page" style="display: none;">
-        <div class="tables-box">weekly-report-btn').style.display
+        <div class="tables-box">
             <h2>Столы</h2>
             <div id="tables-list"></div>
             <button id="back-from-tables-btn">← Назад</button>
@@ -1607,12 +1607,13 @@
             }
           }
 
-          if (Array.isArray(remote)) {
-            updatePurchaseBtn();
+                  if (Array.isArray(remote)) {
             soldItems = remote;
             localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
             updateCartButtons();
+            updatePurchaseBtn();
           }
+
         } catch (e) {}
       }          
         
@@ -3156,9 +3157,12 @@ function updateHappyBanner() {
                 ${it.list && it.list.length
                   ? `<div class="tobacco-cards">${it.list.map(l => {
                       if (typeof l === 'string') return `<div class="tobacco-chip">${esc(l)}</div>`;
-              return `<div class="tobacco-chip tobacco-photo">
-                <img src="${l.img}" alt="${esc(l.name)}" onerror="this.style.display='none'">
-                <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;
+               return l.img
+                ? `<div class="tobacco-chip tobacco-photo">
+                     <img src="${l.img}" alt="${esc(l.name)}" onerror="this.style.display='none'">
+                     <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span>
+                   </div>`
+                : `<div class="tobacco-chip"><span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;             
                     }).join('')}</div>` : ''}
                 ${priceHtml(it)}
                 ${it.note ? `<input type="text" class="tobacco-input" placeholder="${it.note}">` : ''}
@@ -3315,8 +3319,10 @@ function updateHappyBanner() {
           if (it) {
             if (soldItems.includes(it.id)) {
               soldItems = soldItems.filter(x => x !== it.id);
+              unmarkPurchase('item:' + it.id);
               saveItemState();
             }
+
             refreshStockUI(it);
             updateCartButtons();
           }
