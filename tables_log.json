@@ -1,5 +1,21 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 322,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "АКЦИИ В ЛУМУ  ЧАЙ",
+        "price": 198,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-23T03:20:10.195Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-23T03:18:15.547Z",
     "openedBy": "Саша",
     "startCash": 500
