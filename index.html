@@ -3252,7 +3252,21 @@ function updateHappyBanner() {
         else cart.push({ id: it.id, name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });      
         updateCart();
         showCart();
-      }         
+
+        // Уведомление в Telegram о добавлении в корзину
+        const tbl = getQrTable();
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const total = (typeof p === 'number' ? p : it.price) * (existing ? existing.qty : 1);
+        tgSend(
+          '🛒 Добавили в корзину: ' + it.title
+          + (it.size ? ' (' + it.size + ')' : '')
+          + (note ? ' — ' + note : '')
+          + ' ×' + (existing ? existing.qty : 1)
+          + ' — ' + total.toLocaleString('ru-RU') + ' ₽'
+          + (tbl ? ' · 🪑 стол ' + tbl : '')
+          + '\n🕐 ' + time
+        );
+      }                  
 
       function stockControlHtml(it) {
         if (stockOf(it.id) === null) {
