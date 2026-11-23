@@ -1628,42 +1628,44 @@
           headers = ghLogHeaders();
         }
         const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
-        fetch(api + `?ref=${GH_BRANCH}`, { headers })
-          .then(r => r.json())
-          .then(file => {
-            let log = [];
-            try {
-              const bytes = Uint8Array.from(atob(file.content), c => c.charCodeAt(0));
-              log = JSON.parse(new TextDecoder().decode(bytes));
-            } catch (e) {}
-            log.unshift(closed);
-            if (log.length > 500) log = log.slice(0, 500);
-            return fetch(api, {
-              method: 'PUT',
-              headers: { ...headers, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: 'Закрытие стола ' + closed.table,
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(log, null, 2)))),
-                branch: GH_BRANCH,
-                sha: file.sha
-              })
-            });
+
+        const putLog = (logArr, sha, attempts) =>
+          fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'Закрытие стола ' + closed.table,
+              content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+              branch: GH_BRANCH,
+              sha
+            })
           })
-          .catch(e => console.warn('Журнал не записался:', e));
-      }
+          .then(r => { if (!r.ok) throw new Error('conflict ' + r.status); })
+          .catch(e => {
+            if (attempts > 0) {
+              // кто-то записал в журнал раньше — перечитываем свежий и пробуем снова
+              return fetchClosedLog().then(fresh => {
+                const arr = (Array.isArray(fresh) ? fresh : []).slice();
+                arr.unshift(closed);
+                return putLog(arr.slice(0, 500), lastLogSha, attempts - 1);
+              });
+            }
+            console.warn('Журнал не записался:', e);
+            alert('⚠️ Стол закрыт локально, но запись в журнал не прошла (сеть). Итог смены может посчитаться без него.');
+          });
 
-      const WEEKLY_MS = 7 * 24 * 60 * 60 * 1000;
-
-      async function fetchClosedLog() {
-        try {
-          const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${GH_LOG}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
-          if (!r.ok) return closedTables;
-          const file = await r.json();
-          return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
-        } catch (e) {
-          return closedTables;
+        // быстрый путь: свежий журнал уже в кэше — PUT сразу
+        if (lastLogSha && Array.isArray(lastLogData)) {
+          const next = [closed, ...lastLogData].slice(0, 500);
+          return putLog(next, lastLogSha, 1);
         }
-      }        
+        // кэша нет — читаем журнал и пишем с одной повторной попыткой
+        return fetchClosedLog().then(arr => {
+          const fresh = (Array.isArray(arr) ? arr : []).slice();
+          fresh.unshift(closed);
+          return putLog(fresh.slice(0, 500), lastLogSha, 1);
+        });
+      } 
 
       // Точка последнего сведения недели (метка weekResetAt в журнале)
       function weekResetPoint(log) {
@@ -1938,9 +1940,10 @@
         return last;
       }
 
-      async function openShift() {
+       async function openShift() {
+        const logPromise = fetchClosedLog(); // тянем журнал, пока бармен печатает
         const name = prompt('Кто открывает смену? (имя бармена):');
-        if (name === null) return; // окно закрыли крестиком — молча выходим
+        if (name === null) return;
         if (!name.trim()) {
           alert('Введите имя бармена — без него смену открыть нельзя.');
           return;
@@ -1948,9 +1951,9 @@
         const clean = name.trim();
 
         const boxRaw = prompt('💵 Размен в кассе на начало смены? (число ₽; пусто — 0)', '');
-        const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);     
-          
-        const log = await fetchClosedLog();
+        const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);
+
+        const log = await logPromise;      
         const lastClose = shiftClosePoint(log);
         const openMark = shiftOpenPoint(log);
         if (openMark && openMark.t > lastClose) {
@@ -1973,11 +1976,11 @@
           return;
         }
 
-       writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash });
+       writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash }, log);
        shiftStatusCache = { open: null, ts: 0 };
       }
 
-      function writeShiftOpen(entry) {
+      function writeShiftOpen(entry, logArr) {
         let headers = ghLogHeaders();
         if (!headers) {
           const t = prompt('Для сохранения имени бармена нужен GitHub-токен (вводится один раз):');
@@ -1989,6 +1992,28 @@
           headers = ghLogHeaders();
         }
         const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+
+        // быстрый путь: журнал уже прочитан — PUT сразу, без GET
+        if (Array.isArray(logArr) && lastLogSha) {
+          const next = [entry, ...logArr].slice(0, 500);
+          return fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'Открытие смены',
+              content: btoa(unescape(encodeURIComponent(JSON.stringify(next, null, 2)))),
+              branch: GH_BRANCH,
+              sha: lastLogSha
+            })
+          })
+          .then(r => { if (!r.ok) throw new Error('conflict'); })
+          .then(() => alert('✅ Смена открыта. Имя бармена подставится в итог при закрытии.'))
+          .catch(() => writeShiftOpenSlow(entry, headers, api)); // устарел sha — тихий откат на медленный путь
+        }
+        writeShiftOpenSlow(entry, headers, api);
+      }
+
+      function writeShiftOpenSlow(entry, headers, api) {
         fetch(api + `?ref=${GH_BRANCH}`, { headers })
           .then(r => r.json())
           .then(file => {
@@ -1999,6 +2024,7 @@
             } catch (e) {}
             logArr.unshift(entry);
             if (logArr.length > 500) logArr = logArr.slice(0, 500);
+            lastLogSha = file.sha;
             return fetch(api, {
               method: 'PUT',
               headers: { ...headers, 'Content-Type': 'application/json' },
@@ -2012,7 +2038,7 @@
           })
           .then(() => alert('✅ Смена открыта. Имя бармена подставится в итог при закрытии.'))
           .catch(e => alert('Смена объявлена в Telegram, но не сохранена в журнале: ' + e));
-      }
+      }     
   
       // === ЗАКРЫТИЕ СМЕНЫ ===
       function shiftClosePoint(log) {
