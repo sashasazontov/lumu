@@ -877,7 +877,7 @@
             <p class="hero-tagline">Кальянная в Домодедово</p>
             <p class="hero-text">Атмосферное место для вечерних посиделок:
                премиум-кальяны, авторские коктейли, шоты и вкусные чаи.</p>
-            <p class="hero-hours">🕐 Вс-Чт 16:00–02:00 · Пн-Сб 16:00–04:00</p>
+            <p class="hero-hours">🕐 Вс-Чт 16:00–02:00 · Пт-Сб 16:00–04:00</p>
             <p class="open-status"></p>
             <div id="happy-banner" style="display: none;"></div>
             <div class="hero-buttons">
@@ -983,7 +983,7 @@
             <h2>Контакты</h2>
             <div class="contact-row">📍 <a href="https://yandex.ru/maps/org/lu_mu/95865257469/" target="_blank" rel="noopener">
                 Домодедово, мкр. Авиационный, просп. Академика Туполева, 2 (ТЦ «Торговый город»)</a></div>
-            <div class="contact-row">🕐  Вс-Чт с 16:00 до 02:00 Пн-Сб с 16:00 до 04:00</div>
+            <div class="contact-row">🕐 Вс-Чт с 16:00 до 02:00 · Пт-Сб с 16:00 до 04:00</div>
             <div class="contact-row">📞 <a href="tel:+79152128610">+7 (915) 212-86-10</a></div>
             <div class="contact-row">📞 <a href="tel:+79362440231">+7 (936) 244-02-31</a></div>
             <div class="contact-row">📞 <a href="tel:+79091680333">+7 (909) 168-03-33</a></div>
@@ -1748,6 +1748,7 @@
         });
       }
       maybeSendWeekly();
+      setInterval(maybeSendWeekly, 30 * 60 * 1000); // проверять сводку раз в полчаса
 
       // === ЦВЕТ СЕЗОНА ===
       function applySeasonTheme() {
@@ -2244,7 +2245,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             </div>`;
           card.querySelectorAll('.btn-close-table').forEach(btn => {
             btn.onclick = () => {
-              if (confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) {
+              if (!confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) return;
+              if (!t.items.length && !confirm('В заказе нет позиций. Всё равно закрыть?')) return;
+              {
                 const closed = tables.splice(idx, 1)[0];
                 const d = prompt('Скидка в % (0 или пусто — без скидки):', '0');
                 const disc = Math.min(Math.max(Number(d) || 0, 0), 100);
@@ -2493,8 +2496,9 @@ function updateOpenStatus() {
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
   const day = now.getDay();
   const t = now.getHours() * 60 + now.getMinutes();
-  // Пн-Сб (1-6): 16:00–04:00, Вс-Чт (0,2-4): 16:00–02:00
-  const isWeekend = [5, 6].includes(day);
+  // Пт-Сб (5,6): 16:00–04:00, Вс-Чт (0,2-4): 16:00–02:00
+  // Ночь пт→сб и сб→вс считается по расписанию предыдущего дня
+  const isWeekend = [5, 6].includes(day) || (day === 0 && t < 4 * 60);
   const openMin = 16 * 60;
   const closeMin = isWeekend ? 4 * 60 : 2 * 60; // 04:00 или 02:00
   const isOpen = t >= openMin || t < closeMin;  // открыто после 16:00 и до закрытия ночью
@@ -2506,6 +2510,7 @@ function updateOpenStatus() {
     el.className = 'open-status closed';
   }
 }
+
       const snow = { raf: null, ctx: null };
 
       function startSnow() {
