@@ -2177,10 +2177,16 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
         if (override && override.items) { menuCategories = override.categories || []; menuItems = override.items; }
       } catch (e) {}
 
+      // Итог стола с учётом скидки
+      function tableTotal(t) {
+        const sum = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+        return t.discount ? Math.round(sum * (100 - t.discount) / 100) : sum;
+      }
+        
       function renderTables() {
         const list = document.getElementById('tables-list');
         list.innerHTML = '';
-
+          
         // --- Активные столы ---
         if (tables.length === 0) {
           list.insertAdjacentHTML('beforeend',
@@ -2208,6 +2214,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
             btn.onclick = () => {
               if (confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) {
                 const closed = tables.splice(idx, 1)[0];
+                const d = prompt('Скидка в % (0 или пусто — без скидки):', '0');
+                const disc = Math.min(Math.max(Number(d) || 0, 0), 100);
+                if (disc) closed.discount = disc;
                 closed.closedAt = new Date().toISOString();
                 closed.pay = btn.dataset.pay;
                 closedTables.unshift(closed);
@@ -2384,7 +2393,7 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
       }
 
       function sendTableClosed(t) {
-        const total = t.items.reduce((s, i) => s + i.price * i.qty, 0);
+      const total = tableTotal(t);
 
         const lines = t.items.map(i => {
           const size = i.size ? ` (${i.size})` : '';
@@ -2392,7 +2401,9 @@ const blob = new Blob([new Uint8Array(toCp1251Bytes(text))], { type: 'text/csv' 
           return `• ${i.name}${size}${note} ×${i.qty} — ${i.price * i.qty} ₽`;
         }).join('\n');
 
-        const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
+         const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n` +
+          (t.discount ? ` скидка ${t.discount}%\n` : '') +
+          `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
              
           const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
 
