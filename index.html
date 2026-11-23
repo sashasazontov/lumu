@@ -1511,7 +1511,7 @@
         } catch (e) {}
       }
 
-           async function pullRemoteItemState() {
+      async function pullRemoteItemState() {
         const token = localStorage.getItem('lummu_gh_token');
         try {
           let remote = null;
@@ -1538,7 +1538,7 @@
             updateCartButtons();
           }
         } catch (e) {}
-      }
+      }          
         
      // === СТОП-ЛИСТ ВКУСОВ ===
       const FLAVOR_FILE = 'flavors_state.json';
