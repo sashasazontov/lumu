@@ -1,5 +1,13 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 383,
+    "orderNo": 2,
+    "items": [],
+    "closedAt": "2026-11-23T13:40:11.130Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-23T06:44:43.571Z",
     "openedBy": "mmm",
     "startCash": 0
