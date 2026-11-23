@@ -1,22 +1,9 @@
 {
-  "tables": [
-    {
-      "table": "1",
-      "lastMsgId": 316,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Вильям-Кола",
-          "price": 399,
-          "size": "",
-          "note": "",
-          "qty": 1
-        }
-      ]
-    },
+  "tables": [],
+  "closedTables": [
     {
       "table": "2",
-      "lastMsgId": null,
+      "lastMsgId": 317,
       "orderNo": 1,
       "items": [
         {
@@ -33,10 +20,26 @@
           "note": "",
           "qty": 1
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-23T02:47:36.465Z",
+      "pay": "💵 Наличка"
+    },
+    {
+      "table": "1",
+      "lastMsgId": 316,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Вильям-Кола",
+          "price": 399,
+          "size": "",
+          "note": "",
+          "qty": 1
+        }
+      ],
+      "closedAt": "2026-11-23T02:47:32.946Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -281,5 +284,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795402002374
+  "updatedAt": 1795402057966
 }
