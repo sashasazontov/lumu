@@ -2,69 +2,6 @@
   "tables": [],
   "closedTables": [
     {
-      "table": "3",
-      "lastMsgId": 346,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Лесные Ягоды 100%",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T04:26:09.167Z",
-      "pay": "💳 Перевод"
-    },
-    {
-      "table": "2",
-      "lastMsgId": 345,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "Fanta",
-          "price": 250,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Джин",
-          "price": 279,
-          "size": "50 мл",
-          "note": "",
-          "qty": 7
-        }
-      ],
-      "discount": 10,
-      "closedAt": "2026-11-23T04:25:40.520Z",
-      "pay": "💳 Перевод"
-    },
-    {
-      "table": "1",
-      "lastMsgId": 343,
-      "orderNo": 1,
-      "items": [
-        {
-          "name": "АКЦИИ В ЛУМУ  ЧАЙ",
-          "price": 198,
-          "size": "",
-          "note": "",
-          "qty": 1
-        },
-        {
-          "name": "Пряное яблоко с корицей",
-          "price": 399,
-          "size": "700 мл",
-          "note": "",
-          "qty": 1
-        }
-      ],
-      "closedAt": "2026-11-23T04:25:17.567Z",
-      "pay": "💵 Наличка"
-    },
-    {
       "table": "3-постоянники",
       "lastMsgId": 252,
       "orderNo": 5,
@@ -308,5 +245,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795407970669
+  "updatedAt": 1795408044039
 }
