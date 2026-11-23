@@ -1,21 +1,5 @@
-[
-  {
-    "table": "1",
-    "lastMsgId": 358,
-    "orderNo": 1,
-    "items": [
-      {
-        "name": "Pepsi",
-        "price": 250,
-        "size": "",
-        "note": "",
-        "qty": 5
-      }
-    ],
-    "closedAt": "2026-11-23T04:36:25.984Z",
-    "pay": "💳 Перевод"
-  },
-  {
-    "weekResetAt": "2026-11-23T06:50:00.000Z"
-  }
-]
+{
+  "tables": [],
+  "closedTables": [],
+  "updatedAt": 1795404062766
+}
