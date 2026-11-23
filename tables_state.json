@@ -1,5 +1,34 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "6",
+      "lastMsgId": 365,
+      "orderNo": 1,
+      "items": [
+        {
+          "name": "Ром-Кола",
+          "price": 379,
+          "size": "",
+          "note": "",
+          "qty": 2
+        },
+        {
+          "name": "Сухари",
+          "price": 300,
+          "size": "",
+          "note": "",
+          "qty": 1
+        },
+        {
+          "name": "Виски",
+          "price": 279,
+          "size": "50 мл",
+          "note": "",
+          "qty": 1
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "1",
@@ -269,5 +298,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795411342098
+  "updatedAt": 1795411401766
 }
