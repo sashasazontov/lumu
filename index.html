@@ -1694,13 +1694,16 @@
         flavorStock = JSON.parse(localStorage.getItem('lummu_flavor_stock')) || {};
       } catch (e) { flavorStock = {}; }
 
-      let flavorStockPushTimer = null;
+           let flavorStockPushTimer = null;
+      let lastFlavorStockSave = Number(localStorage.getItem('lummu_flavor_stock_save') || 0);
       function saveFlavorStockState() {
+        lastFlavorStockSave = Date.now();
+        localStorage.setItem('lummu_flavor_stock_save', String(lastFlavorStockSave));
         localStorage.setItem('lummu_flavor_stock', JSON.stringify(flavorStock));
         clearTimeout(flavorStockPushTimer);
         flavorStockPushTimer = setTimeout(pushRemoteFlavorStockState, 1500);
       }
-
+ 
       // null = учёт не ведётся, число = сколько порций осталось
       function flavorStockOf(itemId, name) {
         const n = flavorStock[itemId + '||' + name];
@@ -1769,7 +1772,9 @@
               remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
             }
           }
-          if (remote && (remote.updatedAt || 0) > Number(localStorage.getItem('lummu_flavor_stock_stamp') || 0)) {
+          if (remote
+              && (remote.updatedAt || 0) > Number(localStorage.getItem('lummu_flavor_stock_stamp') || 0)
+              && (remote.updatedAt || 0) > lastFlavorStockSave) {
             flavorStock = remote.stock || {};
             localStorage.setItem('lummu_flavor_stock', JSON.stringify(flavorStock));
             localStorage.setItem('lummu_flavor_stock_stamp', String(remote.updatedAt));
