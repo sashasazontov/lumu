@@ -2,28 +2,9 @@
   "tables": [
     {
       "table": "6",
-      "lastMsgId": 393,
+      "lastMsgId": 396,
       "orderNo": 2,
-      "items": [
-        {
-          "id": "serving",
-          "name": "Сервировка и предоставление посуды для еды, принесённой с собой",
-          "price": 400,
-          "size": "",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwtkmo71-mcpb"
-        },
-        {
-          "id": "cork-fee",
-          "name": "Пробковый сбор (за бутылку)",
-          "price": 700,
-          "size": "",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwtknf2a-020w"
-        }
-      ]
+      "items": []
     }
   ],
   "closedTables": [
@@ -271,5 +252,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795456850827
+  "updatedAt": 1795458289376
 }
