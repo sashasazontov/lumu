@@ -1,22 +1,21 @@
 {
-  "tables": [],
-  "closedTables": [
+  "tables": [
     {
       "table": "1",
-      "lastMsgId": 316,
+      "lastMsgId": 322,
       "orderNo": 1,
       "items": [
         {
-          "name": "Вильям-Кола",
-          "price": 399,
+          "name": "АКЦИИ В ЛУМУ  ЧАЙ",
+          "price": 198,
           "size": "",
           "note": "",
           "qty": 1
         }
-      ],
-      "closedAt": "2026-11-23T02:47:32.946Z",
-      "pay": "💳 Перевод"
-    },
+      ]
+    }
+  ],
+  "closedTables": [
     {
       "table": "3-постоянники",
       "lastMsgId": 252,
@@ -261,5 +260,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795403775705
+  "updatedAt": 1795403973401
 }
