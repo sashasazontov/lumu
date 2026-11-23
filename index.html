@@ -1735,7 +1735,8 @@
           t.closedAt && new Date(t.closedAt).getTime() > since);
         if (!week.length) return null;
 
-        const revenue = week.reduce((s, t) => s + tableTotal(t), 0);        
+        const revenue = week.reduce((s, t) => s + tableTotal(t), 0);  
+        const guestsTotal = week.reduce((s, t) => s + (Number(t.guests) || 0), 0);
 
         const byItem = {};
         week.forEach(t => t.items.forEach(i => {
@@ -1753,7 +1754,10 @@
         let text = `📊 Сводка Лу-Му (${period})\n\n`;
         text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
         text += `🪑 Закрыто столов: ${week.length}\n`;
-        text += `📈 Средний чек стола: ${Math.round(revenue / week.length).toLocaleString('ru-RU')} ₽\n\n`;
+        text += `📈 Средний чек стола: ${Math.round(revenue / week.length).toLocaleString('ru-RU')} ₽\n`;
+        if (guestsTotal > 0) {
+          text += `👥 Гостей: ${guestsTotal} · На гостя: ${Math.round(revenue / guestsTotal).toLocaleString('ru-RU')} ₽\n`;
+        }
         text += `🏆 Топ-5 позиций:\n`;
         top.forEach(([name, v], i) => {
           text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
@@ -1817,7 +1821,7 @@
         const rows = log.filter(t => t.closedAt && new Date(t.closedAt).getTime() >= since)
           .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
 
-        const data = [['Дата', 'Время', 'Стол', 'Оплата', 'Состав заказа', 'Сумма, ₽']];
+        const data = [['Дата', 'Время', 'Стол', 'Оплата', 'Гостей', 'Состав заказа', 'Сумма, ₽']];
         let revenue = 0;
         rows.forEach(t => {
           const d = new Date(t.closedAt);
@@ -1830,11 +1834,13 @@
             d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
             'Стол ' + t.table,
             (t.pay || '').replace('💵 ', '').replace('💳 ', ''),
+            t.guests || '',
             items,
             total
           ]);
         });
-        data.push(['', '', '', 'Итого:', rows.length + ' столов', revenue]);
+        data.push(['', '', '', 'Итого:', '', rows.length + ' столов', revenue]);
+
 
         const fileName = 'lumu_report_' + new Date().toISOString().slice(0, 10);
 
@@ -2118,9 +2124,9 @@
           if (!confirm('С последнего закрытия смены столов не было. Всё равно закрыть смену?')) return;
         }
 
-        const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
-
-        let revenue = 0, cash = 0, card = 0;
+        const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`; 
+          
+        guestsTotal += Number(t.guests) || 0;
         const byItem = {};
         rows.forEach(t => {
           revenue += tableTotal(t);
@@ -2174,6 +2180,9 @@
         }
         if (rows.length) {
           text += `📈 Средний чек стола: ${Math.round(revenue / rows.length).toLocaleString('ru-RU')} ₽\n`;
+          if (guestsTotal > 0) {
+            text += `👥 Гостей: ${guestsTotal} · Средний чек на гостя: ${Math.round(revenue / guestsTotal).toLocaleString('ru-RU')} ₽\n`;
+          }
           const top = Object.entries(byItem).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
           text += `\n🏆 Топ позиций:\n`;
           top.forEach(([name, v], i) => {
@@ -2367,6 +2376,9 @@
                 const d = prompt('Скидка в % (0 или пусто — без скидки):', '0');
                 const disc = Math.min(Math.max(Number(d) || 0, 0), 100);
                 if (disc) closed.discount = disc;
+                const gRaw = prompt('Сколько гостей за столом? (число; пусто — не считать)', '');
+                const guests = Math.max(Math.round(Number(String(gRaw || '').replace(',', '.')) || 0), 0);
+                if (guests) closed.guests = guests;
                 closed.closedAt = new Date().toISOString();
                 closed.pay = btn.dataset.pay;
                 closedTables.unshift(closed);
@@ -2378,6 +2390,7 @@
               }
             };
           });
+
           card.querySelector('.btn-edit-table').onclick = () => editTable(idx);
           list.appendChild(card);
           if (getRole() !== 'admin') {
