@@ -1,5 +1,21 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 336,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "Вильям-Кола",
+        "price": 399,
+        "size": "",
+        "note": "",
+        "qty": 1
+      }
+    ],
+    "closedAt": "2026-11-23T04:17:02.823Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "table": "12",
     "lastMsgId": null,
     "orderNo": 1,
