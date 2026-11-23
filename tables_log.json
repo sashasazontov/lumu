@@ -1,5 +1,29 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 364,
+    "orderNo": 1,
+    "items": [
+      {
+        "name": "АКЦИИ В ЛУМУ ШОТ",
+        "price": 1794,
+        "size": "",
+        "note": "",
+        "qty": 1
+      },
+      {
+        "name": "АКЦИИ В ЛУМУ ЧАША",
+        "price": 500,
+        "size": "",
+        "note": "Dark Side — Redberry 100%",
+        "qty": 1
+      }
+    ],
+    "discount": 10,
+    "closedAt": "2026-11-23T05:22:20.593Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-23T05:20:00.981Z",
     "openedBy": "Sasha2009.",
     "startCash": 13650
