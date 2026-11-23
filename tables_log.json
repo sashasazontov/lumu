@@ -1,4 +1,10 @@
 [
-  { "weekResetAt": "2026-11-23T06:41:00.000Z" }
+  {
+    "shiftOpenAt": "2026-11-23T05:20:00.981Z",
+    "openedBy": "Sasha2009.",
+    "startCash": 13650
+  },
+  {
+    "weekResetAt": "2026-11-23T06:41:00.000Z"
+  }
 ]
-
