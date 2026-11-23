@@ -17,14 +17,6 @@
   ],
   "closedTables": [
     {
-      "table": "2",
-      "lastMsgId": 383,
-      "orderNo": 2,
-      "items": [],
-      "closedAt": "2026-11-23T13:40:11.130Z",
-      "pay": "💵 Наличка"
-    },
-    {
       "table": "3-постоянники",
       "lastMsgId": 252,
       "orderNo": 5,
@@ -268,5 +260,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795441212635
+  "updatedAt": 1795441638603
 }
