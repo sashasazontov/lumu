@@ -858,7 +858,29 @@
         color: var(--text-muted);
         font-size: 0.8rem;
     }
-       
+
+        .stock-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+        .stock-btn {
+            width: 26px; height: 26px; padding: 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 6px; cursor: pointer;
+        }
+        .stock-enable-btn {
+            margin-top: 8px; width: 100%; padding: 8px;
+            background: none; border: 1px dashed #555; color: var(--text-muted);
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+        }
+        .stock-off-btn {
+            background: none; border: none; color: #777; cursor: pointer; padding: 0 4px;
+        }
+        
     </style>
 </head>
 
@@ -1641,6 +1663,99 @@
       }
       pullRemoteFlavorState();
 
+      // === ОСТАТКИ ПОЗИЦИЙ (видны только админу) ===
+      const STOCK_FILE = 'stock_state.json';
+      let stockCounts = {};
+      try {
+        stockCounts = JSON.parse(localStorage.getItem('lummu_stock')) || {};
+      } catch (e) { stockCounts = {}; }
+
+      let stockPushTimer = null;
+      function saveStockState() {
+        localStorage.setItem('lummu_stock', JSON.stringify(stockCounts));
+        clearTimeout(stockPushTimer);
+        stockPushTimer = setTimeout(pushRemoteStockState, 1500);
+      }
+
+      // null = учёт не ведётся, число = сколько порций осталось
+      function stockOf(id) {
+        const n = stockCounts[id];
+        return (typeof n === 'number' && n >= 0) ? n : null;
+      }
+
+      function applyStockAutoState(it) {
+        const n = stockOf(it.id);
+        if (n === 0 && !soldItems.includes(it.id)) {
+          soldItems.push(it.id);
+          saveItemState();
+          const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+          tgSendStop('⛔ Автостоп (закончилось): ' + it.title + '\n🕐 ' + time);
+        } else if (n > 0 && soldItems.includes(it.id)) {
+          soldItems = soldItems.filter(x => x !== it.id);
+          saveItemState();
+          const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+          tgSendStop('↩ Вернули в продажу (пополнение): ' + it.title + '\n🕐 ' + time);
+        }
+      }
+
+      async function pushRemoteStockState() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify({ stock: stockCounts, updatedAt: Date.now() }, null, 2))));
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const api = `https://api.github.com/repos/${GH_REPO}/contents/${STOCK_FILE}`;
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Остатки позиций', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          } else {
+            const api = `${TG_API}/gh/repos/${GH_REPO}/contents/${STOCK_FILE}`;
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api + `?key=${SECRET}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Остатки позиций', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          }
+        } catch (e) {}
+      }
+
+      async function pullRemoteStockState() {
+        try {
+          let remote = null;
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${STOCK_FILE}?ref=${GH_BRANCH}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) {
+              const file = await r.json();
+              remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+            }
+          }
+          if (!remote) {
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${STOCK_FILE}?ref=${GH_BRANCH}&key=${SECRET}`);
+            if (r.ok) {
+              const file = await r.json();
+              remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+            }
+          }
+          if (remote && (remote.updatedAt || 0) > Number(localStorage.getItem('lummu_stock_stamp') || 0)) {
+            stockCounts = remote.stock || {};
+            localStorage.setItem('lummu_stock', JSON.stringify(stockCounts));
+            localStorage.setItem('lummu_stock_stamp', String(remote.updatedAt));
+            updateCartButtons();
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+        
       function ghLogHeaders() {
         const t = localStorage.getItem('lummu_gh_token');
         return t ? { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' } : null;
@@ -2832,6 +2947,15 @@ function updateHappyBanner() {
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
                 ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
                 ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
+                    ${getRole() === 'admin' && it.price && stockOf(it.id) !== null ? `
+                  <div class="stock-row">
+                    <button class="stock-btn" data-stock-dec="${it.id}">−</button>
+                    <span>${stockOf(it.id) === 0 ? '🚫 стоп' : stockOf(it.id) + ' осталось'}</span>
+                    <button class="stock-btn" data-stock-inc="${it.id}">+</button>
+                    <button class="stock-off-btn" data-stock-off="${it.id}" title="Убрать учёт остатка">✕</button>
+                  </div>` : ''}
+                ${getRole() === 'admin' && it.price && stockOf(it.id) === null ? `<button class="stock-enable-btn" data-id="${it.id}">🔢 Вести остаток</button>` : ''}
+
               </div>
             </article>`).join('');
 
@@ -2900,13 +3024,84 @@ function updateHappyBanner() {
           item.name === it.title && item.size === (it.size || '') && item.note === note
         );
         if (existing) existing.qty += 1;
-        else cart.push({ name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });
+        else cart.push({ id: it.id, name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });      
         updateCart();
         showCart();
       }         
 
+      function stockControlHtml(it) {
+        if (stockOf(it.id) === null) {
+          return `<button class="stock-enable-btn" data-id="${it.id}">🔢 Вести остаток</button>`;
+        }
+        return `<div class="stock-row">
+          <button class="stock-btn" data-stock-dec="${it.id}">−</button>
+          <span>${stockOf(it.id) === 0 ? '🚫 стоп' : stockOf(it.id) + ' осталось'}</span>
+          <button class="stock-btn" data-stock-inc="${it.id}">+</button>
+          <button class="stock-off-btn" data-stock-off="${it.id}" title="Убрать учёт">✕</button>
+        </div>`;
+      }
+
+      function refreshStockUI(it) {
+        document.querySelectorAll(`.item-card[data-id="${it.id}"]`).forEach(card => {
+          const info = card.querySelector('.item-info');
+          if (!info) return;
+          const old = info.querySelector('.stock-row, .stock-enable-btn');
+          const tmp = document.createElement('div');
+          tmp.innerHTML = stockControlHtml(it);
+          if (old) old.replaceWith(tmp.firstElementChild);
+          else info.insertAdjacentHTML('beforeend', stockControlHtml(it));
+        });
+      }
+        
       // === ДЕЛЕГИРОВАНИЕ КЛИКОВ ===
       document.addEventListener('click', (e) => {
+        const stockEnable = e.target.closest('.stock-enable-btn');
+        if (stockEnable) {
+          const it = menuItems.find(i => i.id === stockEnable.dataset.id);
+          if (!it) return;
+          const raw = prompt('Сколько порций «' + it.title + '» сейчас в наличии?');
+          if (raw === null) return;
+          const n = parseInt(String(raw).replace(/\D/g, ''), 10);
+          if (isNaN(n) || n < 0) return;
+          stockCounts[it.id] = n;
+          saveStockState();
+          applyStockAutoState(it);
+          refreshStockUI(it);
+          updateCartButtons();
+          return;
+        }
+
+        const stockBtn = e.target.closest('.stock-btn');
+        if (stockBtn) {
+          const id = stockBtn.dataset.stockDec || stockBtn.dataset.stockInc;
+          const it = menuItems.find(i => i.id === id);
+          if (!it) return;
+          const n = stockOf(id);
+          if (n === null) return;
+          stockCounts[id] = Math.max(n + (stockBtn.dataset.stockInc ? 1 : -1), 0);
+          saveStockState();
+          applyStockAutoState(it);
+          refreshStockUI(it);
+          updateCartButtons();
+          return;
+        }
+
+        const stockOff = e.target.closest('.stock-off-btn');
+        if (stockOff) {
+          const it = menuItems.find(i => i.id === stockOff.dataset.stockOff);
+          delete stockCounts[stockOff.dataset.stockOff];
+          saveStockState();
+          if (it) {
+            if (soldItems.includes(it.id)) {
+              soldItems = soldItems.filter(x => x !== it.id);
+              saveItemState();
+            }
+            refreshStockUI(it);
+            updateCartButtons();
+          }
+          return;
+        }       
+          
         const cat = e.target.closest('.cat-btn');
         if (cat) {
           document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -3220,6 +3415,16 @@ function updateHappyBanner() {
           if (data.ok) {
             if (isNew) table.lastMsgId = data.result.message_id;
             saveTables();
+            (added || []).forEach(i => {      // ← списание остатков
+              if (!i.id) return;
+              const n = stockOf(i.id);
+              if (n === null) return;
+              stockCounts[i.id] = Math.max(n - i.qty, 0);
+              const it0 = menuItems.find(x => x.id === i.id);
+              if (it0) applyStockAutoState(it0);
+            });
+            saveStockState();
+            updateCartButtons();
             alert(isNew
               ? `✅ Новый заказ отправлен! Стол ${table.table}`
               : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
@@ -3306,6 +3511,7 @@ function updateHappyBanner() {
         if (changed && tablesPage.style.display !== 'none') renderTables();
         await pullRemoteFlavorState();
         await pullRemoteItemState();
+        await pullRemoteStockState();
       }, 20000);
 
 
