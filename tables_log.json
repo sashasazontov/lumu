@@ -1,5 +1,13 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 426,
+    "orderNo": 4,
+    "items": [],
+    "closedAt": "2026-11-23T23:44:49.397Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "a",
     "lastMsgId": 405,
     "orderNo": 3,
