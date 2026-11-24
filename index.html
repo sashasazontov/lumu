@@ -925,7 +925,36 @@
             background: var(--accent-gradient); color: #000;
             border-color: transparent; font-weight: 700;
         }
-        
+
+    #search-row {
+        display: flex;
+        gap: 8px;
+        padding: 12px 1rem 0;
+        max-width: 480px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    #menu-search {
+        flex: 1;
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 999px;
+        color: var(--text-main);
+        font-size: 0.95rem;
+        outline: none;
+    }
+    #menu-search::placeholder { color: #777; }
+    #menu-search:focus { border-color: var(--accent); }
+    #search-clear {
+        padding: 0 14px;
+        background: none;
+        border: 1px solid #444;
+        color: var(--text-muted);
+        border-radius: 999px;
+        cursor: pointer;
+    }
+    
     </style>
 </head>
 
