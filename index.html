@@ -3110,12 +3110,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           ? `🛎 Заказ по столу ${t.table}\n\n✎ Заказ исправлен в ${time}\n\n${lines || '—'}\n\n💵 Итого: ${total.toLocaleString('ru-RU')} ₽`
           : `🛎 Стол ${t.table}\n\n✎ В ${time} заказ полностью отменён (все позиции убраны)`;
 
-        const apiCall = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
-
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(p)
-        }).then(r => r.json());
+        const apiCall = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
 
         const send = () => apiCall('sendMessage', { chat_id: TG_CHAT, text: text })
           .then(d => {
@@ -3153,12 +3148,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           (t.guests ? `👥 Гостей за столом: ${t.guests}\n` : '') +
           `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
              
-          const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
-
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(p)
-        }).then(r => r.json());
+         const request = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
 
         const send = () => request('sendMessage', { chat_id: TG_CHAT, text: text })
           .then(data => {
@@ -3908,12 +3898,7 @@ function updateHappyBanner() {
           ? { chat_id: TG_CHAT, text: text }
           : { chat_id: TG_CHAT, message_id: table.lastMsgId, text: text };
 
-         const request = (apiMethod, p) => fetch(`${TG_API}/bot${TG_TOKEN}/${apiMethod}`, {
-
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(p)
-        }).then(r => r.json());
+        const request = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
 
         request(isNew ? 'sendMessage' : 'editMessageText', params)
         .then(data => {
