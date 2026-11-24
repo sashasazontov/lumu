@@ -1040,6 +1040,7 @@
             <button id="admin-add-btn">➕ Добавить позицию</button>
             <button id="admin-download-btn">💾 Скачать menu.json</button>
             <button id="admin-save-github-btn">🚀 Сохранить на GitHub</button>
+            <button id="backup-btn">💾 Скачать всё (бэкап)</button> 
             <button onclick="window.open('print-menu.html', '_blank')">🖨 Печатная версия меню</button> 
             <button id="back-from-admin-btn">← Назад</button>
         </div>
@@ -4138,6 +4139,36 @@ function updateHappyBanner() {
         closeMixBuilder();
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+
+      // === РЕЗЕРВНАЯ КОПИЯ ОДНИМ ФАЙЛОМ ===
+      async function collectBackup() {
+        let log = [];
+        try { log = await fetchClosedLog(); } catch (e) {}
+        return {
+          backupAt: new Date().toISOString(),
+          menu: { categories: menuCategories, items: menuItems },
+          happyHours: HAPPY_HOURS,
+          tables: tables,
+          closedTables: closedTables,
+          log: log,
+          soldItems: soldItems,
+          soldFlavors: soldFlavors,
+          stockCounts: stockCounts,
+          flavorStock: flavorStock,
+          purchaseTimes: purchaseTimes
+        };
+      }
+
+      document.getElementById('backup-btn').addEventListener('click', async () => {
+        const data = await collectBackup();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'lumu_backup_' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        alert('✅ Бэкап скачан: ' + a.download + '\nВнутри: меню, журналы, столы, стоп-листы, остатки.');
+      });
         
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
