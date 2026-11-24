@@ -907,6 +907,21 @@
             background: none; border: none; color: #777;
             cursor: pointer; padding: 0 2px; font-size: 0.8rem;
         }
+
+        .table-tabs {
+            display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+        }
+        .table-tab {
+            flex: 1; padding: 9px 6px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-main);
+            border-radius: 999px; cursor: pointer; font-size: 0.9rem;
+        }
+        .table-tab.active {
+            background: var(--accent-gradient); color: #000;
+            border-color: transparent; font-weight: 700;
+        }
         
     </style>
 </head>
