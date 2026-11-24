@@ -4409,7 +4409,8 @@ function updateHappyBanner() {
                 <span class="inv-name">${it.isExtra ? '📦 ' : ''}${esc(it.title)}</span>
                 <span class="inv-exp">по учёту: ${stockOf(it.id)}</span>
                 <input type="number" min="0" data-inv-item="${it.id}" placeholder="факт">
-              </div>`).join('')}
+                ${it.isExtra ? `<button class="inv-row-del" data-xid="${it.id}" title="Удалить позицию" style="background:none;border:none;color:#ff5a6a;cursor:pointer;font-size:0.95rem;padding:0 2px;">🗑</button>` : ''}
+              </div>`).join('')}          
             ${flavorNames.map(fn => `
               <div class="inv-row">
                 <span class="inv-name">🍃 ${esc(fn)}</span>
@@ -4462,6 +4463,25 @@ function updateHappyBanner() {
             openInventory();
           };
         });
+
+        invOverlay.querySelectorAll('.inv-row-del').forEach(btn => {
+          btn.onclick = () => {
+            const x = extraItems.find(e => e.id === btn.dataset.xid);
+            if (!x) return;
+            if (!confirm(`Удалить «${x.name}» из инвентаризации? Остаток и стоп-лист сбросятся, история сверок в журнале останется.`)) return;
+            delete stockCounts[x.id];
+            saveStockState();
+            if (soldItems.includes(x.id)) {
+              soldItems = soldItems.filter(v => v !== x.id);
+              unmarkPurchase('item:' + x.id);
+              saveItemState();
+            }
+            extraItems = extraItems.filter(y => y.id !== x.id);
+            saveExtraItems();
+            openInventory();
+          };
+        });
+
         invOverlay.style.display = 'flex';
       }       
 
