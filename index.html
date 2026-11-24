@@ -9,6 +9,9 @@
     <link rel="apple-touch-icon" href="icon-512.png">
     <link rel="icon" href="icon-512.png">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <meta name="description" content="Лу-Му — кальянная в Домодедово. Меню, заказ и вызов кальянщика онлайн.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
             --bg-dark: #15151a;  
@@ -971,7 +974,38 @@
             border-color: var(--accent);
             color: var(--accent);
         }
-        
+
+@media (max-width: 768px) {
+  #header-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    margin: 0;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    background: rgba(21,21,26,0.94);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    justify-content: space-around;
+    gap: 8px;
+    z-index: 300;
+  }
+  #header-nav .nav-btn {
+    flex: 1;
+    min-height: 44px;
+  }
+  body { padding-bottom: 64px; }
+  /* кнопки кальянщика и админа не конфликтуют с нижней панелью */
+  #hookah-call-btn { bottom: calc(70px + env(safe-area-inset-bottom)); }
+  #nav-admin-btn   { bottom: calc(70px + env(safe-area-inset-bottom)); }
+}
+
+button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает задержку тапа */
+.qty-btn, .stock-btn { width: 38px; height: 38px; font-size: 18px; }
+.flstock-btn { width: 30px; height: 30px; }
+.admin-card input, .admin-card textarea, .admin-card select,
+#menu-search, .tobacco-input, .inv-row input {
+  font-size: 16px; /* без автозума на iOS */
+}
+       
     </style>
 </head>
 
@@ -3247,6 +3281,9 @@ function updateOpenStatus() {
         const c = document.getElementById('snow-canvas');
         if (c) c.style.display = 'none';
       }
+            function lockScroll(on) {
+        document.body.style.overflow = on ? 'hidden' : '';
+      }
 
 // === СЧАСТЛИВЫЕ ЧАСЫ ===
 // days: 0=воскресенье ... 6=суббота; from/to — часы (to не включается)
@@ -3381,7 +3418,7 @@ function updateHappyBanner() {
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}" data-id="${it.id}">
               <div class="item-img-wrapper">
                 <div class="img-placeholder">${it.title}</div>
-                ${it.img ? `<img src="${it.img}" alt="${it.title}" class="item-img"
+                ${it.img ? `<img src="${it.img}" alt="${it.title}" class="item-img" loading="lazy"
                      onload="this.classList.add('loaded')"
                      onerror="this.classList.add('error')">` : ''}
                 ${it.promo ? '<span class="promo-badge">Акция</span>' : ''}
@@ -3395,10 +3432,10 @@ function updateHappyBanner() {
                       if (typeof l === 'string') return `<div class="tobacco-chip">${esc(l)}</div>`;
                return l.img
                 ? `<div class="tobacco-chip tobacco-photo">
-                     <img src="${l.img}" alt="${esc(l.name)}" onerror="this.style.display='none'">
+                     <img src="${l.img}" alt="${esc(l.name)}" loading="lazy" onerror="this.style.display='none'">
                      <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span>
                    </div>`
-                : `<div class="tobacco-chip"><span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;             
+                : `<div class="tobacco-chip"><span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;
                     }).join('')}</div>` : ''}
                 ${priceHtml(it)}
                 ${it.note ? `<input type="text" class="tobacco-input" placeholder="${it.note}">` : ''}
@@ -4055,11 +4092,13 @@ function updateHappyBanner() {
 
         callOverlay.querySelector('#call-close-btn').onclick = () => {
           callOverlay.style.display = 'none';
+          lockScroll(false);
         };
       }
 
       function openCallPanel() {
         buildCallPanel();
+        lockScroll(true);
         callOverlay.style.display = 'flex';
       }
 
@@ -4082,6 +4121,7 @@ function updateHappyBanner() {
         }).then(r => r.json()).then(d => {
           if (d.ok) {
             callOverlay.style.display = 'none';
+            lockScroll(false);
             alert('✅ Кальянщик вызван! Он уже идёт к вашему столу.');
           } else {
             alert('Не удалось отправить вызов: ' + (d.description || 'ошибка'));
@@ -4106,6 +4146,7 @@ function updateHappyBanner() {
       let mixForced = false;
       function closeMixBuilder() {
         mixOverlay.style.display = 'none';
+        lockScroll(false);
       }
 
       function openMixBuilder(itemId, forced) {
@@ -4115,6 +4156,7 @@ function updateHappyBanner() {
         mixForced = !!forced;
         mixSelected = [];
         renderMixBuilder(it);
+        lockScroll(true);
         mixOverlay.style.display = 'flex';
       }
 
