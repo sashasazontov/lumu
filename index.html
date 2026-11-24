@@ -4385,8 +4385,9 @@ function updateHappyBanner() {
         if (ev.target === invOverlay) invOverlay.style.display = 'none';
       });
 
+      function openInventory() {
         const items = menuItems.filter(it => typeof it.price === 'number' && stockOf(it.id) !== null)
-          .concat(extraItems.map(x => ({ id: x.id, title: x.name, price: null, isExtra: true })));
+          .concat(extraItems.map(x => ({ id: x.id, title: x.name, price: null, isExtra: true })));      
         const flavorNames = Object.keys(flavorStock);
         if (!items.length && !flavorNames.length) {
           alert('Учёт остатков не ведётся — сверять нечего. Начните вести остатки (🔢 на карточке), и они попадут в инвентаризацию.');
