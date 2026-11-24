@@ -4360,6 +4360,16 @@ function updateHappyBanner() {
         invOverlay.style.display = 'flex';
       }
 
+      // Последний известный факт из прошлых сверок: для позиций по id, для вкусов по имени
+      function prevFactMap() {
+        const byItem = {}, byFlavor = {};
+        (inventoryLog || []).forEach(entry => {
+          (entry.items || []).forEach(i => { byItem[i.id] = i.actual; });
+          (entry.flavors || []).forEach(i => { byFlavor[i.name] = i.actual; });
+        });
+        return { byItem, byFlavor };
+      }
+        
       function submitInventory(items, flavorNames) {
         const invItems = [], invFlavors = [];
         invOverlay.querySelectorAll('[data-inv-item]').forEach(inp => {
@@ -4418,6 +4428,33 @@ function updateHappyBanner() {
           text += '✅ Всё сошлось — расхождений нет 🎉';
         }
 
+        // Сравнение с прошлой сверкой: расход по системе и потери вне системы
+        const prev = prevFactMap();
+        const deltaLines = [];
+        invItems.forEach(i => {
+          if (prev.byItem[i.id] === undefined) return;
+          const was = prev.byItem[i.id];
+          const used = was - i.expected;                 // списалось по системе
+          const off = i.actual - i.expected;             // расхождение факт/учёт
+          const offTxt = off < 0
+            ? `−${Math.abs(off)} вне системы`
+            : off > 0 ? `+${off} не внесено в учёт` : 'в норме';
+          deltaLines.push(`• ${i.name}: было ${was}, списалось ${used}, факт ${i.actual} → ${offTxt}`);
+        });
+        invFlavors.forEach(i => {
+          if (prev.byFlavor[i.name] === undefined) return;
+          const was = prev.byFlavor[i.name];
+          const used = was - i.expected;
+          const off = i.actual - i.expected;
+          const offTxt = off < 0
+            ? `−${Math.abs(off)} вне системы`
+            : off > 0 ? `+${off} не внесено в учёт` : 'в норме';
+          deltaLines.push(`• ${i.name}: было ${was}, списалось ${used}, факт ${i.actual} → ${offTxt}`);
+        });
+        if (deltaLines.length) {
+          text += `\n📊 Динамика с прошлой сверки:\n` + deltaLines.join('\n');
+        }
+          
         tgSend(text);
         invOverlay.style.display = 'none';
         alert(mism.length || mismF.length
