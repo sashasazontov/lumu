@@ -1,5 +1,40 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1 стол Алик мы не считаем",
+      "lastMsgId": 438,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-standard",
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Арбуз 50% + Sebero — Маракуйя 50%",
+          "qty": 1,
+          "batchId": "bmwv5l46d-vx8p"
+        },
+        {
+          "id": "item-1795311818077",
+          "name": "Вода без газа Bonvida ",
+          "price": 199,
+          "size": "",
+          "note": "",
+          "qty": 2,
+          "batchId": "bmwv5l46d-vx8p"
+        },
+        {
+          "id": "tea-malina",
+          "name": "Пряная малина",
+          "price": 399,
+          "size": "700 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwv5l46d-vx8p"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "2",
@@ -39,5 +74,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795532145955
+  "updatedAt": 1795552485013
 }
