@@ -3252,8 +3252,8 @@ function updateOpenStatus() {
 // days: 0=воскресенье ... 6=суббота; from/to — часы (to не включается)
 // discount — процент скидки; categories — id категорий из menu.json (не задано = на всё)
 const HAPPY_HOURS = [
-  { title: 'Счастливые часы', discount: 20, days: [0, 1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookahs'] },
-  { title: 'Ночные кальяны',  discount: 15, days: [0, 5, 6],          from:22, to: 24, categories: ['hookahs'] }
+  { title: 'Счастливые часы', discount: 10, days: [0, 1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookahs'] },
+  { title: 'Ночные кальяны',  discount: 10, days: [0, 5, 6],          from:22, to: 24, categories: ['hookahs'] }
 ];
 
 function isHappyActive(rule) {
