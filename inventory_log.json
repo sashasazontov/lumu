@@ -1,5 +1,20 @@
 [
   {
+    "inventoryAt": "2026-11-24T03:11:36.434Z",
+    "week": "2026-11-22",
+    "by": "админ",
+    "items": [],
+    "flavors": [
+      {
+        "name": "Musthave-Садовая клубника",
+        "price": null,
+        "expected": 1,
+        "actual": 1,
+        "diff": 0
+      }
+    ]
+  },
+  {
     "inventoryAt": "2026-11-24T02:27:52.983Z",
     "week": "2026-11-22",
     "by": "админ",
