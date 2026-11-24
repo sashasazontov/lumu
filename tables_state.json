@@ -1,5 +1,22 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1",
+      "lastMsgId": null,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "juices-1000",
+          "name": "Соки",
+          "price": 399,
+          "size": "1 л",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvcx0ir-znme"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
@@ -76,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795559415896
+  "updatedAt": 1795564793549
 }
