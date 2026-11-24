@@ -924,7 +924,41 @@
             background: var(--accent-gradient); color: #000;
             border-color: transparent; font-weight: 700;
         }
-    
+
+        #inv-overlay {
+            position: fixed; inset: 0; z-index: 220;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        #inv-panel {
+            background: var(--card-dark);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 520px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        #inv-panel h3 { color: var(--accent); margin-bottom: 8px; }
+        .inv-row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.9rem;
+        }
+        .inv-row .inv-name { flex: 1; }
+        .inv-row input {
+            width: 70px; padding: 6px; text-align: center;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid #333; border-radius: 8px;
+            color: var(--text-main); font-size: 0.9rem;
+        }
+        .inv-row .inv-exp { color: var(--text-muted); min-width: 92px; text-align: right; font-size: 0.8rem; }
+        .inv-hist { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
+        
     </style>
 </head>
 
@@ -1022,6 +1056,7 @@
                 <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
                 <button id="purchase-list-btn" style="display: none;">🛒 Что закупать</button>
                 <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
+                <button id="inventory-btn" style="display: none;">📋 Инвентаризация</button>
                 <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
                 <button id="shift-close-btn" style="display: none;">🌙 Закрыть смену</button>
                 <button id="shift-open-btn" style="display: none;">🌅 Открыть смену</button>
@@ -1408,6 +1443,7 @@
         document.getElementById('weekly-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('purchase-list-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('inventory-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('shift-close-btn').style.display = 'block';
         document.getElementById('shift-open-btn').style.display = 'block';
@@ -2165,7 +2201,9 @@
         });
       }
       maybeSendWeekly();
+      maybeInventoryReminder();
       setInterval(maybeSendWeekly, 30 * 60 * 1000); // проверять сводку раз в полчаса
+      setInterval(maybeInventoryReminder, 30 * 60 * 1000); // проверять напоминание об инвентаризации раз в полчаса
 
       // === ЦВЕТ СЕЗОНА ===
       function applySeasonTheme() {
@@ -4169,6 +4207,212 @@ function updateHappyBanner() {
         URL.revokeObjectURL(a.href);
         alert('✅ Бэкап скачан: ' + a.download + '\nВнутри: меню, журналы, столы, стоп-листы, остатки.');
       });
+
+      // === ИНВЕНТАРИЗАЦИЯ (сверка остатков) ===
+      const INV_FILE = 'inventory_log.json';
+      let inventoryLog = [];
+      try {
+        inventoryLog = JSON.parse(localStorage.getItem('lummu_inventory')) || [];
+      } catch (e) { inventoryLog = []; }
+
+      function saveInventoryLog() {
+        localStorage.setItem('lummu_inventory', JSON.stringify(inventoryLog));
+        pushRemoteInventory();
+      }
+
+      async function pushRemoteInventory() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(inventoryLog.slice(0, 100), null, 2))));
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const api = `https://api.github.com/repos/${GH_REPO}/contents/${INV_FILE}`;
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Инвентаризация', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          } else {
+            const api = `${TG_API}/gh/repos/${GH_REPO}/contents/${INV_FILE}`;
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api + `?key=${SECRET}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Инвентаризация', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          }
+        } catch (e) {}
+      }
+
+      // понедельник — граница недели, чтобы «инвентаризация на этой неделе» считалась одинаково
+      function weekKeyOf(d) {
+        const t = new Date(d);
+        t.setHours(0, 0, 0, 0);
+        t.setDate(t.getDate() - ((t.getDay() + 6) % 7));
+        return t.toISOString().slice(0, 10);
+      }
+      function inventoryDoneThisWeek() {
+        const wk = weekKeyOf(new Date());
+        return inventoryLog.some(e => e.week === wk);
+      }
+
+      const invOverlay = document.createElement('div');
+      invOverlay.id = 'inv-overlay';
+      document.body.appendChild(invOverlay);
+      invOverlay.addEventListener('click', (ev) => {
+        if (ev.target === invOverlay) invOverlay.style.display = 'none';
+      });
+
+      function openInventory() {
+        const items = menuItems.filter(it => typeof it.price === 'number' && stockOf(it.id) !== null);
+        const flavorNames = Object.keys(flavorStock);
+        if (!items.length && !flavorNames.length) {
+          alert('Учёт остатков не ведётся — сверять нечего. Начните вести остатки (🔢 на карточке), и они попадут в инвентаризацию.');
+          return;
+        }
+
+        const hist = inventoryLog.slice(0, 4).map(e => {
+          const d = new Date(e.inventoryAt);
+          const bad = (e.items || []).filter(i => i.diff !== 0).length + (e.flavors || []).filter(i => i.diff !== 0).length;
+          return `• ${d.toLocaleDateString('ru-RU')} — ${bad ? 'расхождений: ' + bad : 'всё сошлось ✅'}`;
+        }).join('<br>');
+
+        invOverlay.innerHTML = `
+          <div id="inv-panel">
+            <h3>📋 Инвентаризация</h3>
+            <p class="mix-hint">Впишите сколько реально на полке. Пустое поле = пропустить позицию. После сохранения учёт пересчитается по факту.</p>
+            ${items.map(it => `
+              <div class="inv-row">
+                <span class="inv-name">${esc(it.title)}</span>
+                <span class="inv-exp">по учёту: ${stockOf(it.id)}</span>
+                <input type="number" min="0" data-inv-item="${it.id}" placeholder="факт">
+              </div>`).join('')}
+            ${flavorNames.map(fn => `
+              <div class="inv-row">
+                <span class="inv-name">🍃 ${esc(fn)}</span>
+                <span class="inv-exp">по учёту: ${flavorStock[fn]}</span>
+                <input type="number" min="0" data-inv-flavor="${esc(fn)}" placeholder="факт">
+              </div>`).join('')}
+            <button id="inv-save-btn" class="mix-primary" style="margin-top: 12px;">✅ Сохранить и отправить отчёт</button>
+            <button id="inv-close-btn" class="mix-ghost">← Закрыть</button>
+            ${hist ? `<div class="inv-hist"><b>Последние сверки:</b><br>${hist}</div>` : ''}
+          </div>`;
+
+        invOverlay.querySelector('#inv-close-btn').onclick = () => invOverlay.style.display = 'none';
+        invOverlay.querySelector('#inv-save-btn').onclick = () => submitInventory(items, flavorNames);
+        invOverlay.style.display = 'flex';
+      }
+
+      function submitInventory(items, flavorNames) {
+        const invItems = [], invFlavors = [];
+        invOverlay.querySelectorAll('[data-inv-item]').forEach(inp => {
+          if (inp.value === '') return;
+          const n = Math.max(parseInt(inp.value, 10) || 0, 0);
+          const it = items.find(x => x.id === inp.dataset.invItem);
+          if (!it) return;
+          const expected = stockOf(it.id);
+          invItems.push({ id: it.id, name: it.title, price: it.price, expected, actual: n, diff: n - expected });
+        });
+        invOverlay.querySelectorAll('[data-inv-flavor]').forEach(inp => {
+          if (inp.value === '') return;
+          const n = Math.max(parseInt(inp.value, 10) || 0, 0);
+          const fn = inp.dataset.invFlavor;
+          const expected = flavorStock[fn] || 0;
+          const fl = menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === fn);
+          invFlavors.push({ name: fn, price: (fl && fl.price) || null, expected, actual: n, diff: n - expected });
+        });
+
+        if (!invItems.length && !invFlavors.length) {
+          alert('Ни одной позиции не заполнено — сверять нечего.');
+          return;
+        }
+
+        // учёт пересчитывается по факту
+        invItems.forEach(i => { stockCounts[i.id] = i.actual; });
+        invFlavors.forEach(i => { flavorStock[i.name] = i.actual; });
+        saveStockState();
+        saveFlavorStockState();
+        updateCartButtons();
+
+        const entry = {
+          inventoryAt: new Date().toISOString(),
+          week: weekKeyOf(new Date()),
+          by: 'админ',
+          items: invItems,
+          flavors: invFlavors
+        };
+        inventoryLog.unshift(entry);
+        saveInventoryLog();
+
+        const money = (arr) => arr.reduce((s, i) => i.diff < 0 && i.price ? s + Math.abs(i.diff) * i.price : s, 0);
+        const loss = money(invItems) + money(invFlavors);
+
+        let text = `📋 Инвентаризация — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
+        const line = (i) => `• ${i.name}: по учёту ${i.expected}, факт ${i.actual} → ` +
+          (i.diff < 0 ? `❗ недостача ${Math.abs(i.diff)}` : `📈 излишек +${i.diff}`) +
+          (i.diff < 0 && i.price ? ` (~${(Math.abs(i.diff) * i.price).toLocaleString('ru-RU')} ₽)` : '');
+        const mism = invItems.filter(i => i.diff !== 0);
+        const mismF = invFlavors.filter(i => i.diff !== 0);
+        if (mism.length || mismF.length) {
+          text += mism.length ? `Позиции:\n${mism.map(line).join('\n')}\n` : '';
+          text += mismF.length ? `Вкусы:\n${mismF.map(line).join('\n')}\n` : '';
+          text += `\n📉 Суммарная недостача: ${loss.toLocaleString('ru-RU')} ₽`;
+        } else {
+          text += '✅ Всё сошлось — расхождений нет 🎉';
+        }
+
+        tgSend(text);
+        invOverlay.style.display = 'none';
+        alert(mism.length || mismF.length
+          ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}, отчёт в Telegram.`
+          : '✅ Инвентаризация записана — всё сошлось!');
+      }
+
+      // напоминание по воскресеньям: один раз в день, только админу
+      function maybeInventoryReminder() {
+        if (getRole() !== 'admin') return;
+        const now = new Date();
+        if (now.getDay() !== 0) return;            // 0 = воскресенье
+        if (inventoryDoneThisWeek()) return;
+        const key = 'lummu_inv_reminded_' + now.toISOString().slice(0, 10);
+        if (localStorage.getItem(key)) return;
+        localStorage.setItem(key, '1');
+        tgSend('📋 Напоминание: воскресенье — пора провести инвентаризацию.\n⚙ → 📋 Инвентаризация — сверка остатков за пару минут.');
+      }
+
+      document.getElementById('inventory-btn').addEventListener('click', () => {
+        if (getRole() !== 'admin') return;
+        openInventory();
+      });
+
+      // подтянуть историю сверок с GitHub
+      (async () => {
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          let remote = null;
+          const url = `${TG_API}/gh/repos/${GH_REPO}/contents/${INV_FILE}?ref=${GH_BRANCH}&key=${SECRET}`;
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${INV_FILE}?ref=${GH_BRANCH}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) remote = await r.json();
+          }
+          if (!remote) {
+            const r = await fetch(url);
+            if (r.ok) remote = await r.json();
+          }
+          if (remote) {
+            const arr = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(remote.content), c => c.charCodeAt(0))));
+            if (Array.isArray(arr)) {
+              inventoryLog = arr;
+              localStorage.setItem('lummu_inventory', JSON.stringify(inventoryLog));
+            }
+          }
+        } catch (e) {}
+      })();
         
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
