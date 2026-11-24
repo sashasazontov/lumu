@@ -1601,6 +1601,25 @@
         const newCard = document.querySelector(`.admin-card[data-index="${j}"]`);
         if (newCard) newCard.scrollIntoView({ block: 'nearest' });
       });
+
+      // Навигация стрелками по карточкам в редакторе меню
+      let adminNavIdx = -1;
+      document.addEventListener('keydown', (e) => {
+        if (adminPage.style.display !== 'flex') return;      // редактор закрыт — не мешаем
+        if (!['ArrowDown', 'ArrowUp'].includes(e.key)) return;
+        const tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return; // печатаете в поле — стрелки работают как обычно
+        const cards = [...document.querySelectorAll('#admin-list .admin-card')];
+        if (!cards.length) return;
+        e.preventDefault();
+        adminNavIdx = e.key === 'ArrowDown'
+          ? Math.min(adminNavIdx + 1, cards.length - 1)
+          : Math.max(adminNavIdx - 1, 0);
+        const c = cards[adminNavIdx];
+        c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        c.style.outline = '2px solid var(--accent)';
+        setTimeout(() => { c.style.outline = ''; }, 700);
+      });
         
       document.getElementById('admin-add-btn').addEventListener('click', () => {
         const newItem = {
