@@ -958,6 +958,19 @@
         }
         .inv-row .inv-exp { color: var(--text-muted); min-width: 92px; text-align: right; font-size: 0.8rem; }
         .inv-hist { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
+
+        .admin-move-btn {
+            flex: 1; padding: 8px;
+            background: none;
+            border: 1px solid #555;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem;
+        }
+        .admin-move-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
         
     </style>
 </head>
@@ -1516,7 +1529,11 @@
               <div><label><input type="checkbox" data-field="sold" ${it.sold ? 'checked' : ''}> Распродано</label></div>
               <div><label><input type="checkbox" data-field="tobaccoBtn" ${it.tobaccoBtn ? 'checked' : ''}> Кнопка «Табаки»</label></div>
             </div>
-            <button class="admin-del-btn">🗑 Удалить позицию</button>
+            <div class="admin-row" style="margin-top: 8px;">
+              <button type="button" class="admin-move-btn" data-move="up">↑ Выше</button>
+              <button type="button" class="admin-move-btn" data-move="down">↓ Ниже</button>
+            </div>
+            <button class="admin-del-btn">🗑 Удалить позицию</button>            
           </div>`).join('');
 
         // выставить сохранённые категории в селектах
@@ -1567,6 +1584,24 @@
         }
       });
 
+      document.getElementById('admin-list').addEventListener('click', (e) => {
+        const moveBtn = e.target.closest('.admin-move-btn');
+        if (!moveBtn) return;
+        const card = moveBtn.closest('.admin-card');
+        const idx = +card.dataset.index;
+        const dir = moveBtn.dataset.move === 'up' ? -1 : 1;
+        const j = idx + dir;
+        if (j < 0 || j >= adminItems.length) return;
+        // меняем местами и в рабочей копии, и в живом меню
+        [adminItems[idx], adminItems[j]] = [adminItems[j], adminItems[idx]];
+        [menuItems[idx], menuItems[j]] = [menuItems[j], menuItems[idx]];
+        saveMenuOverride();
+        renderAdmin();
+        // вернуть фокус на передвинутую карточку, чтобы видеть результат
+        const newCard = document.querySelector(`.admin-card[data-index="${j}"]`);
+        if (newCard) newCard.scrollIntoView({ block: 'nearest' });
+      });
+        
       document.getElementById('admin-add-btn').addEventListener('click', () => {
         const newItem = {
           id: 'item-' + Date.now(),
