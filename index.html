@@ -1685,35 +1685,21 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       const TG_API    = 'https://bold-block-8b09lummu-tg.sasasazontov265.workers.dev';
 
     // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
-      const TG_TOKEN = '9025764038:AAEeZ7PfgAnyu7569NchttNUxFXkuQoTdZc';
       const TG_CHAT  = '-1003907000620';
       const TG_CHAT_STOP =  '-1004475385122'; // ← сюда ID второй группы (для стоп-листа)
       const TG_CHAT_CART =  '-1004440127167'; 
         
-      function tgSend(text) {
-          
-     return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: TG_CHAT, text })
-        }).then(r => r.json());
+      function tgTo(chat, text) {
+        return fetch(`${TG_API}/api/send`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat, text })
+        }).then(r => r.json()).catch(() => null);
       }
 
-    function tgSendStop(text) {
-        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ chat_id: TG_CHAT_STOP, text })
-        }).then(r => r.json()).catch(() => null);
-    }
+      const tgSend     = t => tgTo(TG_CHAT, t);
+      const tgSendStop = t => tgTo(TG_CHAT_STOP, t);
+      const tgSendCart = t => tgTo(TG_CHAT_CART, t);
 
-    function tgSendCart(text) {
-        return fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ chat_id: TG_CHAT_CART, text })
-        }).then(r => r.json()).catch(() => null);
-    }
         
       const GH_LOG = 'tables_log.json';
 
@@ -4115,11 +4101,12 @@ function updateHappyBanner() {
 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const text = `💨 Вызов кальянщика\n\n🪑 Стол ${tableNum}\n🕐 В ${time}`;
-        fetch(`${TG_API}/bot${TG_TOKEN}/sendMessage`, {
+          fetch(`${TG_API}/api/send`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: TG_CHAT, text })
+          body: JSON.stringify({ chat: TG_CHAT, text })
         }).then(r => r.json()).then(d => {
+
           if (d.ok) {
             callOverlay.style.display = 'none';
             lockScroll(false);
