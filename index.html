@@ -4415,6 +4415,7 @@ function updateHappyBanner() {
                 <span class="inv-exp">по учёту: ${flavorStock[fn]}</span>
                 <input type="number" min="0" data-inv-flavor="${esc(fn)}" placeholder="факт">
               </div>`).join('')}
+            <button id="inv-excel-btn" class="mix-ghost" style="margin-top: 8px;">📊 Экспорт в Excel</button>
             <button id="inv-save-btn" class="mix-primary" style="margin-top: 12px;">✅ Сохранить и отправить отчёт</button>
             <button id="inv-close-btn" class="mix-ghost">← Закрыть</button>
             <div class="inv-hist"><b>📦 Складские позиции</b> — хаус-алкоголь, специи, сиропы:<br>
@@ -4426,6 +4427,7 @@ function updateHappyBanner() {
           </div>`;
 
         invOverlay.querySelector('#inv-close-btn').onclick = () => invOverlay.style.display = 'none';
+        invOverlay.querySelector('#inv-excel-btn').onclick = exportInventoryExcel;
         invOverlay.querySelector('#inv-save-btn').onclick = () => submitInventory(items, flavorNames);
         invOverlay.querySelector('#inv-extra-add-btn').onclick = () => {
           const inp = invOverlay.querySelector('#inv-extra-name');
@@ -4470,6 +4472,41 @@ function updateHappyBanner() {
           (entry.flavors || []).forEach(i => { byFlavor[i.name] = i.actual; });
         });
         return { byItem, byFlavor };
+      }
+
+      // Экспорт всех сверок в Excel
+      function exportInventoryExcel() {
+        if (typeof XLSX === 'undefined') { alert('Библиотека Excel не подключена (шаг 1).'); return; }
+        if (!inventoryLog.length) { alert('Сверок пока нет — экспортировать нечего.'); return; }
+
+        const rows = [['Дата', 'Тип', 'Название', 'Было', 'По учёту', 'Факт', 'Расхождение', 'Недостача ₽']];
+        const lastItem = {}, lastFlavor = {};
+        inventoryLog.slice().sort((a, b) => a.inventoryAt - b.inventoryAt).forEach(entry => {
+          const d = new Date(entry.inventoryAt).toLocaleString('ru-RU',
+            { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+          (entry.items || []).forEach(i => {
+            const it = menuItems.find(x => x.id === i.id);
+            const ex = extraItems.find(x => x.id === i.id);
+            const name = it ? it.title : ex ? '📦 ' + ex.name : i.id;
+            const type = it ? 'Позиция' : ex ? 'Складская' : 'Позиция';
+            const was = lastItem[i.id] !== undefined ? lastItem[i.id] : '';
+            const price = it && typeof it.price === 'number' ? it.price : null;
+            const loss = (i.diff < 0 && price) ? Math.abs(i.diff) * price : '';
+            rows.push([d, type, name, was, i.expected, i.actual, i.diff, loss]);
+            lastItem[i.id] = i.actual;
+          });
+          (entry.flavors || []).forEach(i => {
+            const was = lastFlavor[i.name] !== undefined ? lastFlavor[i.name] : '';
+            rows.push([d, 'Вкус', '🍃 ' + i.name, was, i.expected, i.actual, i.diff, '']);
+            lastFlavor[i.name] = i.actual;
+          });
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [{ wch: 16 }, { wch: 10 }, { wch: 24 }, { wch: 8 }, { wch: 10 }, { wch: 8 }, { wch: 12 }, { wch: 14 }];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Сверки');
+        XLSX.writeFile(wb, 'inventarizaciya_' + new Date().toISOString().slice(0, 10) + '.xlsx');
       }
         
       function submitInventory(items, flavorNames) {
