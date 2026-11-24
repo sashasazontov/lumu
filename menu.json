@@ -435,12 +435,12 @@
     {
       "id": "lipton",
       "category": "sodas",
-      "title": "Lipton",
+      "title": "Lipton Персик",
       "desc": "Прохладный напиток ",
       "price": 250,
       "size": "",
       "img": "https://images.unsplash.com/photo-1513263515901-685c0b564282?q=80&w=800&auto=format&fit=crop",
-      "note": "Какой Липтон? (Малина / Персик)",
+      "note": "",
       "promo": false,
       "tobaccoBtn": false,
       "list": []
@@ -1796,6 +1796,13 @@
       "category": "cocktails",
       "price": 479,
       "desc": "Освежающий цитрусовый аперитив с яркими нотами красного апельсина, пряных трав и легкой горчинкой тоника."
+    },
+    {
+      "id": "item-1795483090523",
+      "title": "Lipton Малина",
+      "category": "sodas",
+      "price": 250,
+      "desc": "Прохладный напиток"
     }
   ]
 }
