@@ -4054,9 +4054,10 @@ function updateHappyBanner() {
       const callOverlay = document.createElement('div');
       callOverlay.id = 'call-overlay';
       document.body.appendChild(callOverlay);
-      callOverlay.addEventListener('click', (ev) => {
-        if (ev.target === callOverlay) callOverlay.style.display = 'none';
-      });
+     callOverlay.addEventListener('click', (ev) => {
+       if (ev.target === callOverlay) { callOverlay.style.display = 'none'; lockScroll(false); }
+     });
+
 
       function buildCallPanel() {
         const qrTable = getQrTable();
@@ -4424,7 +4425,7 @@ function updateHappyBanner() {
       invOverlay.id = 'inv-overlay';
       document.body.appendChild(invOverlay);
       invOverlay.addEventListener('click', (ev) => {
-        if (ev.target === invOverlay) invOverlay.style.display = 'none';
+        if (ev.target === invOverlay) { invOverlay.style.display = 'none'; lockScroll(false); }
       });
 
       function openInventory() {
@@ -4470,7 +4471,7 @@ function updateHappyBanner() {
             ${hist ? `<div class="inv-hist"><b>Последние сверки:</b><br>${hist}</div>` : ''}
           </div>`;
 
-        invOverlay.querySelector('#inv-close-btn').onclick = () => invOverlay.style.display = 'none';
+        invOverlay.querySelector('#inv-close-btn').onclick = () => { invOverlay.style.display = 'none'; lockScroll(false); };
         invOverlay.querySelector('#inv-excel-btn').onclick = exportInventoryExcel;
         invOverlay.querySelector('#inv-save-btn').onclick = () => submitInventory(items, flavorNames);
         invOverlay.querySelector('#inv-extra-add-btn').onclick = () => {
@@ -4524,6 +4525,7 @@ function updateHappyBanner() {
           };
         });
 
+        lockScroll(true);
         invOverlay.style.display = 'flex';
       }       
 
@@ -4659,6 +4661,7 @@ function updateHappyBanner() {
           
         // tgSend(text);
         invOverlay.style.display = 'none';
+        lockScroll(false);
         alert(mism.length || mismF.length
           ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}. Учёт пересчитан по факту.`
           : '✅ Инвентаризация записана — всё сошлось!');
