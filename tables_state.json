@@ -1,5 +1,43 @@
 {
   "tables": [],
-  "closedTables": [],
-  "updatedAt": 1795477497996
+  "closedTables": [
+    {
+      "table": "2",
+      "lastMsgId": 432,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "beer-280",
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Мельник",
+          "qty": 1,
+          "batchId": "bmwus255z-n2sd"
+        },
+        {
+          "id": "chips-lays",
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "Сыр",
+          "qty": 1,
+          "batchId": "bmwus255z-n2sd"
+        },
+        {
+          "id": "kalyan-two-flavors",
+          "name": "Кальян от двух вкусов",
+          "price": 1600,
+          "size": "",
+          "note": "Sebero — Энергетик 39% + Musthave-Ананасовые колечки 61%",
+          "qty": 1,
+          "batchId": "bmwus255z-n2sd"
+        }
+      ],
+      "guests": 1,
+      "closedAt": "2026-11-24T14:55:40.302Z",
+      "pay": "💳 Перевод"
+    }
+  ],
+  "updatedAt": 1795532145955
 }
