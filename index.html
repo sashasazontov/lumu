@@ -1832,6 +1832,69 @@
       pullRemoteFlavorState();
       pullRemoteStockState(); 
 
+      // === СКЛАДСКИЕ ПОЗИЦИИ (не из меню: хаус-алкоголь, специи, сиропы...) ===
+      const EXTRA_FILE = 'extra_stock_items.json';
+      let extraItems = [];
+      try {
+        extraItems = JSON.parse(localStorage.getItem('lummu_extra_items')) || [];
+      } catch (e) { extraItems = []; }
+
+      let extraPushTimer = null;
+      function saveExtraItems() {
+        localStorage.setItem('lummu_extra_items', JSON.stringify(extraItems));
+        clearTimeout(extraPushTimer);
+        extraPushTimer = setTimeout(pushRemoteExtraItems, 1500);
+      }
+
+      async function pushRemoteExtraItems() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(extraItems, null, 2))));
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const api = `https://api.github.com/repos/${GH_REPO}/contents/${EXTRA_FILE}`;
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api, {
+              method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Складские позиции', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          } else {
+            const api = `${TG_API}/gh/repos/${GH_REPO}/contents/${EXTRA_FILE}`;
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api + `?key=${SECRET}`, {
+              method: 'PUT', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Складские позиции', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          }
+        } catch (e) {}
+      }
+
+      async function pullRemoteExtraItems() {
+        try {
+          let remote = null;
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${EXTRA_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,
+              { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' } });
+            if (r.ok) remote = await r.json();
+          }
+          if (!remote) {
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${EXTRA_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+            if (r.ok) remote = await r.json();
+          }
+          if (remote) {
+            const arr = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(remote.content), c => c.charCodeAt(0))));
+            if (Array.isArray(arr)) {
+              extraItems = arr;
+              localStorage.setItem('lummu_extra_items', JSON.stringify(extraItems));
+            }
+          }
+        } catch (e) {}
+      }
+      pullRemoteExtraItems();
+        
      // === ОСТАТКИ ВКУСОВ ТАБАКА (видны только админу) ===
       const FLAVOR_STOCK_FILE = 'flavors_stock.json';
       let flavorStock = {};
@@ -2754,7 +2817,8 @@
         if (soldItems.length) {
           text += `\n\n📦 Позиции:\n` + soldItems.map(id => {
             const it = menuItems.find(i => i.id === id);
-            return `• ${it ? it.title : id} — с ${when('item:' + id)}`;
+            const ex = extraItems.find(x => x.id === id);
+            return `• ${it ? it.title : ex ? '📦 ' + ex.name : id} — с ${when('item:' + id)}`;
           }).join('\n');
         }
         if (soldFlavors.length) {
@@ -2762,7 +2826,7 @@
         }
         const d = await tgSend(text);
         alert(d.ok ? '🛒 Список отправлен в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка'));
-      });
+      });     
         
       document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
@@ -3946,6 +4010,7 @@ function updateHappyBanner() {
         await pullRemoteItemState();
         await pullRemoteFlavorStockState(); 
         await pullRemoteStockState();
+        await pullRemoteExtraItems();
       }, 20000);
 
       // === ВЫЗОВ КАЛЬЯНЩИКА ===
@@ -4320,8 +4385,8 @@ function updateHappyBanner() {
         if (ev.target === invOverlay) invOverlay.style.display = 'none';
       });
 
-      function openInventory() {
-        const items = menuItems.filter(it => typeof it.price === 'number' && stockOf(it.id) !== null);
+        const items = menuItems.filter(it => typeof it.price === 'number' && stockOf(it.id) !== null)
+          .concat(extraItems.map(x => ({ id: x.id, title: x.name, price: null, isExtra: true })));
         const flavorNames = Object.keys(flavorStock);
         if (!items.length && !flavorNames.length) {
           alert('Учёт остатков не ведётся — сверять нечего. Начните вести остатки (🔢 на карточке), и они попадут в инвентаризацию.');
@@ -4340,7 +4405,7 @@ function updateHappyBanner() {
             <p class="mix-hint">Впишите сколько реально на полке. Пустое поле = пропустить позицию. После сохранения учёт пересчитается по факту.</p>
             ${items.map(it => `
               <div class="inv-row">
-                <span class="inv-name">${esc(it.title)}</span>
+                <span class="inv-name">${it.isExtra ? '📦 ' : ''}${esc(it.title)}</span>
                 <span class="inv-exp">по учёту: ${stockOf(it.id)}</span>
                 <input type="number" min="0" data-inv-item="${it.id}" placeholder="факт">
               </div>`).join('')}
@@ -4352,13 +4417,50 @@ function updateHappyBanner() {
               </div>`).join('')}
             <button id="inv-save-btn" class="mix-primary" style="margin-top: 12px;">✅ Сохранить и отправить отчёт</button>
             <button id="inv-close-btn" class="mix-ghost">← Закрыть</button>
+            <div class="inv-hist"><b>📦 Складские позиции</b> — хаус-алкоголь, специи, сиропы:<br>
+              ${extraItems.map((x, xi) => `• ${esc(x.name)} <button class="inv-extra-del" data-xi="${xi}" title="Убрать из инвентаризации" style="background:none;border:none;color:#777;cursor:pointer;">✕</button>`).join('<br>') || 'пока пусто'}
+            </div>
+            <input type="text" id="inv-extra-name" class="tobacco-input" placeholder="Название (например, Хаус-алкоголь)">
+            <button id="inv-extra-add-btn" class="mix-ghost" style="margin-top:6px;">➕ Добавить складскую позицию</button>            
             ${hist ? `<div class="inv-hist"><b>Последние сверки:</b><br>${hist}</div>` : ''}
           </div>`;
 
         invOverlay.querySelector('#inv-close-btn').onclick = () => invOverlay.style.display = 'none';
         invOverlay.querySelector('#inv-save-btn').onclick = () => submitInventory(items, flavorNames);
+        invOverlay.querySelector('#inv-extra-add-btn').onclick = () => {
+          const inp = invOverlay.querySelector('#inv-extra-name');
+          const name = (inp.value || '').trim();
+          if (!name) { alert('Введите название позиции.'); return; }
+          if (extraItems.some(x => x.name.toLowerCase() === name.toLowerCase())) {
+            alert('Такая позиция уже есть в списке.');
+            return;
+          }
+          const x = { id: 'extra-' + Date.now(), name };
+          extraItems.push(x);
+          saveExtraItems();
+          stockCounts[x.id] = 0;   // остаток начинаем вести с нуля
+          saveStockState();
+          openInventory();
+        };
+        invOverlay.querySelectorAll('.inv-extra-del').forEach(btn => {
+          btn.onclick = () => {
+            const x = extraItems[+btn.dataset.xi];
+            if (!x) return;
+            if (!confirm('Убрать «' + x.name + '» из складских позиций? История сверок в журнале останется.')) return;
+            delete stockCounts[x.id];
+            saveStockState();
+            if (soldItems.includes(x.id)) {
+              soldItems = soldItems.filter(v => v !== x.id);
+              unmarkPurchase('item:' + x.id);
+              saveItemState();
+            }
+            extraItems = extraItems.filter(y => y.id !== x.id);
+            saveExtraItems();
+            openInventory();
+          };
+        });
         invOverlay.style.display = 'flex';
-      }
+      }       
 
       // Последний известный факт из прошлых сверок: для позиций по id, для вкусов по имени
       function prevFactMap() {
