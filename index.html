@@ -3914,7 +3914,7 @@ function updateHappyBanner() {
                 .forEach(name => {
                   const fn = flavorStockOf(i.id, name);
                   if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
-                  flavorStock[name] = Math.max(fn - 1, 0);
+                  flavorStock[name] = Math.max(fn - i.qty, 0);
                   applyFlavorAutoState(i.id, name);
                 });
             });
