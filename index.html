@@ -4514,7 +4514,7 @@ function updateHappyBanner() {
         const invItems = [], invFlavors = [];
         invOverlay.querySelectorAll('[data-inv-item]').forEach(inp => {
           if (inp.value === '') return;
-          const n = Math.max(parseInt(inp.value, 10) || 0, 0);
+          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
           const it = items.find(x => x.id === inp.dataset.invItem);
           if (!it) return;
           const expected = stockOf(it.id);
@@ -4522,7 +4522,7 @@ function updateHappyBanner() {
         });
         invOverlay.querySelectorAll('[data-inv-flavor]').forEach(inp => {
           if (inp.value === '') return;
-          const n = Math.max(parseInt(inp.value, 10) || 0, 0);
+          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
           const fn = inp.dataset.invFlavor;
           const expected = flavorStock[fn] || 0;
           const fl = menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === fn);
