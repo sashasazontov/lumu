@@ -1,8 +1,9 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
-      "lastMsgId": 438,
+      "lastMsgId": 439,
       "orderNo": 1,
       "items": [
         {
@@ -32,10 +33,11 @@
           "qty": 1,
           "batchId": "bmwv5l46d-vx8p"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "discount": 100,
+      "closedAt": "2026-11-24T22:30:13.929Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "2",
       "lastMsgId": 432,
@@ -74,5 +76,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795552485013
+  "updatedAt": 1795559415896
 }
