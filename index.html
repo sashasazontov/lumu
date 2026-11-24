@@ -1012,6 +1012,7 @@
 
             <div id="tab-closed" style="display: none;">
                 <div id="closed-list"></div>
+                <button id="archive-cleanup-btn" style="display: none;">🧹 Удалить старше 30 дней</button>
             </div>
 
             <div id="tab-shift" style="display: none;">
@@ -1407,6 +1408,7 @@
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('shift-close-btn').style.display = 'block';
         document.getElementById('shift-open-btn').style.display = 'block';
+        document.getElementById('archive-cleanup-btn').style.display = admin ? 'block' : 'none';
         if (!localStorage.getItem('lummu_gh_token')) {
           const t = prompt('Для синхронизации столов нужен GitHub-токен (вводится один раз):');
           if (t && t.trim().startsWith('github_pat_')) localStorage.setItem('lummu_gh_token', t.trim());
@@ -2619,6 +2621,22 @@
       }
 
       // === КНОПКА СВОДКИ ===
+
+      document.getElementById('archive-cleanup-btn').addEventListener('click', () => {
+        if (getRole() !== 'admin') return;
+        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const old = closedTables.filter(t => t.closedAt && new Date(t.closedAt).getTime() < cutoff);
+        if (!old.length) {
+          alert('Старше 30 дней ничего нет — чистить нечего 🎉');
+          return;
+        }
+        if (!confirm(`Удалить ${old.length} закрытых столов старше 30 дней? Данные исчезнут безвозвратно.`)) return;
+        closedTables = closedTables.filter(t => !(t.closedAt && new Date(t.closedAt).getTime() < cutoff));
+        saveClosed();
+        renderTables();
+        alert(`✅ Удалено: ${old.length}. Сводки и смены это не задело — они живут в журнале отдельно.`);
+      });
+        
       document.getElementById('weekly-report-btn').addEventListener('click', async () => {
         if (getRole() !== 'admin') return;
         const text = await collectWeekStats();
