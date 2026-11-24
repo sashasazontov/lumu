@@ -1700,6 +1700,12 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       const tgSendStop = t => tgTo(TG_CHAT_STOP, t);
       const tgSendCart = t => tgTo(TG_CHAT_CART, t);
 
+      function tgEdit(chat, messageId, text) {
+        return fetch(`${TG_API}/api/send`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat, text, messageId })
+        }).then(r => r.json()).catch(() => null);
+      }
         
       const GH_LOG = 'tables_log.json';
 
