@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg-dark: #15151a;
+            --bg-dark: #15151a;  
             --card-dark: #202028;
             --accent: #17b8a6;
             --accent-blue: #0aa5c9;
@@ -4595,12 +4595,12 @@ function updateHappyBanner() {
           text += `\n📊 Динамика с прошлой сверки:\n` + deltaLines.join('\n');
         }
           
-        tgSend(text);
+        // tgSend(text);
         invOverlay.style.display = 'none';
         alert(mism.length || mismF.length
-          ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}, отчёт в Telegram.`
+          ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}. Учёт пересчитан по факту.`
           : '✅ Инвентаризация записана — всё сошлось!');
-      }
+      }    
 
       // напоминание по воскресеньям: один раз в день, только админу
       function maybeInventoryReminder() {
