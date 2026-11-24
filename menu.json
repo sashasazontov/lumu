@@ -1183,108 +1183,7 @@
           "name": "Musthave-Арбуз"
         },
         {
-          "name": "Musthave-Мандарин"
-        },
-        {
-          "name": "Musthave-Клубника Лимон Арбуз"
-        },
-        {
-          "name": "Musthave-Киви, Яблоко и Лайм"
-        },
-        {
-          "name": "Musthave-Голубика Лимон и Мята"
-        },
-        {
-          "name": "Musthave-Лесные Ягоды"
-        },
-        {
-          "name": "Musthave-Арбуз Виноград и Чернослив"
-        },
-        {
-          "name": "Musthave-Дыня"
-        },
-        {
-          "name": "Musthave-Напиток Кола"
-        },
-        {
-          "name": "Musthave-Яблочные Леденцы"
-        },
-        {
-          "name": "Musthave-Вишнёвый Сок"
-        },
-        {
-          "name": "Musthave-Грейпфрут"
-        },
-        {
-          "name": "Musthave-Малина"
-        },
-        {
-          "name": "Musthave-Пинкман"
-        },
-        {
-          "name": "Musthave-Ананасовые колечки"
-        },
-        {
-          "name": "Musthave-Кислые ягоды"
-        },
-        {
-          "name": "Musthave-Ягодный морс"
-        },
-        {
-          "name": "Musthave-Освежающая Мята"
-        },
-        {
-          "name": "Sebero — Энергетик"
-        },
-        {
-          "name": "Sebero — Шипучка яблоко"
-        },
-        {
-          "name": "Sebero — Маракуйя"
-        },
-        {
-          "name": "Dark Side — Грейпфрут",
-          "price": 200
-        },
-        {
-          "name": "Dark Side — Сладкий виноград",
-          "price": 200
-        },
-        {
-          "name": "Dark Side — Манго",
-          "price": 200
-        },
-        {
-          "name": "Dark Side — Персик",
-          "price": 200
-        },
-        {
-          "name": "Dark Side — Tropic Ray",
-          "price": 200
-        },
-        {
-          "name": "Dark Side — Redberry",
-          "price": 200
-        }
-      ]
-    },
-    {
-      "id": "kalyan-two-flavors",
-      "category": "hookahs",
-      "title": "Кальян от двух вкусов",
-      "desc": "Кальян на классической чаше, стандартный табак, 70 минут.",
-      "price": 2000,
-      "size": "",
-      "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru-1793642307180.png",
-      "note": "Ваши два вкуса: например, вишня + мята",
-      "promo": false,
-      "tobaccoBtn": true,
-      "list": [
-        {
-          "name": "Musthave-Мандарин Апельсин"
-        },
-        {
-          "name": "Musthave-Арбуз"
+          "name": "Musthave-Садовая клубника"
         },
         {
           "name": "Musthave-Мандарин"
@@ -1368,18 +1267,22 @@
         {
           "name": "Dark Side — Redberry",
           "price": 200
+        },
+        {
+          "name": "Dark Side — Ананас Ментол Киви",
+          "price": 200
         }
       ]
     },
     {
-      "id": "kalyan-standard",
+      "id": "kalyan-two-flavors",
       "category": "hookahs",
-      "title": "Кальян Стандарт",
+      "title": "Кальян от двух вкусов",
       "desc": "Кальян на классической чаше, стандартный табак, 70 минут.",
-      "price": 1500,
+      "price": 2000,
       "size": "",
-      "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru_1793642307180.png",
-      "note": "Ваш вкус: например, двойное яблоко",
+      "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru-1793642307180.png",
+      "note": "Ваши два вкуса: например, вишня + мята",
       "promo": false,
       "tobaccoBtn": true,
       "list": [
@@ -1388,6 +1291,9 @@
         },
         {
           "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Садовая клубника"
         },
         {
           "name": "Musthave-Мандарин"
@@ -1420,6 +1326,24 @@
           "name": "Musthave-Вишнёвый Сок"
         },
         {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
           "name": "Musthave-Освежающая Мята"
         },
         {
@@ -1445,6 +1369,123 @@
         },
         {
           "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Ананас Ментол Киви",
+          "price": 200
+        }
+      ]
+    },
+    {
+      "id": "kalyan-standard",
+      "category": "hookahs",
+      "title": "Кальян Стандарт",
+      "desc": "Кальян на классической чаше, стандартный табак, 70 минут.",
+      "price": 1500,
+      "size": "",
+      "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru_1793642307180.png",
+      "note": "Ваш вкус: например, двойное яблоко",
+      "promo": false,
+      "tobaccoBtn": true,
+      "list": [
+        {
+          "name": "Musthave-Мандарин Апельсин"
+        },
+        {
+          "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Садовая клубника"
+        },
+        {
+          "name": "Musthave-Мандарин"
+        },
+        {
+          "name": "Musthave-Клубника Лимон Арбуз"
+        },
+        {
+          "name": "Musthave-Киви, Яблоко и Лайм"
+        },
+        {
+          "name": "Musthave-Голубика Лимон и Мята"
+        },
+        {
+          "name": "Musthave-Лесные Ягоды"
+        },
+        {
+          "name": "Musthave-Арбуз Виноград и Чернослив"
+        },
+        {
+          "name": "Musthave-Дыня"
+        },
+        {
+          "name": "Musthave-Напиток Кола"
+        },
+        {
+          "name": "Musthave-Яблочные Леденцы"
+        },
+        {
+          "name": "Musthave-Вишнёвый Сок"
+        },
+        {
+          "name": "Musthave-Грейпфрут"
+        },
+        {
+          "name": "Musthave-Малина"
+        },
+        {
+          "name": "Musthave-Пинкман"
+        },
+        {
+          "name": "Musthave-Ананасовые колечки"
+        },
+        {
+          "name": "Musthave-Кислые ягоды"
+        },
+        {
+          "name": "Musthave-Ягодный морс"
+        },
+        {
+          "name": "Musthave-Освежающая Мята"
+        },
+        {
+          "name": "Sebero — Энергетик"
+        },
+        {
+          "name": "Sebero — Шипучка яблоко"
+        },
+        {
+          "name": "Sebero — Маракуйя"
+        },
+        {
+          "name": "Dark Side — Грейпфрут",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Сладкий виноград",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Манго",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Персик",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Tropic Ray"
+        },
+        {
+          "name": "Dark Side — Redberry",
           "price": 200
         },
         {
@@ -1472,6 +1513,9 @@
           "name": "Musthave-Арбуз"
         },
         {
+          "name": "Musthave-Садовая клубника"
+        },
+        {
           "name": "Musthave-Мандарин"
         },
         {
@@ -1553,6 +1597,10 @@
         {
           "name": "Dark Side — Redberry",
           "price": 200
+        },
+        {
+          "name": "Dark Side — Ананас Ментол Киви",
+          "price": 200
         }
       ]
     },
@@ -1567,6 +1615,9 @@
         },
         {
           "name": "Musthave-Арбуз"
+        },
+        {
+          "name": "Musthave-Садовая клубника"
         },
         {
           "name": "Musthave-Мандарин"
@@ -1648,6 +1699,10 @@
         },
         {
           "name": "Dark Side — Redberry",
+          "price": 200
+        },
+        {
+          "name": "Dark Side — Ананас Ментол Киви",
           "price": 200
         }
       ]
