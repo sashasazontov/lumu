@@ -42,6 +42,22 @@
           "batchId": "bmwvd21nu-l9g4"
         }
       ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": 449,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "rum-cola",
+          "name": "Ром-Кола",
+          "price": 379,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvd44ie-6f73"
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -120,5 +136,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795565028682
+  "updatedAt": 1795565125855
 }
