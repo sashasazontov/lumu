@@ -3051,6 +3051,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               <button class="btn-close-table" data-pay="💵 Наличка">💵 Наличка</button>
               <button class="btn-close-table" data-pay="💳 Перевод">💳 Перевод</button>
             </div>`;
+
           card.querySelectorAll('.btn-close-table').forEach(btn => {
             btn.onclick = () => {
               if (!confirm(`Закрыть стол ${t.table}? Оплата: ${btn.dataset.pay}. Позже можно открыть заново из архива.`)) return;
@@ -3074,7 +3075,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                 logClosedToGithub(closed);
               }
             };
-          });
+          });        
 
           card.querySelector('.btn-edit-table').onclick = () => editTable(idx);
           list.appendChild(card);
