@@ -1,21 +1,23 @@
 {
   "tables": [
     {
-      "table": "2",
-      "lastMsgId": 449,
+      "table": "1",
+      "lastMsgId": 454,
       "orderNo": 1,
-      "items": []
+      "items": [
+        {
+          "id": "broken-dishes",
+          "name": "Бой посуды бара и кухни",
+          "price": 500,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwveooe4-oik6"
+        }
+      ]
     }
   ],
   "closedTables": [
-    {
-      "table": "1",
-      "lastMsgId": 447,
-      "orderNo": 2,
-      "items": [],
-      "closedAt": "2026-11-25T00:42:56.595Z",
-      "pay": "💳 Перевод"
-    },
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -91,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795567378099
+  "updatedAt": 1795567763904
 }
