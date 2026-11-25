@@ -1,14 +1,23 @@
 {
-  "tables": [],
-  "closedTables": [
+  "tables": [
     {
       "table": "1",
-      "lastMsgId": 454,
+      "lastMsgId": 471,
       "orderNo": 1,
-      "items": [],
-      "closedAt": "2026-11-25T01:07:31.316Z",
-      "pay": "💵 Наличка"
-    },
+      "items": [
+        {
+          "id": "cork-fee",
+          "name": "Пробковый сбор (за бутылку)",
+          "price": 700,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvi54fi-w3i0"
+        }
+      ]
+    }
+  ],
+  "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -84,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795568852820
+  "updatedAt": 1795573570067
 }
