@@ -1,4 +1,4 @@
-const CACHE = 'lumu-v1';
+const CACHE = 'lumu-v2';
 const ASSETS = ['./index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -16,8 +16,24 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   // API, Telegram и menu.json всегда ходят в сеть — кэш только для оболочки
   if (url.hostname.includes('api.github.com') || url.hostname.includes('api.telegram.org') ||
+      url.hostname.includes('workers.dev') ||
       url.pathname.endsWith('menu.json') || url.pathname.includes('tables_log.json')) return;
 
+  // Страница (index.html) — сеть в приоритете, кэш только если сеть недоступна
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then(resp => {
+        if (resp && resp.ok) {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return resp;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Остальное (иконки и т.п.) — как раньше: сначала кэш, обновление в фоне
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fetched = fetch(e.request).then(resp => {
@@ -30,4 +46,4 @@ self.addEventListener('fetch', (e) => {
       return cached || fetched;
     })
   );
-}); 
+});
