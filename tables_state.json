@@ -2,8 +2,8 @@
   "tables": [
     {
       "table": "1",
-      "lastMsgId": null,
-      "orderNo": 1,
+      "lastMsgId": 447,
+      "orderNo": 2,
       "items": [
         {
           "id": "juices-1000",
@@ -12,7 +12,34 @@
           "size": "1 л",
           "note": "",
           "qty": 1,
-          "batchId": "bmwvcx0ir-znme"
+          "batchId": "bmwvd18yr-bh0x"
+        },
+        {
+          "id": "limonad-classic",
+          "name": "Классический лимонад",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvd18yr-bh0x"
+        },
+        {
+          "id": "limonad-classic",
+          "name": "Классический лимонад",
+          "price": 260,
+          "size": "250 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvd21nu-l9g4"
+        },
+        {
+          "id": "fanta",
+          "name": "Fanta",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvd21nu-l9g4"
         }
       ]
     }
@@ -93,5 +120,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795564943090
+  "updatedAt": 1795565028682
 }
