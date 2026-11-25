@@ -14,7 +14,7 @@
     "olives": 1,
     "beer-320": 33,
     "coca-cola": 21,
-    "fanta": 13,
+    "fanta": 12,
     "mohito-can": 9,
     "adrenaline-b": 24,
     "adrenaline-m": 14,
@@ -22,7 +22,6 @@
     "sambuca": 8,
     "chips-lays": 16,
     "red-bull-m": 5,
-    "tea-black": 0,
     "prunes-olives": 3,
     "lipton": 28,
     "item-1795483090523": 24,
@@ -145,5 +144,5 @@
     "extra-uxdild": 250,
     "extra-17qjio": 200
   },
-  "updatedAt": 1795564894458
+  "updatedAt": 1795572544284
 }
