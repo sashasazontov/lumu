@@ -2305,17 +2305,19 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         alert(`↩ Стол ${restored.table} снова активен.`);
       }
 
-     function logUndoToGithub(closed, closedAt) {
+      function logUndoToGithub(closed, closedAt, reason) {
         const headers = ghLogHeaders();
         if (!headers) return; // журнала нет — метку не записать, но стол всё равно возвращён
         const entry = { undoOf: closedAt, table: closed.table, undoAt: new Date().toISOString() };
+        if (reason) entry.reason = reason;
         const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+
         const putLog = (logArr, sha, attempts) =>
           fetch(api, {
             method: 'PUT',
             headers: { ...headers, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              message: 'Возврат стола ' + closed.table,
+              message: (reason || 'Возврат стола') + ' · стол ' + closed.table,
               content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
               branch: GH_BRANCH,
               sha
@@ -2332,6 +2334,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             }
             console.warn('Метка возврата не записалась:', e);
           });
+
         if (lastLogSha && Array.isArray(lastLogData)) {
           return putLog([entry, ...lastLogData].slice(0, 500), lastLogSha, 1);
         }
@@ -2342,6 +2345,24 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         });
       }
 
+      // Стереть закрытие из всех отчётов (для тестовых/ошибочных закрытий)
+      // Сумма вычтется из сводок и смен, а след об удалении останется в журнале
+      async function eraseClosedFromReports(t) {
+        const total = tableTotal(t);
+        const d = new Date(t.closedAt);
+        if (!confirm(`Стереть закрытие стола ${t.table} на ${total.toLocaleString('ru-RU')} ₽\n(${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}) из всех отчётов?` +
+          `\n\nИз сводок и смен сумма исчезнет, а запись об удалении останется в журнале.`)) return;
+        const role = await askRole();
+        if (role !== 'admin') return;
+        const i = closedTables.findIndex(c => c.closedAt === t.closedAt && c.table === t.table);
+        if (i === -1) { alert('Эта запись уже удалена.'); return; }
+        const removed = closedTables.splice(i, 1)[0];
+        saveClosed();
+        renderTables();
+        logUndoToGithub(removed, t.closedAt, 'Удаление закрытия из отчётов');
+        tgSend(`🗑 Из отчётов стёрли закрытие: стол ${removed.table} · ${total.toLocaleString('ru-RU')} ₽ · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\nСумма вычтена из сводок и смен. След — в журнале.`);
+      }
+        
       // закрытия, которые отменили (для фильтрации в отчётах)
       function undoneClosedAts(log) {
         const s = new Set();
@@ -2814,6 +2835,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         }
         text += `💵 Выручка: ${revenue.toLocaleString('ru-RU')} ₽\n`;
         text += `🪑 Столов закрыто: ${rows.length}\n`;
+        const erasedMarks = log.filter(e => e && e.undoOf && new Date(e.undoOf).getTime() > since);
+        if (erasedMarks.length) {
+          text += `🗑 Стёрто из отчётов: ${erasedMarks.length} — столы: ${[...new Set(erasedMarks.map(e => e.table))].join(', ')}\n`;
+        }
         text += `💵 Наличка: ${cash.toLocaleString('ru-RU')} ₽ · 💳 Перевод: ${card.toLocaleString('ru-RU')} ₽\n`;
         if (openMark) {
         text += `🧮 Размен на старте: ${startCash.toLocaleString('ru-RU')} ₽ · Ожидалось в ящике: ${expected.toLocaleString('ru-RU')} ₽\n`;
@@ -3109,7 +3134,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             <div class="table-actions">
               <button class="btn-restore-table">↩ Открыть заново</button>
               <button class="btn-delete-table">Удалить совсем</button>
+              ${getRole() === 'admin' ? '<button class="btn-remove-report" style="border:1px solid var(--accent-green); color:var(--accent-green);">🧪 Стереть из отчётов</button>' : ''}
             </div>`;
+
+
           card.querySelector('.btn-restore-table').onclick = () => {
             tables.push(closedTables.splice(idx, 1)[0]);
             saveTables();
@@ -3123,6 +3151,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               renderTables();
             }
           };
+          const rmBtn = card.querySelector('.btn-remove-report');
+          if (rmBtn) rmBtn.onclick = () => eraseClosedFromReports(t);
          closedList.appendChild(card);
           if (getRole() !== 'admin') {
             const tot = card.querySelector('.table-total');
