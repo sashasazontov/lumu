@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": 479,
@@ -14,10 +15,10 @@
           "qty": 1,
           "batchId": "bmwvi9j4e-n99j"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-25T02:30:43.526Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -93,5 +94,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795573775769
+  "updatedAt": 1795573845030
 }
