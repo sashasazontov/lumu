@@ -2257,6 +2257,98 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         });
       } 
 
+      // === ОТМЕНА ПОСЛЕДНЕГО ЗАКРЫТИЯ СТОЛА ===
+      let undoData = null;
+      let undoTimer = null;
+
+      function showUndoToast(closed) {
+        hideUndoToast();
+        undoData = { closed, closedAt: closed.closedAt };
+        const toast = document.createElement('div');
+        toast.id = 'undo-toast';
+        toast.style.cssText = 'position:fixed; left:50%; transform:translateX(-50%); bottom:calc(80px + env(safe-area-inset-bottom)); z-index:250; background:var(--card-dark); border:1px solid var(--accent-green); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5); max-width:92vw;';
+        toast.innerHTML = `
+          <span style="font-size:0.9rem;">Стол <strong>${esc(closed.table)}</strong> закрыт${closed.pay ? ' · ' + closed.pay : ''}</span>
+          <button id="undo-close-btn" style="padding:8px 14px; background:none; border:1px solid var(--accent-green); color:var(--accent-green); border-radius:8px; cursor:pointer; font-weight:600; white-space:nowrap;">↩ Отменить</button>`;
+        document.body.appendChild(toast);
+        document.getElementById('undo-close-btn').onclick = undoLastClose;
+        undoTimer = setTimeout(hideUndoToast, 15000);
+      }
+
+      function hideUndoToast() {
+        clearTimeout(undoTimer);
+        undoTimer = null;
+        undoData = null;
+        const t = document.getElementById('undo-toast');
+        if (t) t.remove();
+      }
+
+      async function undoLastClose() {
+        const data = undoData;
+        if (!data) return;
+        hideUndoToast();
+        const role = await askRole();
+        if (!role) return;
+        const i = closedTables.findIndex(t => t.closedAt === data.closedAt && t.table === data.closed.table);
+        if (i === -1) { alert('Закрытие уже синхронизировалось — вернуть стол можно из архива.'); return; }
+        const restored = closedTables.splice(i, 1)[0];
+        delete restored.closedAt;
+        delete restored.pay;
+        delete restored.discount;
+        delete restored.guests;
+        tables.unshift(restored);
+        saveTables();
+        saveClosed();
+        renderTables();
+        if (restored.lastMsgId) sendTableUpdate(restored); // сообщение в Telegram вернётся в вид заказа
+        logUndoToGithub(restored);
+        alert(`↩ Стол ${restored.table} снова активен.`);
+      }
+
+      function logUndoToGithub(closed) {
+        const headers = ghLogHeaders();
+        if (!headers) return; // журнала нет — метку не записать, но стол всё равно возвращён
+        const entry = { undoOf: closed.closedAt, table: closed.table, undoAt: new Date().toISOString() };
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
+        const putLog = (logArr, sha, attempts) =>
+          fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'Возврат стола ' + closed.table,
+              content: btoa(unescape(encodeURIComponent(JSON.stringify(logArr, null, 2)))),
+              branch: GH_BRANCH,
+              sha
+            })
+          })
+          .then(r => { if (!r.ok) throw new Error('conflict ' + r.status); })
+          .catch(e => {
+            if (attempts > 0) {
+              return fetchClosedLog().then(fresh => {
+                const arr = (Array.isArray(fresh) ? fresh : []).slice();
+                arr.unshift(entry);
+                return putLog(arr.slice(0, 500), lastLogSha, attempts - 1);
+              });
+            }
+            console.warn('Метка возврата не записалась:', e);
+          });
+        if (lastLogSha && Array.isArray(lastLogData)) {
+          return putLog([entry, ...lastLogData].slice(0, 500), lastLogSha, 1);
+        }
+        return fetchClosedLog().then(arr => {
+          const fresh = (Array.isArray(arr) ? arr : []).slice();
+          fresh.unshift(entry);
+          return putLog(fresh.slice(0, 500), lastLogSha, 1);
+        });
+      }
+
+      // закрытия, которые отменили (для фильтрации в отчётах)
+      function undoneClosedAts(log) {
+        const s = new Set();
+        (log || []).forEach(e => { if (e && e.undoOf) s.add(e.undoOf); });
+        return s;
+      }
+        
       // Точка последнего сведения недели (метка weekResetAt в журнале)
       function weekResetPoint(log) {
         let last = 0;
@@ -2274,8 +2366,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const now = Date.now();
         const mark = weekResetPoint(log);
         const since = mark > 0 ? mark : now - WEEKLY_MS;
+        const undone = undoneClosedAts(log);
         const week = log.filter(t =>
-          t.closedAt && new Date(t.closedAt).getTime() > since);
+        t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() > since);
         if (!week.length) return null;
 
         const revenue = week.reduce((s, t) => s + tableTotal(t), 0);  
@@ -2363,7 +2456,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
         const log = await fetchClosedLog();
         const since = Date.now() - days * 24 * 60 * 60 * 1000;
-        const rows = log.filter(t => t.closedAt && new Date(t.closedAt).getTime() >= since)
+        const undone = undoneClosedAts(log);
+        const rows = log.filter(t => t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() >= since)
           .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
 
         const data = [['Дата', 'Время', 'Стол', 'Оплата', 'Гостей', 'Состав заказа', 'Сумма, ₽']];
@@ -2972,6 +3066,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                 saveTables();
                 saveClosed();
                 renderTables();
+                showUndoToast(closed);
                 sendTableClosed(closed);
                 logClosedToGithub(closed);
               }
