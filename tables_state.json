@@ -40,6 +40,22 @@
           "batchId": "bmwwf8fpe-2j13"
         }
       ]
+    },
+    {
+      "table": "1",
+      "lastMsgId": 502,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-standard",
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Мандарин Апельсин 100%",
+          "qty": 1,
+          "batchId": "bmwwfh88p-pnqg"
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -118,5 +134,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795629151996
+  "updatedAt": 1795629562282
 }
