@@ -4470,7 +4470,11 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                 if (n === null) return;
                 stockCounts[i.id] = Math.max(n - i.qty, 0);
                 const it0 = menuItems.find(x => x.id === i.id);
-                if (it0) applyStockAutoState(it0, n); // n — остаток до списания
+                if (it0) {
+                   applyStockAutoState(it0, n); // n — остаток до списания
+                   refreshStockUI(it0);         // НОВОЕ: сразу перерисовать остаток на карточке
+                 }
+
 
                 // автосписание вкусов из заметки микса
                 const note = i.note || '';
@@ -4489,6 +4493,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               saveStockState();
               saveFlavorStockState();
               updateCartButtons();
+              if (mixItemId && menuItems.find(x => x.id === mixItemId) && mixOverlay.style.display === 'flex') {
+              renderMixBuilder(menuItems.find(x => x.id === mixItemId));
+              }
               alert(isNew
                 ? `✅ Новый заказ отправлен! Стол ${table.table}`
                 : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
