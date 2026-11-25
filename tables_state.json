@@ -1,6 +1,24 @@
 {
   "tables": [
     {
+      "table": "2",
+      "lastMsgId": 487,
+      "orderNo": 2,
+      "items": [
+        {
+          "id": "kalyan-premium",
+          "name": "Кальян Премиум",
+          "price": 2900,
+          "size": "",
+          "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
+          "qty": 1,
+          "batchId": "bmwvizyly-30do"
+        }
+      ]
+    }
+  ],
+  "closedTables": [
+    {
       "table": "1",
       "lastMsgId": 482,
       "orderNo": 5,
@@ -50,35 +68,10 @@
           "qty": 1,
           "batchId": "bmwviy12e-s7x9"
         }
-      ]
+      ],
+      "closedAt": "2026-11-25T03:03:31.858Z",
+      "pay": "💵 Наличка"
     },
-    {
-      "table": "2",
-      "lastMsgId": 487,
-      "orderNo": 2,
-      "items": [
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2900,
-          "size": "",
-          "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
-          "qty": 1,
-          "batchId": "bmwvizyly-30do"
-        },
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1,
-          "batchId": "bmwvjfaoi-7yed"
-        }
-      ]
-    }
-  ],
-  "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -154,5 +147,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795575724315
+  "updatedAt": 1795575813362
 }
