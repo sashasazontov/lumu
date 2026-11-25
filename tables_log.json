@@ -1,5 +1,23 @@
 [
   {
+    "table": "1",
+    "lastMsgId": 471,
+    "orderNo": 2,
+    "items": [
+      {
+        "id": "cork-fee",
+        "name": "Пробковый сбор (за бутылку)",
+        "price": 700,
+        "size": "",
+        "note": "",
+        "qty": 1,
+        "batchId": "bmwvi54fi-w3i0"
+      }
+    ],
+    "closedAt": "2026-11-25T02:28:51.845Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "undoOf": "2026-11-25T02:28:08.102Z",
     "table": "1",
     "undoAt": "2026-11-25T02:28:10.622Z"
