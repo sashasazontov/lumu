@@ -2412,10 +2412,11 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const cur = paySplit(week);
         const curTotal = cur.cash + cur.card;
         const prevFrom = since - (now - since);
-        const prevRows = log.filter(t => {
+          const prevRows = log.filter(t => {
           const ts = new Date(t.closedAt).getTime();
-          return ts > prevFrom && ts <= since;
+          return ts > prevFrom && ts <= since && !undone.has(t.closedAt);
         });
+
         const prev = paySplit(prevRows);
         const prevTotal = prev.cash + prev.card;
         const pct = (part, total) => total ? Math.round(part / total * 100) : 0;
@@ -2524,8 +2525,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
         const log = await fetchClosedLog();
         const since = weekResetPoint(log);
+        const undone = undoneClosedAts(log);
         const rows = log
-          .filter(t => t.closedAt && new Date(t.closedAt).getTime() > since)
+          .filter(t => t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() > since)
           .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
 
         if (!rows.length) {
@@ -2755,8 +2757,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         if (openMark && openMark.t > lastClose) {
           since = openMark.t; // период считаем с открытия смены
         }
+        const undone = undoneClosedAts(log);
         const rows = log
-          .filter(t => t.closedAt && new Date(t.closedAt).getTime() > since)
+          .filter(t => t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() > since)
           .sort((a, b) => new Date(a.closedAt) - new Date(b.closedAt));
 
         if (!rows.length) {
