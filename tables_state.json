@@ -55,7 +55,7 @@
     {
       "table": "2",
       "lastMsgId": 487,
-      "orderNo": 1,
+      "orderNo": 2,
       "items": [
         {
           "id": "kalyan-premium",
@@ -65,6 +65,15 @@
           "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
           "qty": 1,
           "batchId": "bmwvizyly-30do"
+        },
+        {
+          "id": "kalyan-premium",
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Musthave-Мандарин Апельсин 100%",
+          "qty": 1,
+          "batchId": "bmwvjfaoi-7yed"
         }
       ]
     }
@@ -145,5 +154,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795575012942
+  "updatedAt": 1795575724315
 }
