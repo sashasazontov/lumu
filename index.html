@@ -1119,6 +1119,11 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             <h2>Редактор меню</h2>
             <div id="admin-cat-list"></div>
             <div id="admin-list"></div>
+            <hr style="border: none; border-top: 1px solid #2a2a30; margin: 1.5rem 0 0.75rem;">
+            <h3 style="color: var(--accent); margin-bottom: 8px;">🎁 Акции и счастливые часы</h3>
+            <div id="promos-admin"></div>
+            <button id="promos-add-btn">➕ Добавить акцию</button>
+            <button id="promos-save-btn">🚀 Сохранить акции на GitHub</button>
             <button id="admin-add-btn">➕ Добавить позицию</button>
             <button id="admin-download-btn">💾 Скачать menu.json</button>
             <button id="admin-save-github-btn">🚀 Сохранить на GitHub</button>
@@ -1514,6 +1519,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         headerNav.style.display = 'flex';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
+        promosDraft = null;
         renderAdmin();
       }
 
@@ -1528,6 +1534,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           return;
         }
 
+        if (!promosDraft) promosDraft = JSON.parse(JSON.stringify(HAPPY_HOURS));
+        renderPromosAdmin();
+          
         adminItems = JSON.parse(JSON.stringify(menuItems)); // рабочая копия
 
         const catOptions = menuCategories
@@ -3034,6 +3043,113 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           .catch(e => alert('Ошибка сети: ' + e));
       });
 
+      // === РЕДАКТОР АКЦИЙ ===
+      function renderPromosAdmin() {
+        const box = document.getElementById('promos-admin');
+        if (!box) return;
+        const daysRu = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        box.innerHTML = promosDraft.map((p, i) => `
+          <div class="admin-card" data-promo="${i}">
+            <div class="admin-row">
+              <div><label>Название</label><input data-pf="title" value="${esc(p.title || '')}"></div>
+              <div><label>Скидка, %</label><input data-pf="discount" type="number" min="1" max="99" value="${p.discount || 10}"></div>
+            </div>
+            <div class="admin-row">
+              <div><label>Час начала (0–23)</label><input data-pf="from" type="number" min="0" max="23" value="${p.from ?? 16}"></div>
+              <div><label>Час конца (1–24, 24 = полночь)</label><input data-pf="to" type="number" min="1" max="24" value="${p.to ?? 19}"></div>
+            </div>
+            <label>Дни недели</label>
+            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
+              ${daysRu.map((d, di) => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pd="${di}" ${(p.days || []).includes(di) ? 'checked' : ''}> ${d}</label>`).join('')}
+            </div>
+            <label>Категории (ничего не отмечено = всё меню)</label>
+            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
+              ${menuCategories.map(c => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pc="${c.id}" ${(p.categories || []).includes(c.id) ? 'checked' : ''}> ${esc(c.title)}</label>`).join('')}
+            </div>
+            <button class="admin-del-btn promo-del-btn">🗑 Удалить акцию</button>
+          </div>`).join('') || '<p class="empty-hint">Акций нет — добавьте первую.</p>';
+      }
+
+      document.getElementById('promos-admin').addEventListener('input', (e) => {
+        const card = e.target.closest('[data-promo]');
+        if (!card) return;
+        const p = promosDraft[+card.dataset.promo];
+        if (!p) return;
+        if (e.target.dataset.pf) {
+          p[e.target.dataset.pf] = e.target.dataset.pf === 'title' ? e.target.value : Number(e.target.value);
+        }
+        if (e.target.dataset.pd !== undefined) {
+          const d = +e.target.dataset.pd;
+          p.days = p.days || [];
+          if (e.target.checked && !p.days.includes(d)) p.days.push(d);
+          if (!e.target.checked) p.days = p.days.filter(x => x !== d);
+        }
+        if (e.target.dataset.pc) {
+          p.categories = p.categories || [];
+          if (e.target.checked && !p.categories.includes(e.target.dataset.pc)) p.categories.push(e.target.dataset.pc);
+          if (!e.target.checked) p.categories = p.categories.filter(x => x !== e.target.dataset.pc);
+        }
+      });
+
+      document.getElementById('promos-admin').addEventListener('click', (e) => {
+        const del = e.target.closest('.promo-del-btn');
+        if (!del) return;
+        const card = del.closest('[data-promo]');
+        if (confirm('Удалить акцию «' + (promosDraft[+card.dataset.promo].title || 'без названия') + '»?')) {
+          promosDraft.splice(+card.dataset.promo, 1);
+          renderPromosAdmin();
+        }
+      });
+
+      document.getElementById('promos-add-btn').addEventListener('click', () => {
+        promosDraft.push({ title: 'Новая акция', discount: 10, days: [0, 1, 2, 3, 4, 5, 6], from: 16, to: 19, categories: [] });
+        renderPromosAdmin();
+      });
+
+      document.getElementById('promos-save-btn').addEventListener('click', () => {
+        if (getRole() !== 'admin') return;
+        const bad = promosDraft.some(p => !p.title || !p.days || !p.days.length);
+        if (bad) { alert('У каждой акции должны быть название и хотя бы один день недели.'); return; }
+
+        let ghToken = localStorage.getItem('lummu_gh_token');
+        if (!ghToken) {
+          ghToken = prompt('Вставьте GitHub-токен (github_pat_...):');
+          if (!ghToken) return;
+          ghToken = ghToken.trim();
+          if (!ghToken.startsWith('github_pat_')) {
+            alert('Строка не похожа на токен. Нажмите кнопку ещё раз и вставьте его целиком.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', ghToken);
+        }
+
+        const data = { promos: promosDraft, updatedAt: Date.now() };
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        const headers = { 'Authorization': 'Bearer ' + ghToken, 'Accept': 'application/vnd.github+json' };
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${PROMOS_FILE}`;
+
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Обновление акций', content, branch: GH_BRANCH, sha: file.sha })
+          }))
+          .then(r => r.json())
+          .then(res => {
+            if (res.commit) {
+              HAPPY_HOURS = JSON.parse(JSON.stringify(promosDraft));
+              localStorage.setItem('lummu_promos_stamp', String(data.updatedAt));
+              updateHappyBanner();
+              alert('✅ Акции сохранены! На устройствах гостей обновятся в течение минуты.');
+            } else {
+              if ((res.message || '') === 'Bad credentials') localStorage.removeItem('lummu_gh_token');
+              alert('Ошибка GitHub: ' + (res.message || 'неизвестная'));
+            }
+          })
+          .catch(e => alert('Ошибка сети: ' + e));
+      });
+        
       // локальное применение правок без перезагрузки (живёт до очистки браузера)
       function saveMenuOverride() {
         localStorage.setItem('lummu_menu', JSON.stringify({ categories: menuCategories, items: menuItems }));
@@ -3397,13 +3513,43 @@ function updateOpenStatus() {
         document.body.style.overflow = on ? 'hidden' : '';
       }
 
-// === СЧАСТЛИВЫЕ ЧАСЫ ===
-// days: 0=воскресенье ... 6=суббота; from/to — часы (to не включается)
-// discount — процент скидки; categories — id категорий из menu.json (не задано = на всё)
-const HAPPY_HOURS = [
+// === СЧАСТЛИВЫЕ ЧАСЫ (теперь редактируются в админке, файл promos.json) ===
+const PROMOS_FILE = 'promos.json';
+const DEFAULT_PROMOS = [
   { title: 'Счастливые часы', discount: 10, days: [0, 1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookahs'] },
-  { title: 'Ночные кальяны',  discount: 10, days: [0, 5, 6],          from:22, to: 24, categories: ['hookahs'] }
+  { title: 'Ночные кальяны',  discount: 10, days: [0, 5, 6],          from: 22, to: 24, categories: ['hookahs'] }
 ];
+let HAPPY_HOURS = JSON.parse(JSON.stringify(DEFAULT_PROMOS));
+let promosDraft = null;
+
+async function loadPromos() {
+  try {
+    const r = await fetch(PROMOS_FILE + '?v=' + Date.now());
+    if (!r.ok) return;
+    const data = await r.json();
+    if (data && Array.isArray(data.promos)) {
+      HAPPY_HOURS = data.promos;
+      localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
+      updateHappyBanner();
+      if (promosPage.style.display === 'flex') showPromos(); // перерисовать открытую страницу акций
+    }
+  } catch (e) {}
+}
+
+async function pullRemotePromos() {
+  try {
+    const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${PROMOS_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+    if (!r.ok) return;
+    const file = await r.json();
+    const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+    if (data && Array.isArray(data.promos)
+        && (data.updatedAt || 0) > Number(localStorage.getItem('lummu_promos_stamp') || 0)) {
+      HAPPY_HOURS = data.promos;
+      localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
+      updateHappyBanner();
+    }
+  } catch (e) {}
+}
 
 function isHappyActive(rule) {
   // считаем время по Москве, а не по устройству гостя
@@ -3588,9 +3734,10 @@ function updateHappyBanner() {
         }
       }
         
-      showHero()
+           showHero();
       loadMenu();
       pullRemoteState();
+      loadPromos();          // ← добавить эту строку
       updateHappyBanner();
       updateOpenStatus();
       setInterval(updateOpenStatus, 60000); // обновлять каждую минуту
@@ -4155,6 +4302,7 @@ function updateHappyBanner() {
         await pullRemoteFlavorStockState(); 
         await pullRemoteStockState();
         await pullRemoteExtraItems();
+        await pullRemotePromos();
       }, 20000);
 
       // === ВЫЗОВ КАЛЬЯНЩИКА ===
