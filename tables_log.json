@@ -1,5 +1,42 @@
 [
   {
+    "table": "3",
+    "lastMsgId": 500,
+    "orderNo": 2,
+    "items": [
+      {
+        "id": "beer-280",
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "Грин бит",
+        "qty": 3,
+        "batchId": "bmwwf3rgo-rp3b"
+      },
+      {
+        "id": "chips-lays",
+        "name": "Чипсы на выбор (LAYS)",
+        "price": 350,
+        "size": "",
+        "note": "Сметана лук",
+        "qty": 1,
+        "batchId": "bmwwf3rgo-rp3b"
+      },
+      {
+        "id": "beer-280",
+        "name": "Пиво за 280",
+        "price": 280,
+        "size": "",
+        "note": "Греен Бит",
+        "qty": 1,
+        "batchId": "bmwwft2kp-01pj"
+      }
+    ],
+    "guests": 3,
+    "closedAt": "2026-11-25T18:33:47.539Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-25T17:47:02.773Z",
     "openedBy": "Александр",
     "startCash": 0
