@@ -4463,44 +4463,44 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             if (data.ok) {
               if (isNew) table.lastMsgId = data.result.message_id;
               saveTables();
-              (added || []).forEach(i => {      // списание остатков
-                if (!i.id) return;
-                const n = stockOf(i.id);
-                if (n === null) return;
-                stockCounts[i.id] = Math.max(n - i.qty, 0);
-                const it0 = menuItems.find(x => x.id === i.id);
-                if (it0) {
-                   applyStockAutoState(it0, n); // n — остаток до списания
-                   refreshStockUI(it0);         // НОВОЕ: сразу перерисовать остаток на карточке
-                 }
+(added || []).forEach(i => {
+  if (!i.id) return;
 
-
-// автосписание вкусов из заметки (и из конструктора, и напечатанных вручную)
-const note = i.note || '';
-if (!note) return;
-const it1 = menuItems.find(x => x.id === i.id);
-const flavorNames = (it1 && it1.list) ? it1.list.map(l => typeof l === 'string' ? l : l.name) : [];
-// 1) узнаём вкусы по именам из списка этого кальяна
-const used = new Set();
-flavorNames.forEach(name => {
-  if (name && note.includes(name)) used.add(name);
-});
-// 2) запасной путь: старый разбор «Апельсин 50% + Мандарин 50%»
-if (!used.size) {
-  note.split('+')
-    .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
-    .filter(Boolean)
-    .forEach(name => {
-      if (flavorStockOf(i.id, name) !== null) used.add(name);
+  // 1) списание вкусов — работает даже если учёт самой позиции не ведётся
+  const note = i.note || '';
+  if (note) {
+    const it1 = menuItems.find(x => x.id === i.id);
+    const flavorNames = (it1 && it1.list) ? it1.list.map(l => typeof l === 'string' ? l : l.name) : [];
+    const used = new Set();
+    flavorNames.forEach(name => {
+      if (name && note.includes(name)) used.add(name);
     });
-}
-used.forEach(name => {
-  const fn = flavorStockOf(i.id, name);
-  if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
-  flavorStock[name] = Math.max(fn - i.qty, 0);
-  applyFlavorAutoState(i.id, name);
+    if (!used.size) {
+      note.split('+')
+        .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
+        .filter(Boolean)
+        .forEach(name => {
+          if (flavorStockOf(i.id, name) !== null) used.add(name);
+        });
+    }
+    used.forEach(name => {
+      const fn = flavorStockOf(i.id, name);
+      if (fn === null) return;
+      flavorStock[name] = Math.max(fn - i.qty, 0);
+      applyFlavorAutoState(i.id, name);
+    });
+  }
+
+  // 2) списание позиции — только если учёт позиции ведётся
+  const n = stockOf(i.id);
+  if (n === null) return;
+  stockCounts[i.id] = Math.max(n - i.qty, 0);
+  const it0 = menuItems.find(x => x.id === i.id);
+  if (it0) {
+    applyStockAutoState(it0, n);
+    refreshStockUI(it0);
+  }
 });
-              });
 
               saveStockState();
               saveFlavorStockState();
