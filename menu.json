@@ -89,7 +89,7 @@
       "price": 300,
       "size": "",
       "img": "https://images.unsplash.com/photo-1600210481019-37bd1c76906d?q=80&w=800&auto=format&fit=crop",
-      "note": "какой вкус ?",
+      "note": "",
       "promo": true,
       "tobaccoBtn": false,
       "list": [
@@ -1336,7 +1336,7 @@
       "price": 2000,
       "size": "",
       "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru-1793642307180.png",
-      "note": "Ваши два вкуса: например, вишня + мята",
+      "note": "",
       "promo": false,
       "tobaccoBtn": true,
       "list": [
