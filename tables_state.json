@@ -5,18 +5,8 @@
       "table": "1",
       "lastMsgId": 454,
       "orderNo": 1,
-      "items": [
-        {
-          "id": "broken-dishes",
-          "name": "Бой посуды бара и кухни",
-          "price": 500,
-          "size": "",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwveooe4-oik6"
-        }
-      ],
-      "closedAt": "2026-11-25T00:50:11.836Z",
+      "items": [],
+      "closedAt": "2026-11-25T01:07:31.316Z",
       "pay": "💵 Наличка"
     },
     {
@@ -94,5 +84,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795567813337
+  "updatedAt": 1795568852820
 }
