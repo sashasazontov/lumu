@@ -405,7 +405,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 19
+      "minStock": 5
     },
     {
       "id": "coca-cola",
@@ -419,7 +419,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 21
+      "minStock": 5
     },
     {
       "id": "fanta",
@@ -433,7 +433,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 13
+      "minStock": 3
     },
     {
       "id": "lipton",
@@ -447,7 +447,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 28
+      "minStock": 5
     },
     {
       "id": "item-1795483090523",
@@ -455,7 +455,7 @@
       "category": "sodas",
       "price": 250,
       "desc": "Прохладный напиток",
-      "minStock": 24
+      "minStock": 5
     },
     {
       "id": "mohito-can",
@@ -469,7 +469,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 9
+      "minStock": 2
     },
     {
       "id": "adrenaline-b",
@@ -483,7 +483,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 24
+      "minStock": 5
     },
     {
       "id": "adrenaline-m",
@@ -511,7 +511,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 15
+      "minStock": 5
     },
     {
       "id": "red-bull-m",
@@ -539,7 +539,7 @@
       "title": "Вода без газа Bonvida ",
       "category": "sodas",
       "price": 199,
-      "minStock": 3
+      "minStock": 5
     },
     {
       "id": "rum-cola",
@@ -780,7 +780,8 @@
       "note": "Ваше пиво:",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "minStock": 20
     },
     {
       "id": "beer-320",
@@ -793,7 +794,8 @@
       "note": "Ваше пиво:",
       "promo": false,
       "tobaccoBtn": false,
-      "list": []
+      "list": [],
+      "minStock": 20
     },
     {
       "id": "shot-fly-girl",
@@ -1090,7 +1092,8 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "sold": false
+      "sold": false,
+      "minStock": 1
     },
     {
       "id": "suhari",
@@ -1104,7 +1107,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 16
+      "minStock": 5
     },
     {
       "id": "chips-lays",
@@ -1118,7 +1121,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 16
+      "minStock": 5
     },
     {
       "id": "set-orehnik",
@@ -1185,7 +1188,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 3
+      "minStock": 1
     },
     {
       "id": "olives",
@@ -1213,7 +1216,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 3
+      "minStock": 1
     },
     {
       "id": "kalyan-premium",
