@@ -3,7 +3,7 @@
     {
       "table": "1",
       "lastMsgId": 482,
-      "orderNo": 4,
+      "orderNo": 5,
       "items": [
         {
           "id": "kalyan-premium",
@@ -40,6 +40,31 @@
           "note": "Musthave-Мандарин Апельсин 100%",
           "qty": 1,
           "batchId": "bmwvix386-8mip"
+        },
+        {
+          "id": "kalyan-premium",
+          "name": "Кальян Премиум",
+          "price": 2700,
+          "size": "",
+          "note": "Sebero — Шипучка яблоко 50% + Dark Side — Redberry 50%",
+          "qty": 1,
+          "batchId": "bmwviy12e-s7x9"
+        }
+      ]
+    },
+    {
+      "table": "2",
+      "lastMsgId": 487,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-premium",
+          "name": "Кальян Премиум",
+          "price": 2900,
+          "size": "",
+          "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
+          "qty": 1,
+          "batchId": "bmwvizyly-30do"
         }
       ]
     }
@@ -120,5 +145,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795574874841
+  "updatedAt": 1795575012942
 }
