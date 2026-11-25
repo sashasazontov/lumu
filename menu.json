@@ -1225,7 +1225,7 @@
       "price": 2500,
       "size": "",
       "img": "https://i.ibb.co/G3ngcgCS/deepchat-ru-1793642097544.png",
-      "note": "Ваши вкусы: например, грейпфрут + мята",
+      "note": "",
       "promo": false,
       "tobaccoBtn": true,
       "sold": false,
@@ -1446,7 +1446,7 @@
       "price": 1500,
       "size": "",
       "img": "https://i.ibb.co/LzFYHKQ2/deepchat-ru_1793642307180.png",
-      "note": "Ваш вкус: например, двойное яблоко",
+      "note": "",
       "promo": false,
       "tobaccoBtn": true,
       "list": [
@@ -1556,7 +1556,7 @@
       "price": 400,
       "size": "",
       "img": "https://nn-kalyan.ru/wp-content/uploads/2021/01/100-vkusnykh-miksov-dlya-vashego-kalyana-1.jpg",
-      "note": "Какой вкус добавить: например, маракуйя",
+      "note": "",
       "promo": false,
       "tobaccoBtn": true,
       "list": [
