@@ -2291,7 +2291,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         if (!role) return;
         const i = closedTables.findIndex(t => t.closedAt === data.closedAt && t.table === data.closed.table);
         if (i === -1) { alert('Закрытие уже синхронизировалось — вернуть стол можно из архива.'); return; }
-        const restored = closedTables.splice(i, 1)[0];
+        const restored = closedTables.splice(i, 1)[0];   // ← НЕ трогаем, как было
         delete restored.closedAt;
         delete restored.pay;
         delete restored.discount;
@@ -2300,15 +2300,15 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         saveTables();
         saveClosed();
         renderTables();
-        if (restored.lastMsgId) sendTableUpdate(restored); // сообщение в Telegram вернётся в вид заказа
-        logUndoToGithub(restored);
+        logUndoToGithub(restored, data.closedAt);        // ← ИЗМЕНИТЬ: добавить второй аргумент
+        if (restored.lastMsgId) sendTableUpdate(restored);
         alert(`↩ Стол ${restored.table} снова активен.`);
       }
 
-      function logUndoToGithub(closed) {
+     function logUndoToGithub(closed, closedAt) {
         const headers = ghLogHeaders();
         if (!headers) return; // журнала нет — метку не записать, но стол всё равно возвращён
-        const entry = { undoOf: closed.closedAt, table: closed.table, undoAt: new Date().toISOString() };
+        const entry = { undoOf: closedAt, table: closed.table, undoAt: new Date().toISOString() };
         const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_LOG}`;
         const putLog = (logArr, sha, attempts) =>
           fetch(api, {
