@@ -3956,7 +3956,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                   ${it.sold ? 'Нет в наличии' : 'В корзину'}
                 </button>` : ''}
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
-                ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
                 ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
                 ${getRole() === 'admin' && it.price && stockOf(it.id) !== null ? `
                   <div class="stock-row">
