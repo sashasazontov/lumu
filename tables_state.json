@@ -13,15 +13,6 @@
           "note": "",
           "qty": 1,
           "batchId": "bmwvi54fi-w3i0"
-        },
-        {
-          "id": "mohito-can",
-          "name": "Мохито в банке",
-          "price": 250,
-          "size": "",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwvi5qnp-1lwg"
         }
       ]
     }
@@ -102,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795573598833
+  "updatedAt": 1795573652457
 }
