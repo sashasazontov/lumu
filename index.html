@@ -1288,43 +1288,44 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         });
       }
         
-        async function doPushRemoteState() {
+      async function doPushRemoteState() {
         const token = localStorage.getItem('lummu_gh_token');
         tables = dedupeTables(tables);
         closedTables = dedupeClosed(closedTables);
         const payload = JSON.stringify({ tables, closedTables, updatedAt: Date.now() }, null, 2);
         const content = btoa(unescape(encodeURIComponent(payload)));
-        const body = JSON.stringify({
-          message: 'Синхронизация столов',
-          content: content,
-          branch: GH_BRANCH,
-          sha: undefined
-        });
-        try {
-          let file = null;
-          if (token) {
-            const api = `https://api.github.com/repos/${GH_REPO}/contents/${SYNC_FILE}`;
+
+        for (let attempt = 2; attempt >= 0; attempt--) {
+          try {
+            let api, headers;
+            if (token) {
+              api = `https://api.github.com/repos/${GH_REPO}/contents/${SYNC_FILE}`;
+              headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+            } else {
+              api = `${TG_API}/gh/repos/${GH_REPO}/contents/${SYNC_FILE}`;
+              headers = { 'Content-Type': 'application/json' };
+            }
             const r0 = await fetch(api + `?ref=${GH_BRANCH}`, {
-              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+              headers: token ? { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' } : {}
             });
-            file = r0.ok ? await r0.json() : null;
-            await fetch(api, {
+            const file = r0.ok ? await r0.json() : null;
+            const r = await fetch(api + (token ? '' : `?key=${SECRET}`), {
               method: 'PUT',
-              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...JSON.parse(body), sha: file && file.sha ? file.sha : undefined })
+              headers,
+              body: JSON.stringify({
+                message: 'Синхронизация столов',
+                content,
+                branch: GH_BRANCH,
+                sha: file && file.sha ? file.sha : undefined
+              })
             });
-          } else {
-            const api = `${TG_API}/gh/repos/${GH_REPO}/contents/${SYNC_FILE}`;
-            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
-            file = r0.ok ? await r0.json() : null;
-            await fetch(api + `?key=${SECRET}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...JSON.parse(body), sha: file && file.sha ? file.sha : undefined })
-            });
+            if (r.ok) return;           // записалось — выходим
+            if (attempt > 0) continue;  // конфликт по sha — перечитали выше, пробуем снова
+          } catch (e) {
+            if (attempt === 0) console.warn('Синхронизация столов не прошла:', e);
           }
-        } catch (e) {}
-      }
+        }
+      }       
 
            async function pullRemoteState() {
         const token = localStorage.getItem('lummu_gh_token');
