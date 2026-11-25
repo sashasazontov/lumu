@@ -2,8 +2,8 @@
   "tables": [
     {
       "table": "1",
-      "lastMsgId": null,
-      "orderNo": 1,
+      "lastMsgId": 482,
+      "orderNo": 2,
       "items": [
         {
           "id": "kalyan-premium",
@@ -13,6 +13,15 @@
           "note": "Musthave-Мандарин Апельсин 100%",
           "qty": 1,
           "batchId": "bmwvigv52-0rj3"
+        },
+        {
+          "id": "promo-bowl",
+          "name": "АКЦИИ В ЛУМУ ЧАША",
+          "price": 300,
+          "size": "",
+          "note": "Musthave-Мандарин Апельсин 100%",
+          "qty": 1,
+          "batchId": "bmwvijwpq-9esj"
         }
       ]
     }
@@ -93,5 +102,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795574117770
+  "updatedAt": 1795574259872
 }
