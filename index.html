@@ -4475,18 +4475,31 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                  }
 
 
-                // автосписание вкусов из заметки микса
-                const note = i.note || '';
-                if (!note) return;
-                note.split('+')
-                  .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
-                  .filter(Boolean)
-                  .forEach(name => {
-                    const fn = flavorStockOf(i.id, name);
-                    if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
-                    flavorStock[name] = Math.max(fn - i.qty, 0);
-                    applyFlavorAutoState(i.id, name);
-                  });
+// автосписание вкусов из заметки (и из конструктора, и напечатанных вручную)
+const note = i.note || '';
+if (!note) return;
+const it1 = menuItems.find(x => x.id === i.id);
+const flavorNames = (it1 && it1.list) ? it1.list.map(l => typeof l === 'string' ? l : l.name) : [];
+// 1) узнаём вкусы по именам из списка этого кальяна
+const used = new Set();
+flavorNames.forEach(name => {
+  if (name && note.includes(name)) used.add(name);
+});
+// 2) запасной путь: старый разбор «Апельсин 50% + Мандарин 50%»
+if (!used.size) {
+  note.split('+')
+    .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
+    .filter(Boolean)
+    .forEach(name => {
+      if (flavorStockOf(i.id, name) !== null) used.add(name);
+    });
+}
+used.forEach(name => {
+  const fn = flavorStockOf(i.id, name);
+  if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
+  flavorStock[name] = Math.max(fn - i.qty, 0);
+  applyFlavorAutoState(i.id, name);
+});
               });
 
               saveStockState();
