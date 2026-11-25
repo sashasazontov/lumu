@@ -3,7 +3,7 @@
     {
       "table": "1",
       "lastMsgId": 482,
-      "orderNo": 2,
+      "orderNo": 3,
       "items": [
         {
           "id": "kalyan-premium",
@@ -22,6 +22,15 @@
           "note": "Musthave-Мандарин Апельсин 100%",
           "qty": 1,
           "batchId": "bmwvijwpq-9esj"
+        },
+        {
+          "id": "kalyan-premium",
+          "name": "Кальян Премиум",
+          "price": 2500,
+          "size": "",
+          "note": "Musthave-Мандарин Апельсин 100%",
+          "qty": 1,
+          "batchId": "bmwvivrrq-ldyj"
         }
       ]
     }
@@ -102,5 +111,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795574259872
+  "updatedAt": 1795574813334
 }
