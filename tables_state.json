@@ -1,9 +1,8 @@
 {
-  "tables": [],
-  "closedTables": [
+  "tables": [
     {
       "table": "1",
-      "lastMsgId": 479,
+      "lastMsgId": null,
       "orderNo": 1,
       "items": [
         {
@@ -13,12 +12,12 @@
           "size": "",
           "note": "Musthave-Мандарин Апельсин 100%",
           "qty": 1,
-          "batchId": "bmwvi9j4e-n99j"
+          "batchId": "bmwvigv52-0rj3"
         }
-      ],
-      "closedAt": "2026-11-25T02:30:43.526Z",
-      "pay": "💵 Наличка"
-    },
+      ]
+    }
+  ],
+  "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -94,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795573845030
+  "updatedAt": 1795574117770
 }
