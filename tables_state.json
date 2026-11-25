@@ -15,7 +15,9 @@
           "batchId": "bmwwf8fpe-2j13"
         }
       ]
-    },
+    }
+  ],
+  "closedTables": [
     {
       "table": "1",
       "lastMsgId": 502,
@@ -48,10 +50,11 @@
           "qty": 1,
           "batchId": "bmwwfsn4j-o5u4"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "guests": 2,
+      "closedAt": "2026-11-25T18:40:27.955Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "3",
       "lastMsgId": 500,
@@ -164,5 +167,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795631629050
+  "updatedAt": 1795632029463
 }
