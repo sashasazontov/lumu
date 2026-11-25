@@ -1,29 +1,21 @@
 {
   "tables": [
     {
-      "table": "1",
-      "lastMsgId": 447,
-      "orderNo": 2,
-      "items": []
-    },
-    {
       "table": "2",
       "lastMsgId": 449,
       "orderNo": 1,
-      "items": [
-        {
-          "id": "rum-cola",
-          "name": "Ром-Кола",
-          "price": 379,
-          "size": "",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmwvd44ie-6f73"
-        }
-      ]
+      "items": []
     }
   ],
   "closedTables": [
+    {
+      "table": "1",
+      "lastMsgId": 447,
+      "orderNo": 2,
+      "items": [],
+      "closedAt": "2026-11-25T00:42:56.595Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -99,5 +91,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795567072635
+  "updatedAt": 1795567378099
 }
