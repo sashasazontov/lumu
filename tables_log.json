@@ -1,5 +1,23 @@
 [
   {
+    "table": "2",
+    "lastMsgId": 487,
+    "orderNo": 2,
+    "items": [
+      {
+        "id": "kalyan-premium",
+        "name": "Кальян Премиум",
+        "price": 2900,
+        "size": "",
+        "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
+        "qty": 1,
+        "batchId": "bmwvizyly-30do"
+      }
+    ],
+    "closedAt": "2026-11-25T03:03:44.346Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "undoOf": "2026-11-25T03:03:31.858Z",
     "table": "1",
     "undoAt": "2026-11-25T03:03:38.115Z",
