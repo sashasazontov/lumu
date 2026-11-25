@@ -889,6 +889,11 @@
         .stock-off-btn {
             background: none; border: none; color: #777; cursor: pointer; padding: 0 4px;
         }
+        /* НОВОЕ: кнопка списания */
+        .writeoff-btn {
+            background: none; border: none; color: #f0a848; cursor: pointer;
+            padding: 0 2px; font-size: 0.95rem;
+        }
 
         .flstock-row {
             display: inline-flex;
@@ -961,6 +966,8 @@
         }
         .inv-row .inv-exp { color: var(--text-muted); min-width: 92px; text-align: right; font-size: 0.8rem; }
         .inv-hist { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
+        /* НОВОЕ: слепой подсчёт — прячем «по учёту» */
+        .inv-blind-on .inv-exp { visibility: hidden; }
 
         .admin-move-btn {
             flex: 1; padding: 8px;
@@ -1102,6 +1109,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                 <p class="empty-hint">Смена, сводки и закупка — всё здесь.</p>
                 <button id="weekly-report-btn" style="display: none;">📊 Сводка за неделю</button>
                 <button id="purchase-list-btn" style="display: none;">🛒 Что закупать</button>
+                <button id="loss-stats-btn" style="display: none;">💸 Потери по месяцам</button><!-- НОВОЕ -->
                 <button id="export-report-btn" style="display: none;">📄 Скачать отчёт</button>
                 <button id="inventory-btn" style="display: none;">📋 Инвентаризация</button>
                 <button id="week-finalize-btn" style="display: none;">📋 Свести неделю</button>
@@ -1174,6 +1182,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         </p>
     </footer>
 
+    <button id="hookah-call-btn">💨 Вызвать кальянщика</button>
+    <button id="nav-admin-btn" title="Служебный вход">⚙</button>
+
     <script>
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1239,7 +1250,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       } catch (e) {
         tables = [];
       }
-            function saveTables() {
+      function saveTables() {
         localStorage.setItem('lummu_tables', JSON.stringify(tables));
         localStorage.setItem('lummu_tables_stamp', String(Date.now()));
         pushRemoteState();
@@ -1292,7 +1303,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           return true;
         });
       }
-        
+
       async function doPushRemoteState() {
         const token = localStorage.getItem('lummu_gh_token');
         tables = dedupeTables(tables);
@@ -1330,9 +1341,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             if (attempt === 0) console.warn('Синхронизация столов не прошла:', e);
           }
         }
-      }       
+      }
 
-           async function pullRemoteState() {
+      async function pullRemoteState() {
         const token = localStorage.getItem('lummu_gh_token');
         try {
           let remote = null;
@@ -1350,7 +1361,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             if (!r.ok) return false;
             const file = await r.json();
             remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
-
           }
           const localStamp = Number(localStorage.getItem('lummu_tables_stamp') || 0);
           if ((remote.updatedAt || 0) > localStamp) {
@@ -1376,7 +1386,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       const navTablesBtn = document.getElementById('nav-tables-btn');
       const adminPage    = document.getElementById('admin-page');
       const navAdminBtn  = document.getElementById('nav-admin-btn');
-      const contactsPage = document.getElementById('contacts-page'); 
+      const contactsPage = document.getElementById('contacts-page');
       const promosPage = document.getElementById('promos-page');
 
       function setActiveNav(active) {
@@ -1421,7 +1431,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         headerNav.style.display = 'flex';
       }
 
-       function showContacts() {                 // ← сюда
+      function showContacts() {
         hideAll();
         contactsPage.style.display = 'flex';
         headerNav.style.display = 'flex';
@@ -1449,10 +1459,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           </div>`).join('');
         box.innerHTML = items;
       }
-        
+
       // === РОЛИ ===
 
-           // Роль живёт 2 минуты — потом сайт просит пароль заново
+      // Роль живёт 20 минут — потом сайт просит пароль заново
       const ROLE_TTL = 20 * 60 * 1000;
 
       function getRole() {
@@ -1495,6 +1505,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const admin = role === 'admin';
         document.getElementById('weekly-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('purchase-list-btn').style.display = admin ? 'block' : 'none';
+        document.getElementById('loss-stats-btn').style.display = admin ? 'block' : 'none'; // НОВОЕ
         document.getElementById('export-report-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('inventory-btn').style.display = admin ? 'block' : 'none';
         document.getElementById('week-finalize-btn').style.display = admin ? 'block' : 'none';
@@ -1536,7 +1547,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
         if (!promosDraft) promosDraft = JSON.parse(JSON.stringify(HAPPY_HOURS));
         renderPromosAdmin();
-          
+
         adminItems = JSON.parse(JSON.stringify(menuItems)); // рабочая копия
 
         const catOptions = menuCategories
@@ -1560,6 +1571,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               <div><label>Категория</label><select data-field="category">${catOptions}</select></div>
               <div><label>Размер (необязательно)</label><input data-field="size" value="${esc(it.size || '')}"></div>
             </div>
+            <!-- НОВОЕ: минимальный остаток — при достижении позиция уходит в закупку заранее -->
+            <label>Минимальный остаток (пусто = не следить; при остатке ≤ минимума — в закупку)</label>
+            <input data-field="minStock" type="number" min="0" value="${it.minStock ?? ''}">
             <label>Описание</label>
             <textarea data-field="desc" rows="2">${esc(it.desc || '')}</textarea>
             <label>Подсказка в поле заметки (необязательно)</label>
@@ -1577,7 +1591,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               <button type="button" class="admin-move-btn" data-move="up">↑ Выше</button>
               <button type="button" class="admin-move-btn" data-move="down">↓ Ниже</button>
             </div>
-            <button class="admin-del-btn">🗑 Удалить позицию</button>            
+            <button class="admin-del-btn">🗑 Удалить позицию</button>
           </div>`).join('');
 
         // выставить сохранённые категории в селектах
@@ -1594,7 +1608,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         if (!card || !field) return;
         const it = adminItems[+card.dataset.index];
         if (field === 'price') it.price = e.target.value === '' ? null : Number(e.target.value);
-                else if (field === 'list') {
+        // НОВОЕ: минимальный остаток — пустое поле = не следить
+        else if (field === 'minStock') it.minStock = e.target.value === '' ? null : Number(e.target.value);
+        else if (field === 'list') {
           it.list = e.target.value.split('\n').map(s => s.trim()).filter(Boolean).map(s => {
             const parts = s.split('|').map(x => x.trim()).filter(Boolean);
             const entry = { name: parts[0] || '' };
@@ -1608,7 +1624,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
         else if (e.target.type === 'checkbox') it[field] = e.target.checked;
         else it[field] = e.target.value;
-      });     
+      });
 
       document.getElementById('admin-cat-list').addEventListener('input', (e) => {
         const ci = e.target.dataset.catIndex;
@@ -1664,7 +1680,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         c.style.outline = '2px solid var(--accent)';
         setTimeout(() => { c.style.outline = ''; }, 700);
       });
-        
+
       document.getElementById('admin-add-btn').addEventListener('click', () => {
         const newItem = {
           id: 'item-' + Date.now(),
@@ -1694,11 +1710,12 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       const GH_BRANCH = 'main';
       const TG_API    = 'https://bold-block-8b09lummu-tg.sasasazontov265.workers.dev';
 
-    // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
+      
+          // === TELEGRAM И НЕДЕЛЬНАЯ СВОДКА ===
       const TG_CHAT  = '-1003907000620';
       const TG_CHAT_STOP =  '-1004475385122'; // ← сюда ID второй группы (для стоп-листа)
-      const TG_CHAT_CART =  '-1004440127167'; 
-        
+      const TG_CHAT_CART =  '-1004440127167';
+
       function tgTo(chat, text) {
         return fetch(`${TG_API}/api/send`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1716,10 +1733,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           body: JSON.stringify({ chat, text, messageId })
         }).then(r => r.json()).catch(() => null);
       }
-        
+
       const GH_LOG = 'tables_log.json';
 
-     // === СТОП-ЛИСТ ПОЗИЦИЙ ===
+    // === СТОП-ЛИСТ ПОЗИЦИЙ ===
       const ITEM_STATE_FILE = 'items_state.json';
       let soldItems = [];
       try {
@@ -1783,7 +1800,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             }
           }
 
-                  if (Array.isArray(remote)) {
+          if (Array.isArray(remote)) {
             soldItems = remote;
             localStorage.setItem('lummu_sold_items', JSON.stringify(soldItems));
             updateCartButtons();
@@ -1791,8 +1808,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           }
 
         } catch (e) {}
-      }          
-        
+      }
+
      // === СТОП-ЛИСТ ВКУСОВ ===
       const FLAVOR_FILE = 'flavors_state.json';
       let soldFlavors = [];
@@ -1812,8 +1829,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         try {
           const token = localStorage.getItem('lummu_gh_token');
           if (token) {
-            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
             const api = `https://api.github.com/repos/${GH_REPO}/contents/${FLAVOR_FILE}`;
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
             const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
             const file = r0.ok ? await r0.json() : null;
             await fetch(api, {
@@ -1842,7 +1859,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${FLAVOR_FILE}?ref=${GH_BRANCH}`, {
               headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
             });
-            if (r.ok) { 
+            if (r.ok) {
               const file = await r.json();
               remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
             }
@@ -1866,7 +1883,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         return false;
       }
       pullRemoteFlavorState();
-      pullRemoteStockState(); 
+      pullRemoteStockState();
 
       // === СКЛАДСКИЕ ПОЗИЦИИ (не из меню: хаус-алкоголь, специи, сиропы...) ===
       const EXTRA_FILE = 'extra_stock_items.json';
@@ -1930,7 +1947,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         } catch (e) {}
       }
       pullRemoteExtraItems();
-        
+
      // === ОСТАТКИ ВКУСОВ ТАБАКА (видны только админу) ===
       const FLAVOR_STOCK_FILE = 'flavors_stock.json';
       let flavorStock = {};
@@ -1938,7 +1955,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         flavorStock = JSON.parse(localStorage.getItem('lummu_flavor_stock')) || {};
       } catch (e) { flavorStock = {}; }
 
-           let flavorStockPushTimer = null;
+      let flavorStockPushTimer = null;
       let lastFlavorStockSave = Number(localStorage.getItem('lummu_flavor_stock_save') || 0);
       function saveFlavorStockState() {
         lastFlavorStockSave = Date.now();
@@ -1969,12 +1986,12 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         }
       }
       migrateFlavorStock();
-        
-         // null = учёт не ведётся, число = сколько порций осталось (общее для всех кальянов с этим вкусом)
+
+      // null = учёт не ведётся, число = сколько порций осталось (общее для всех кальянов с этим вкусом)
       function flavorStockOf(itemId, name) {
         const n = flavorStock[name];
         return (typeof n === 'number' && n >= 0) ? n : null;
-      }  
+      }
 
       function applyFlavorAutoState(itemId, name) {
         const n = flavorStockOf(itemId, name);
@@ -2068,6 +2085,91 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         </span>`;
       }
 
+      // === НОВОЕ: СПИСАНИЯ (отдельный журнал, не путаются с недостачами) ===
+      const WRITEOFF_FILE = 'writeoffs_log.json';
+      let writeoffLog = [];
+      try {
+        writeoffLog = JSON.parse(localStorage.getItem('lummu_writeoffs')) || [];
+      } catch (e) { writeoffLog = []; }
+
+      function saveWriteoffLog() {
+        localStorage.setItem('lummu_writeoffs', JSON.stringify(writeoffLog));
+        pushRemoteWriteoffs();
+      }
+
+      async function pushRemoteWriteoffs() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(writeoffLog.slice(0, 300), null, 2))));
+        try {
+          const api = `https://api.github.com/repos/${GH_REPO}/contents/${WRITEOFF_FILE}`;
+          const token = localStorage.getItem('lummu_gh_token');
+          if (token) {
+            const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`, { headers });
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api, {
+              method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Списание', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          } else {
+            const r0 = await fetch(api + `?ref=${GH_BRANCH}`);
+            const file = r0.ok ? await r0.json() : null;
+            await fetch(api + `?key=${SECRET}`, {
+              method: 'PUT', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: 'Списание', content, branch: GH_BRANCH, sha: file && file.sha })
+            });
+          }
+        } catch (e) {}
+      }
+
+      // Само списание: уменьшает остаток, пишет в журнал и в Telegram
+      function doWriteoff(it, qty, reason) {
+        if (!it) return;
+        const n = stockOf(it.id);
+        if (n === null) return;
+        stockCounts[it.id] = Math.max(n - qty, 0);
+        saveStockState();
+        applyStockAutoState(it, n);          // prevN = n — проверит и стоп-лист, и минимум
+        refreshStockUI(it);
+        updateCartButtons();
+        writeoffLog.unshift({
+          writeoffAt: new Date().toISOString(),
+          itemId: it.id,
+          name: it.title,
+          price: (typeof it.price === 'number') ? it.price : null,
+          qty,
+          reason
+        });
+        writeoffLog = writeoffLog.slice(0, 300);
+        saveWriteoffLog();
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        tgSendStop('📉 Списание: ' + it.title + ' ×' + qty + ' — ' + reason + '\n🕐 ' + time);
+      }
+
+      // Подтянуть журнал списаний с GitHub при загрузке
+      (async () => {
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          let remote = null;
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${WRITEOFF_FILE}?ref=${GH_BRANCH}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) remote = await r.json();
+          }
+          if (!remote) {
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${WRITEOFF_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+            if (r.ok) remote = await r.json();
+          }
+          if (remote) {
+            const arr = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(remote.content), c => c.charCodeAt(0))));
+            if (Array.isArray(arr)) {
+              writeoffLog = arr;
+              localStorage.setItem('lummu_writeoffs', JSON.stringify(writeoffLog));
+            }
+          }
+        } catch (e) {}
+      })();
+
       // === СПИСОК ЗАКУПКИ ===
       let purchaseTimes = {};
       try {
@@ -2090,14 +2192,50 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         updatePurchaseBtn();
       }
 
+      // === НОВОЕ: МИНИМАЛЬНЫЕ ОСТАТКИ И АВТОЗАКУПКА ===
+      // минимум задаётся у позиции в редакторе меню (поле minStock, пусто = не следить)
+      function stockMinOf(id) {
+        const it = menuItems.find(i => i.id === id) || extraItems.find(x => x.id === id);
+        const m = it && it.minStock;
+        return (typeof m === 'number' && m > 0) ? m : null;
+      }
+
+      // «Скоро закончится»: остаток дошёл до минимума, но ещё не ноль (ноль ловит стоп-лист)
+      function isLowStock(id) {
+        const n = stockOf(id);
+        const m = stockMinOf(id);
+        return typeof n === 'number' && n > 0 && m !== null && n <= m;
+      }
+
+      function lowStockCount() {
+        return menuItems.filter(it => isLowStock(it.id)).length;
+      }
+
+      // Вызывается при каждом изменении остатка. prevN — сколько было ДО изменения.
+      // Пересёк минимум вниз → «📦 Пора докупать» + в закупку; пополнили выше минимума → вышел из закупки.
+      function checkMinStock(it, prevN, newN) {
+        const min = stockMinOf(it.id);
+        if (min === null || typeof newN !== 'number') return;
+        const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const wasLow = typeof prevN === 'number' && prevN > 0 && prevN <= min;
+        const isLow  = newN > 0 && newN <= min;
+        if (isLow && !wasLow) {
+          markPurchase('low:' + it.id);
+          tgSendStop('📦 Пора докупать: ' + it.title + '\nОсталось: ' + newN + ' (минимум ' + min + ')\n🕐 ' + time);
+        } else if (!isLow && wasLow) {
+          unmarkPurchase('low:' + it.id);
+          tgSendStop('↩ Запас пополнен: ' + it.title + '\nТеперь: ' + newN + ' (минимум ' + min + ')\n🕐 ' + time);
+        }
+      }
+
       function updatePurchaseBtn() {
         const btn = document.getElementById('purchase-list-btn');
         if (!btn) return;
-        const n = soldItems.length + soldFlavors.length;
+        const n = soldItems.length + soldFlavors.length + lowStockCount();
         btn.textContent = n ? `🛒 Что закупать (${n})` : '🛒 Что закупать';
       }
       updatePurchaseBtn();
-        
+
       // === ОСТАТКИ ПОЗИЦИЙ (видны только админу) ===
       const STOCK_FILE = 'stock_state.json';
       let stockCounts = {};
@@ -2118,7 +2256,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         return (typeof n === 'number' && n >= 0) ? n : null;
       }
 
-      function applyStockAutoState(it) {
+      // prevN — остаток ДО изменения (для проверки минимума); можно не передавать
+      function applyStockAutoState(it, prevN) {
         const n = stockOf(it.id);
         if (n === 0 && !soldItems.includes(it.id)) {
           soldItems.push(it.id);
@@ -2133,7 +2272,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
           tgSendStop('↩ Вернули в продажу (пополнение): ' + it.title + '\n🕐 ' + time);
         }
-      }     
+        // НОВОЕ: слежение за минимальным остатком
+        checkMinStock(it, prevN, n);
+      }
 
       async function pushRemoteStockState() {
         const content = btoa(unescape(encodeURIComponent(JSON.stringify({ stock: stockCounts, updatedAt: Date.now() }, null, 2))));
@@ -2187,12 +2328,13 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             localStorage.setItem('lummu_stock', JSON.stringify(stockCounts));
             localStorage.setItem('lummu_stock_stamp', String(remote.updatedAt));
             updateCartButtons();
+            updatePurchaseBtn();
             return true;
           }
         } catch (e) {}
         return false;
       }
-        
+
       function ghLogHeaders() {
         const t = localStorage.getItem('lummu_gh_token');
         return t ? { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' } : null;
@@ -2202,6 +2344,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
       let lastLogSha = null;
       let lastLogData = null; // последний прочитанный журнал — для быстрой записи без GET
+
 
       async function fetchClosedLog() {
         try {
@@ -2217,7 +2360,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           return closedTables;
         }
       }
-        
+
       function logClosedToGithub(closed) {
         let headers = ghLogHeaders();
         if (!headers) {
@@ -2264,7 +2407,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           fresh.unshift(closed);
           return putLog(fresh.slice(0, 500), lastLogSha, 1);
         });
-      } 
+      }
 
       // === ОТМЕНА ПОСЛЕДНЕГО ЗАКРЫТИЯ СТОЛА ===
       let undoData = null;
@@ -2300,7 +2443,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         if (!role) return;
         const i = closedTables.findIndex(t => t.closedAt === data.closedAt && t.table === data.closed.table);
         if (i === -1) { alert('Закрытие уже синхронизировалось — вернуть стол можно из архива.'); return; }
-        const restored = closedTables.splice(i, 1)[0];   // ← НЕ трогаем, как было
+        const restored = closedTables.splice(i, 1)[0];
         delete restored.closedAt;
         delete restored.pay;
         delete restored.discount;
@@ -2309,7 +2452,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         saveTables();
         saveClosed();
         renderTables();
-        logUndoToGithub(restored, data.closedAt);        // ← ИЗМЕНИТЬ: добавить второй аргумент
+        logUndoToGithub(restored, data.closedAt);
         if (restored.lastMsgId) sendTableUpdate(restored);
         alert(`↩ Стол ${restored.table} снова активен.`);
       }
@@ -2355,7 +2498,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       }
 
       // Стереть закрытие из всех отчётов (для тестовых/ошибочных закрытий)
-      // Сумма вычтется из сводок и смен, а след об удалении останется в журнале
       async function eraseClosedFromReports(t) {
         const total = tableTotal(t);
         const d = new Date(t.closedAt);
@@ -2371,14 +2513,14 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         logUndoToGithub(removed, t.closedAt, 'Удаление закрытия из отчётов');
         tgSend(`🗑 Из отчётов стёрли закрытие: стол ${removed.table} · ${total.toLocaleString('ru-RU')} ₽ · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\nСумма вычтена из сводок и смен. След — в журнале.`);
       }
-        
+
       // закрытия, которые отменили (для фильтрации в отчётах)
       function undoneClosedAts(log) {
         const s = new Set();
         (log || []).forEach(e => { if (e && e.undoOf) s.add(e.undoOf); });
         return s;
       }
-        
+
       // Точка последнего сведения недели (метка weekResetAt в журнале)
       function weekResetPoint(log) {
         let last = 0;
@@ -2398,10 +2540,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const since = mark > 0 ? mark : now - WEEKLY_MS;
         const undone = undoneClosedAts(log);
         const week = log.filter(t =>
-        t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() > since);
+          t.closedAt && !undone.has(t.closedAt) && new Date(t.closedAt).getTime() > since);
         if (!week.length) return null;
 
-        const revenue = week.reduce((s, t) => s + tableTotal(t), 0);  
+        const revenue = week.reduce((s, t) => s + tableTotal(t), 0);
         const guestsTotal = week.reduce((s, t) => s + (Number(t.guests) || 0), 0);
 
         const byItem = {};
@@ -2429,7 +2571,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           text += `${i + 1}. ${name} — ${v.qty} шт., ${v.sum.toLocaleString('ru-RU')} ₽\n`;
         });
 
-    // Оплаты: наличка/перевод за период и за предыдущий такой же
+        // Оплаты: наличка/перевод за период и за предыдущий такой же
         const paySplit = (rows) => {
           let cash = 0, card = 0;
           rows.forEach(t => {
@@ -2442,7 +2584,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const cur = paySplit(week);
         const curTotal = cur.cash + cur.card;
         const prevFrom = since - (now - since);
-          const prevRows = log.filter(t => {
+        const prevRows = log.filter(t => {
           const ts = new Date(t.closedAt).getTime();
           return ts > prevFrom && ts <= since && !undone.has(t.closedAt);
         });
@@ -2458,7 +2600,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         return text;
       }
 
-        async function maybeSendWeekly() {
+      async function maybeSendWeekly() {
         if (getRole() !== 'admin') return; // автосводка — только с устройства админа
         const last = Number(localStorage.getItem('lummu_weekly_sent') || 0);
         if (Date.now() - last < WEEKLY_MS) return;
@@ -2470,13 +2612,121 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       }
       maybeSendWeekly();
       maybeInventoryReminder();
-      setInterval(maybeSendWeekly, 30 * 60 * 1000); // проверять сводку раз в полчаса
-      setInterval(maybeInventoryReminder, 30 * 60 * 1000); // проверять напоминание об инвентаризации раз в полчаса
+      setInterval(maybeSendWeekly, 30 * 60 * 1000);
+      setInterval(maybeInventoryReminder, 30 * 60 * 1000);
 
       // === ЦВЕТ СЕЗОНА ===
       function applySeasonTheme() {
         // Тема сезона отключена — снег остаётся, цвета базовые
         currentSeason = null;
+      }
+
+      // === НОВОЕ: ПОТЕРИ ПО МЕСЯЦАМ (недостачи сверок + списания, раздельно) ===
+      async function collectLossStats() {
+        // подтягиваем свежий журнал списаний
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          let remote = null;
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${WRITEOFF_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) remote = await r.json();
+          }
+          if (!remote) {
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${WRITEOFF_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+            if (r.ok) remote = await r.json();
+          }
+          if (remote) {
+            const arr = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(remote.content), c => c.charCodeAt(0))));
+            if (Array.isArray(arr)) writeoffLog = arr;
+          }
+        } catch (e) {}
+
+        // сверки инвентаризации тоже обновим
+        try {
+          const token = localStorage.getItem('lummu_gh_token');
+          let remote = null;
+          if (token) {
+            const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${INV_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`, {
+              headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            });
+            if (r.ok) remote = await r.json();
+          }
+          if (!remote) {
+            const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${INV_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+            if (r.ok) remote = await r.json();
+          }
+          if (remote) {
+            const arr = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(remote.content), c => c.charCodeAt(0))));
+            if (Array.isArray(arr)) inventoryLog = arr;
+          }
+        } catch (e) {}
+
+        // группируем по месяцам
+        const months = {};
+        const keyOf = (iso) => (iso || '').slice(0, 7); // «2026-11»
+
+        // недостачи из сверок (только позиции с ценой)
+        inventoryLog.forEach(entry => {
+          const k = keyOf(entry.inventoryAt);
+          if (!k) return;
+          months[k] = months[k] || { short: 0, writeoff: 0, byName: {}, writeoffQty: {} };
+          (entry.items || []).forEach(i => {
+            if (i.diff < 0 && typeof i.price === 'number') {
+              const sum = Math.abs(i.diff) * i.price;
+              months[k].short += sum;
+              const name = i.name;
+              months[k].byName[name] = (months[k].byName[name] || 0) + sum;
+            }
+          });
+          (entry.flavors || []).forEach(i => {
+            if (i.diff < 0 && typeof i.price === 'number') {
+              const sum = Math.abs(i.diff) * i.price;
+              months[k].short += sum;
+              const name = '🍃 ' + i.name;
+              months[k].byName[name] = (months[k].byName[name] || 0) + sum;
+            }
+          });
+        });
+
+        // списания — легитимные потери, отдельно от недостач
+        writeoffLog.forEach(w => {
+          const k = keyOf(w.writeoffAt);
+          if (!k) return;
+          months[k] = months[k] || { short: 0, writeoff: 0, byName: {}, writeoffQty: {} };
+          const sum = (typeof w.price === 'number') ? Math.abs(w.qty) * w.price : 0;
+          months[k].writeoff += sum;
+          const name = w.name + ' (' + (w.reason || '—') + ')';
+          months[k].writeoffQty[name] = (months[k].writeoffQty[name] || 0) + w.qty;
+        });
+
+        if (!Object.keys(months).length) {
+          alert('Потерь пока нет — недостач и списаний не зафиксировано 🎉');
+          return;
+        }
+
+        const keys = Object.keys(months).sort().reverse().slice(0, 6); // последние 6 месяцев
+        let text = `💸 Потери Лу-Му по месяцам\n\n`;
+        keys.forEach(k => {
+          const m = months[k];
+          const label = k.split('-').reverse().join('.') + ' (гг)';
+          text += `📅 ${k}: недостача ${Math.round(m.short).toLocaleString('ru-RU')} ₽ · списания ${Math.round(m.writeoff).toLocaleString('ru-RU')} ₽\n`;
+          const topNames = Object.entries(m.byName).sort((a, b) => b[1] - a[1]).slice(0, 3);
+          topNames.forEach(([name, sum]) => {
+            text += `   • ${name} — ${Math.round(sum).toLocaleString('ru-RU')} ₽\n`;
+          });
+          const topW = Object.entries(m.writeoffQty).sort((a, b) => b[1] - a[1]).slice(0, 3);
+          topW.forEach(([name, qty]) => {
+            text += `   📉 ${name} — ${qty} шт.\n`;
+          });
+        });
+        const totalShort = keys.reduce((s, k) => s + months[k].short, 0);
+        const totalWriteoff = keys.reduce((s, k) => s + months[k].writeoff, 0);
+        text += `\n📈 Итого за ${keys.length} мес.: недостачи ${Math.round(totalShort).toLocaleString('ru-RU')} ₽ · списания ${Math.round(totalWriteoff).toLocaleString('ru-RU')} ₽`;
+
+        const d = await tgSend(text);
+        alert(d.ok ? '💸 Отчёт о потерях отправлен в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка'));
       }
 
       // === ЭКСПОРТ ВЫРУЧКИ (Excel .xlsx, при недоступности библиотеки — CSV) ===
@@ -2510,7 +2760,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           ]);
         });
         data.push(['', '', '', 'Итого:', '', rows.length + ' столов', revenue]);
-
 
         const fileName = 'lumu_report_' + new Date().toISOString().slice(0, 10);
 
@@ -2664,7 +2913,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         return last;
       }
 
-       async function openShift() {
+      async function openShift() {
         const logPromise = fetchClosedLog(); // тянем журнал, пока бармен печатает
         const name = prompt('Кто открывает смену? (имя бармена):');
         if (name === null) return;
@@ -2677,7 +2926,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const boxRaw = prompt('💵 Размен в кассе на начало смены? (число ₽; пусто — 0)', '');
         const startCash = Math.max(Number(String(boxRaw || '').replace(/\s/g, '').replace(',', '.')) || 0, 0);
 
-        const log = await logPromise;      
+        const log = await logPromise;
         const lastClose = shiftClosePoint(log);
         const openMark = shiftOpenPoint(log);
         if (openMark && openMark.t > lastClose) {
@@ -2694,14 +2943,14 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           alert('Ошибка сети при отправке в Telegram: ' + e);
           return;
         }
-        
+
         if (!d.ok) {
           alert('Не удалось отправить в Telegram: ' + (d.description || 'ошибка'));
           return;
         }
 
-       writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash }, log);
-       shiftStatusCache = { open: null, ts: 0 };
+        writeShiftOpen({ shiftOpenAt: new Date().toISOString(), openedBy: clean, startCash }, log);
+        shiftStatusCache = { open: null, ts: 0 };
       }
 
       function writeShiftOpen(entry, logArr) {
@@ -2732,7 +2981,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           })
           .then(r => { if (!r.ok) throw new Error('conflict'); })
           .then(() => alert('✅ Смена открыта. Имя бармена подставится в итог при закрытии.'))
-          .catch(() => writeShiftOpenSlow(entry, headers, api)); // устарел sha — тихий откат на медленный путь
+          .catch(() => writeShiftOpenSlow(entry, headers, api));
         }
         writeShiftOpenSlow(entry, headers, api);
       }
@@ -2762,8 +3011,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           })
           .then(() => alert('✅ Смена открыта. Имя бармена подставится в итог при закрытии.'))
           .catch(e => alert('Смена объявлена в Telegram, но не сохранена в журнале: ' + e));
-      }     
-  
+      }
+
       // === ЗАКРЫТИЕ СМЕНЫ ===
       function shiftClosePoint(log) {
         let last = 0;
@@ -2778,7 +3027,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
       async function closeShift() {
         const role = await askRole();
-        if (!role) return;     
+        if (!role) return;
 
         const log = await fetchClosedLog();
         const lastClose = shiftClosePoint(log);
@@ -2796,8 +3045,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           if (!confirm('С последнего закрытия смены столов не было. Всё равно закрыть смену?')) return;
         }
 
-        const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`; 
-          
+        const period = `${new Date(since).toLocaleDateString('ru-RU')} ${new Date(since).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+
         let revenue = 0, cash = 0, card = 0, guestsTotal = 0;
         const byItem = {};
         rows.forEach(t => {
@@ -2836,7 +3085,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             }
           }
         }
-     
+
         let text = `🌙 Смена закрыта — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
         text += `🕐 Период: с ${period}\n`;
         if (openMark && openMark.t === since) {
@@ -2850,10 +3099,10 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         }
         text += `💵 Наличка: ${cash.toLocaleString('ru-RU')} ₽ · 💳 Перевод: ${card.toLocaleString('ru-RU')} ₽\n`;
         if (openMark) {
-        text += `🧮 Размен на старте: ${startCash.toLocaleString('ru-RU')} ₽ · Ожидалось в ящике: ${expected.toLocaleString('ru-RU')} ₽\n`;
+          text += `🧮 Размен на старте: ${startCash.toLocaleString('ru-RU')} ₽ · Ожидалось в ящике: ${expected.toLocaleString('ru-RU')} ₽\n`;
         }
-        if (typeof inBox === 'number' && !isNaN(inBox)) {       
-        text += `🧮 В ящике: ${Math.round(inBox).toLocaleString('ru-RU')} ₽${diff !== 0 ? ' (разница ' + diff.toLocaleString('ru-RU') + ' ₽)' : ''}\n`;
+        if (typeof inBox === 'number' && !isNaN(inBox)) {
+          text += `🧮 В ящике: ${Math.round(inBox).toLocaleString('ru-RU')} ₽${diff !== 0 ? ' (разница ' + diff.toLocaleString('ru-RU') + ' ₽)' : ''}\n`;
         }
         if (rows.length) {
           text += `📈 Средний чек стола: ${Math.round(revenue / rows.length).toLocaleString('ru-RU')} ₽\n`;
@@ -2914,7 +3163,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           .then(() => alert('✅ Смена закрыта, итоги в Telegram. Следующая смена начнёт считать с нуля.'))
           .catch(e => {
             if (attempts > 0) {
-              // кто-то записал в журнал раньше — перечитываем свежий и пробуем снова
               return fetchClosedLog().then(fresh => {
                 const arr = (Array.isArray(fresh) ? fresh : []).slice();
                 arr.unshift(entry);
@@ -2924,11 +3172,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
             alert('Отчёт отправлен, но смена не отмечена: ' + e);
           });
 
-        // быстрый путь: журнал уже прочитан в closeShift — PUT сразу
         if (lastLogSha && Array.isArray(lastLogData)) {
           return putLog([entry, ...lastLogData].slice(0, 500), lastLogSha, 1);
         }
-        // кэша нет — читаем журнал и пишем с одной повторной попыткой
         return fetchClosedLog().then(arr => {
           const fresh = (Array.isArray(arr) ? arr : []).slice();
           fresh.unshift(entry);
@@ -2936,8 +3182,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         });
       }
 
-      // === КНОПКА СВОДКИ ===
-
+      // === КНОПКИ ВКЛАДКИ «СМЕНА» ===
       document.getElementById('archive-cleanup-btn').addEventListener('click', () => {
         if (getRole() !== 'admin') return;
         const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -2952,7 +3197,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         renderTables();
         alert(`✅ Удалено: ${old.length}. Сводки и смены это не задело — они живут в журнале отдельно.`);
       });
-        
+
       document.getElementById('weekly-report-btn').addEventListener('click', async () => {
         if (getRole() !== 'admin') return;
         const text = await collectWeekStats();
@@ -2963,7 +3208,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
 
       document.getElementById('purchase-list-btn').addEventListener('click', async () => {
         if (getRole() !== 'admin') return;
-        if (!soldItems.length && !soldFlavors.length) {
+        if (!soldItems.length && !soldFlavors.length && !lowStockCount()) {
           alert('Список пуст — всё в наличии 🎉');
           return;
         }
@@ -2982,10 +3227,22 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         if (soldFlavors.length) {
           text += `\n\n🍃 Вкусы табака:\n` + soldFlavors.map(f => `• ${f} — с ${when('flavor:' + f)}`).join('\n');
         }
+        // НОВОЕ: позиции с низким остатком — закупка заранее
+        const lows = menuItems.filter(it => isLowStock(it.id));
+        if (lows.length) {
+          text += `\n\n⚠ Скоро закончится (минимум задан):\n` + lows.map(it =>
+            `• ${it.title} — осталось ${stockOf(it.id)} из минимума ${stockMinOf(it.id)} — с ${when('low:' + it.id)}`).join('\n');
+        }
         const d = await tgSend(text);
         alert(d.ok ? '🛒 Список отправлен в Telegram!' : 'Не удалось отправить: ' + (d.description || 'ошибка'));
-      });     
-        
+      });
+
+      // НОВОЕ: кнопка «💸 Потери по месяцам»
+      document.getElementById('loss-stats-btn').addEventListener('click', async () => {
+        if (getRole() !== 'admin') return;
+        collectLossStats();
+      });
+
       document.getElementById('week-finalize-btn').addEventListener('click', sendWeekFinalReport);
 
       document.getElementById('shift-close-btn').addEventListener('click', closeShift);
@@ -3042,114 +3299,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           })
           .catch(e => alert('Ошибка сети: ' + e));
       });
+ 
 
-      // === РЕДАКТОР АКЦИЙ ===
-      function renderPromosAdmin() {
-        const box = document.getElementById('promos-admin');
-        if (!box) return;
-        const daysRu = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
-        box.innerHTML = promosDraft.map((p, i) => `
-          <div class="admin-card" data-promo="${i}">
-            <div class="admin-row">
-              <div><label>Название</label><input data-pf="title" value="${esc(p.title || '')}"></div>
-              <div><label>Скидка, %</label><input data-pf="discount" type="number" min="1" max="99" value="${p.discount || 10}"></div>
-            </div>
-            <div class="admin-row">
-              <div><label>Час начала (0–23)</label><input data-pf="from" type="number" min="0" max="23" value="${p.from ?? 16}"></div>
-              <div><label>Час конца (1–24, 24 = полночь)</label><input data-pf="to" type="number" min="1" max="24" value="${p.to ?? 19}"></div>
-            </div>
-            <label>Дни недели</label>
-            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
-              ${daysRu.map((d, di) => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pd="${di}" ${(p.days || []).includes(di) ? 'checked' : ''}> ${d}</label>`).join('')}
-            </div>
-            <label>Категории (ничего не отмечено = всё меню)</label>
-            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
-              ${menuCategories.map(c => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pc="${c.id}" ${(p.categories || []).includes(c.id) ? 'checked' : ''}> ${esc(c.title)}</label>`).join('')}
-            </div>
-            <button class="admin-del-btn promo-del-btn">🗑 Удалить акцию</button>
-          </div>`).join('') || '<p class="empty-hint">Акций нет — добавьте первую.</p>';
-      }
-
-      document.getElementById('promos-admin').addEventListener('input', (e) => {
-        const card = e.target.closest('[data-promo]');
-        if (!card) return;
-        const p = promosDraft[+card.dataset.promo];
-        if (!p) return;
-        if (e.target.dataset.pf) {
-          p[e.target.dataset.pf] = e.target.dataset.pf === 'title' ? e.target.value : Number(e.target.value);
-        }
-        if (e.target.dataset.pd !== undefined) {
-          const d = +e.target.dataset.pd;
-          p.days = p.days || [];
-          if (e.target.checked && !p.days.includes(d)) p.days.push(d);
-          if (!e.target.checked) p.days = p.days.filter(x => x !== d);
-        }
-        if (e.target.dataset.pc) {
-          p.categories = p.categories || [];
-          if (e.target.checked && !p.categories.includes(e.target.dataset.pc)) p.categories.push(e.target.dataset.pc);
-          if (!e.target.checked) p.categories = p.categories.filter(x => x !== e.target.dataset.pc);
-        }
-      });
-
-      document.getElementById('promos-admin').addEventListener('click', (e) => {
-        const del = e.target.closest('.promo-del-btn');
-        if (!del) return;
-        const card = del.closest('[data-promo]');
-        if (confirm('Удалить акцию «' + (promosDraft[+card.dataset.promo].title || 'без названия') + '»?')) {
-          promosDraft.splice(+card.dataset.promo, 1);
-          renderPromosAdmin();
-        }
-      });
-
-      document.getElementById('promos-add-btn').addEventListener('click', () => {
-        promosDraft.push({ title: 'Новая акция', discount: 10, days: [0, 1, 2, 3, 4, 5, 6], from: 16, to: 19, categories: [] });
-        renderPromosAdmin();
-      });
-
-      document.getElementById('promos-save-btn').addEventListener('click', () => {
-        if (getRole() !== 'admin') return;
-        const bad = promosDraft.some(p => !p.title || !p.days || !p.days.length);
-        if (bad) { alert('У каждой акции должны быть название и хотя бы один день недели.'); return; }
-
-        let ghToken = localStorage.getItem('lummu_gh_token');
-        if (!ghToken) {
-          ghToken = prompt('Вставьте GitHub-токен (github_pat_...):');
-          if (!ghToken) return;
-          ghToken = ghToken.trim();
-          if (!ghToken.startsWith('github_pat_')) {
-            alert('Строка не похожа на токен. Нажмите кнопку ещё раз и вставьте его целиком.');
-            return;
-          }
-          localStorage.setItem('lummu_gh_token', ghToken);
-        }
-
-        const data = { promos: promosDraft, updatedAt: Date.now() };
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-        const headers = { 'Authorization': 'Bearer ' + ghToken, 'Accept': 'application/vnd.github+json' };
-        const api = `https://api.github.com/repos/${GH_REPO}/contents/${PROMOS_FILE}`;
-
-        fetch(api + `?ref=${GH_BRANCH}`, { headers })
-          .then(r => r.json())
-          .then(file => fetch(api, {
-            method: 'PUT',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'Обновление акций', content, branch: GH_BRANCH, sha: file.sha })
-          }))
-          .then(r => r.json())
-          .then(res => {
-            if (res.commit) {
-              HAPPY_HOURS = JSON.parse(JSON.stringify(promosDraft));
-              localStorage.setItem('lummu_promos_stamp', String(data.updatedAt));
-              updateHappyBanner();
-              alert('✅ Акции сохранены! На устройствах гостей обновятся в течение минуты.');
-            } else {
-              if ((res.message || '') === 'Bad credentials') localStorage.removeItem('lummu_gh_token');
-              alert('Ошибка GitHub: ' + (res.message || 'неизвестная'));
-            }
-          })
-          .catch(e => alert('Ошибка сети: ' + e));
-      });
-        
       // локальное применение правок без перезагрузки (живёт до очистки браузера)
       function saveMenuOverride() {
         localStorage.setItem('lummu_menu', JSON.stringify({ categories: menuCategories, items: menuItems }));
@@ -3164,11 +3315,11 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         const sum = t.items.reduce((s, i) => s + i.price * i.qty, 0);
         return t.discount ? Math.round(sum * (100 - t.discount) / 100) : sum;
       }
-        
+
       function renderTables() {
         const list = document.getElementById('tables-list');
         list.innerHTML = '';
-          
+
         // --- Активные столы ---
         if (tables.length === 0) {
           list.insertAdjacentHTML('beforeend',
@@ -3216,7 +3367,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
                 logClosedToGithub(closed);
               }
             };
-          });        
+          });
 
           card.querySelector('.btn-edit-table').onclick = () => editTable(idx);
           list.appendChild(card);
@@ -3226,7 +3377,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           }
         });
 
-                // --- Архив: отдельный таб ---
+        // --- Архив: отдельный таб ---
         const closedList = document.getElementById('closed-list');
         closedList.innerHTML = '';
         const closedTabBtn = document.querySelector('.table-tab[data-tab="closed"]');
@@ -3253,7 +3404,6 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
               ${getRole() === 'admin' ? '<button class="btn-remove-report" style="border:1px solid var(--accent-green); color:var(--accent-green);">🧪 Стереть из отчётов</button>' : ''}
             </div>`;
 
-
           card.querySelector('.btn-restore-table').onclick = () => {
             tables.push(closedTables.splice(idx, 1)[0]);
             saveTables();
@@ -3269,7 +3419,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           };
           const rmBtn = card.querySelector('.btn-remove-report');
           if (rmBtn) rmBtn.onclick = () => eraseClosedFromReports(t);
-         closedList.appendChild(card);
+          closedList.appendChild(card);
           if (getRole() !== 'admin') {
             const tot = card.querySelector('.table-total');
             if (tot) tot.style.display = 'none';
@@ -3277,7 +3427,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         });
       }
 
-              // === ПРАВКА ЗАКАЗА СТОЛА ===
+      // === ПРАВКА ЗАКАЗА СТОЛА ===
       function editTable(idx) {
         const t = tables[idx];
         if (!t) return;
@@ -3387,7 +3537,7 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       }
 
       function sendTableClosed(t) {
-      const total = tableTotal(t);
+        const total = tableTotal(t);
 
         const lines = t.items.map(i => {
           const size = i.size ? ` (${i.size})` : '';
@@ -3395,12 +3545,12 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
           return `• ${i.name}${size}${note} ×${i.qty} — ${i.price * i.qty} ₽`;
         }).join('\n');
 
-         const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n` +
+        const text = `🛎 Заказ по столу ${t.table}\n\n${lines}\n` +
           (t.discount ? ` скидка ${t.discount}%\n` : '') +
           (t.guests ? `👥 Гостей за столом: ${t.guests}\n` : '') +
           `✅ Стол ${t.table} закрыт, к оплате ${total.toLocaleString('ru-RU')} ₽${t.pay ? ' — ' + t.pay : ''}`;
-             
-         const request = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
+
+        const request = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
 
         const send = () => request('sendMessage', { chat_id: TG_CHAT, text: text })
           .then(data => {
@@ -3426,9 +3576,9 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
         headerNav.style.display = 'none';
         navMenuBtn.classList.remove('active');
         navCartBtn.classList.remove('active');
-        updateHappyBanner(); 
+        updateHappyBanner();
         updateOpenStatus();
-        startSnow();   
+        startSnow();
       }
 
       navMenuBtn.addEventListener('click', showMenu);
@@ -3436,8 +3586,8 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       document.getElementById('open-menu-btn').addEventListener('click', showMenu);
       document.getElementById('open-rules-btn').addEventListener('click', showRules);
       document.getElementById('back-from-rules-btn').addEventListener('click', showHero);
-      document.getElementById('open-contacts-btn').addEventListener('click', showContacts);     // ← добавить
-      document.getElementById('back-from-contacts-btn').addEventListener('click', showHero); 
+      document.getElementById('open-contacts-btn').addEventListener('click', showContacts);
+      document.getElementById('back-from-contacts-btn').addEventListener('click', showHero);
       document.getElementById('open-promos-btn').addEventListener('click', showPromos);
       document.getElementById('back-from-promos-btn').addEventListener('click', showHero);
       function switchTableTab(tab) {
@@ -3455,26 +3605,25 @@ button, .cat-btn, .nav-btn { touch-action: manipulation; } /* убирает з�
       navAdminBtn.addEventListener('click', showAdmin);
       document.getElementById('back-from-admin-btn').addEventListener('click', showMenu);
 
-function updateOpenStatus() {
-  const el = document.querySelector('.open-status');
-  if (!el) return;
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
-  const day = now.getDay();
-  const t = now.getHours() * 60 + now.getMinutes();
-  // Пт-Сб (5,6): 16:00–04:00, Вс-Чт (0,2-4): 16:00–02:00
-  // Ночь пт→сб и сб→вс считается по расписанию предыдущего дня
-  const isWeekend = [5, 6].includes(day) || (day === 0 && t < 4 * 60);
-  const openMin = 16 * 60;
-  const closeMin = isWeekend ? 4 * 60 : 2 * 60; // 04:00 или 02:00
-  const isOpen = t >= openMin || t < closeMin;  // открыто после 16:00 и до закрытия ночью
-  if (isOpen) {
-    el.textContent = '● Сейчас открыто';
-    el.className = 'open-status open';
-  } else {
-    el.textContent = '● Сейчас закрыто · откроемся в 16:00';
-    el.className = 'open-status closed';
-  }
-}
+      function updateOpenStatus() {
+        const el = document.querySelector('.open-status');
+        if (!el) return;
+        const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+        const day = now.getDay();
+        const t = now.getHours() * 60 + now.getMinutes();
+        // Пт-Сб (5,6): 16:00–04:00, Вс-Чт (0,2-4): 16:00–02:00
+        const isWeekend = [5, 6].includes(day) || (day === 0 && t < 4 * 60);
+        const openMin = 16 * 60;
+        const closeMin = isWeekend ? 4 * 60 : 2 * 60;
+        const isOpen = t >= openMin || t < closeMin;
+        if (isOpen) {
+          el.textContent = '● Сейчас открыто';
+          el.className = 'open-status open';
+        } else {
+          el.textContent = '● Сейчас закрыто · откроемся в 16:00';
+          el.className = 'open-status closed';
+        }
+      }
 
       const snow = { raf: null, ctx: null };
 
@@ -3509,109 +3658,216 @@ function updateOpenStatus() {
         const c = document.getElementById('snow-canvas');
         if (c) c.style.display = 'none';
       }
-            function lockScroll(on) {
+
+      function lockScroll(on) {
         document.body.style.overflow = on ? 'hidden' : '';
       }
 
-// === СЧАСТЛИВЫЕ ЧАСЫ (теперь редактируются в админке, файл promos.json) ===
-const PROMOS_FILE = 'promos.json';
-const DEFAULT_PROMOS = [
-  { title: 'Счастливые часы', discount: 10, days: [0, 1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookahs'] },
-  { title: 'Ночные кальяны',  discount: 10, days: [0, 5, 6],          from: 22, to: 24, categories: ['hookahs'] }
-];
-let HAPPY_HOURS = JSON.parse(JSON.stringify(DEFAULT_PROMOS));
-let promosDraft = null;
+      // === СЧАСТЛИВЫЕ ЧАСЫ (редактируются в админке, файл promos.json) ===
+      const PROMOS_FILE = 'promos.json';
+      const DEFAULT_PROMOS = [
+        { title: 'Счастливые часы', discount: 10, days: [0, 1, 2, 3, 4, 5], from: 16, to: 19, categories: ['hookahs'] },
+        { title: 'Ночные кальяны',  discount: 10, days: [0, 5, 6],          from: 22, to: 24, categories: ['hookahs'] }
+      ];
+      let HAPPY_HOURS = JSON.parse(JSON.stringify(DEFAULT_PROMOS));
+      let promosDraft = null;
 
-async function loadPromos() {
-  try {
-    const r = await fetch(PROMOS_FILE + '?v=' + Date.now());
-    if (!r.ok) return;
-    const data = await r.json();
-    if (data && Array.isArray(data.promos)) {
-      HAPPY_HOURS = data.promos;
-      localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
-      updateHappyBanner();
-      if (promosPage.style.display === 'flex') showPromos(); // перерисовать открытую страницу акций
-    }
-  } catch (e) {}
-}
+      async function loadPromos() {
+        try {
+          const r = await fetch(PROMOS_FILE + '?v=' + Date.now());
+          if (!r.ok) return;
+          const data = await r.json();
+          if (data && Array.isArray(data.promos)) {
+            HAPPY_HOURS = data.promos;
+            localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
+            updateHappyBanner();
+            if (promosPage.style.display === 'flex') showPromos();
+          }
+        } catch (e) {}
+      }
 
-async function pullRemotePromos() {
-  try {
-    const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${PROMOS_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
-    if (!r.ok) return;
-    const file = await r.json();
-    const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
-    if (data && Array.isArray(data.promos)
-        && (data.updatedAt || 0) > Number(localStorage.getItem('lummu_promos_stamp') || 0)) {
-      HAPPY_HOURS = data.promos;
-      localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
-      updateHappyBanner();
-    }
-  } catch (e) {}
-}
+      async function pullRemotePromos() {
+        try {
+          const r = await fetch(`${TG_API}/gh/repos/${GH_REPO}/contents/${PROMOS_FILE}?ref=${GH_BRANCH}&key=${SECRET}&t=${Date.now()}`);
+          if (!r.ok) return;
+          const file = await r.json();
+          const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c => c.charCodeAt(0))));
+          if (data && Array.isArray(data.promos)
+              && (data.updatedAt || 0) > Number(localStorage.getItem('lummu_promos_stamp') || 0)) {
+            HAPPY_HOURS = data.promos;
+            localStorage.setItem('lummu_promos_stamp', String(data.updatedAt || Date.now()));
+            updateHappyBanner();
+          }
+        } catch (e) {}
+      }
 
-function isHappyActive(rule) {
-  // считаем время по Москве, а не по устройству гостя
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
-  const day = now.getDay();
-  const hour = now.getHours() + now.getMinutes() / 60;
-  const inDay = rule.from <= rule.to
-    ? hour >= rule.from && hour < rule.to
-    : hour >= rule.from || hour < rule.to; // интервал через полночь
-  return rule.days.includes(day) && inDay;
-}
+      function isHappyActive(rule) {
+        const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+        const day = now.getDay();
+        const hour = now.getHours() + now.getMinutes() / 60;
+        const inDay = rule.from <= rule.to
+          ? hour >= rule.from && hour < rule.to
+          : hour >= rule.from || hour < rule.to; // интервал через полночь
+        return rule.days.includes(day) && inDay;
+      }
 
-function happyRuleFor(it) {
-  for (const r of HAPPY_HOURS) {
-    if (!isHappyActive(r)) continue;
-    if (r.categories && !r.categories.includes(it.category)) continue;
-    if (r.items && !r.items.includes(it.id)) continue;
-    return r;
-  }
-  return null;
-}
+      function happyRuleFor(it) {
+        for (const r of HAPPY_HOURS) {
+          if (!isHappyActive(r)) continue;
+          if (r.categories && !r.categories.includes(it.category)) continue;
+          if (r.items && !r.items.includes(it.id)) continue;
+          return r;
+        }
+        return null;
+      }
 
-function happyPriceFor(it) {
-  const r = happyRuleFor(it);
-  if (!r || typeof it.price !== 'number') return null;
-  return Math.round(it.price * (100 - r.discount) / 100);
-}
+      function happyPriceFor(it) {
+        const r = happyRuleFor(it);
+        if (!r || typeof it.price !== 'number') return null;
+        return Math.round(it.price * (100 - r.discount) / 100);
+      }
 
-function priceHtml(it) {
-  if (typeof it.price !== 'number') return '';
-  const hp = happyPriceFor(it);
-  const r = happyRuleFor(it);
-  const size = it.size ? ` (${it.size})` : '';
-  if (hp !== null && hp < it.price) {
-    return `<div class="item-price"><s style="opacity:.55">${it.price} ₽</s> ${hp} ₽${size}
-      <span style="color:var(--accent-green); font-size:.8rem;">${r.title} −${r.discount}%</span></div>`;
-  }
-  return `<div class="item-price">${it.price} ₽${size}</div>`;
-}
+      function priceHtml(it) {
+        if (typeof it.price !== 'number') return '';
+        const hp = happyPriceFor(it);
+        const r = happyRuleFor(it);
+        const size = it.size ? ` (${it.size})` : '';
+        if (hp !== null && hp < it.price) {
+          return `<div class="item-price"><s style="opacity:.55">${it.price} ₽</s> ${hp} ₽${size}
+            <span style="color:var(--accent-green); font-size:.8rem;">${r.title} −${r.discount}%</span></div>`;
+        }
+        return `<div class="item-price">${it.price} ₽${size}</div>`;
+      }
 
-function happyBannerHtml() {
-  const active = HAPPY_HOURS.filter(isHappyActive);
-  if (!active.length) return '';
-  const catName = (r) => {
-    if (!r.categories) return 'всё меню';
-    return r.categories.map(id =>
-      (menuCategories.find(c => c.id === id) || {}).title || 'выбранные позиции'
-    ).join(', ');
-  };
-  return '🔥 ' + active
-    .map(r => `${r.title}: −${r.discount}% на ${catName(r)}`)
-    .join(' · ');
-}
+      function happyBannerHtml() {
+        const active = HAPPY_HOURS.filter(isHappyActive);
+        if (!active.length) return '';
+        const catName = (r) => {
+          if (!r.categories) return 'всё меню';
+          return r.categories.map(id =>
+            (menuCategories.find(c => c.id === id) || {}).title || 'выбранные позиции'
+          ).join(', ');
+        };
+        return '🔥 ' + active
+          .map(r => `${r.title}: −${r.discount}% на ${catName(r)}`)
+          .join(' · ');
+      }
 
-function updateHappyBanner() {
-  const b = document.getElementById('happy-banner');
-  if (!b) return;
-  const html = happyBannerHtml();
-  b.innerHTML = html;
-  b.style.display = html ? 'block' : 'none';
-}
-        
+      function updateHappyBanner() {
+        const b = document.getElementById('happy-banner');
+        if (!b) return;
+        const html = happyBannerHtml();
+        b.innerHTML = html;
+        b.style.display = html ? 'block' : 'none';
+      }
+
+      // === РЕДАКТОР АКЦИЙ ===
+      function renderPromosAdmin() {
+        const box = document.getElementById('promos-admin');
+        if (!box) return;
+        const daysRu = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        box.innerHTML = promosDraft.map((p, i) => `
+          <div class="admin-card" data-promo="${i}">
+            <div class="admin-row">
+              <div><label>Название</label><input data-pf="title" value="${esc(p.title || '')}"></div>
+              <div><label>Скидка, %</label><input data-pf="discount" type="number" min="1" max="99" value="${p.discount || 10}"></div>
+            </div>
+            <div class="admin-row">
+              <div><label>Час начала (0–23)</label><input data-pf="from" type="number" min="0" max="23" value="${p.from ?? 16}"></div>
+              <div><label>Час конца (1–24, 24 = полночь)</label><input data-pf="to" type="number" min="1" max="24" value="${p.to ?? 19}"></div>
+            </div>
+            <label>Дни недели</label>
+            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
+              ${daysRu.map((d, di) => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pd="${di}" ${(p.days || []).includes(di) ? 'checked' : ''}> ${d}</label>`).join('')}
+            </div>
+            <label>Категории (ничего не отмечено = всё меню)</label>
+            <div class="admin-row" style="flex-wrap: wrap; gap: 4px;">
+              ${menuCategories.map(c => `<label style="margin-right:8px; font-size:0.85rem;"><input type="checkbox" data-pc="${c.id}" ${(p.categories || []).includes(c.id) ? 'checked' : ''}> ${esc(c.title)}</label>`).join('')}
+            </div>
+            <button class="admin-del-btn promo-del-btn">🗑 Удалить акцию</button>
+          </div>`).join('') || '<p class="empty-hint">Акций нет — добавьте первую.</p>';
+      }
+
+      document.getElementById('promos-admin').addEventListener('input', (e) => {
+        const card = e.target.closest('[data-promo]');
+        if (!card) return;
+        const p = promosDraft[+card.dataset.promo];
+        if (!p) return;
+        if (e.target.dataset.pf) {
+          p[e.target.dataset.pf] = e.target.dataset.pf === 'title' ? e.target.value : Number(e.target.value);
+        }
+        if (e.target.dataset.pd !== undefined) {
+          const d = +e.target.dataset.pd;
+          p.days = p.days || [];
+          if (e.target.checked && !p.days.includes(d)) p.days.push(d);
+          if (!e.target.checked) p.days = p.days.filter(x => x !== d);
+        }
+        if (e.target.dataset.pc) {
+          p.categories = p.categories || [];
+          if (e.target.checked && !p.categories.includes(e.target.dataset.pc)) p.categories.push(e.target.dataset.pc);
+          if (!e.target.checked) p.categories = p.categories.filter(x => x !== e.target.dataset.pc);
+        }
+      });
+
+      document.getElementById('promos-admin').addEventListener('click', (e) => {
+        const del = e.target.closest('.promo-del-btn');
+        if (!del) return;
+        const card = del.closest('[data-promo]');
+        if (confirm('Удалить акцию «' + (promosDraft[+card.dataset.promo].title || 'без названия') + '»?')) {
+          promosDraft.splice(+card.dataset.promo, 1);
+          renderPromosAdmin();
+        }
+      });
+
+      document.getElementById('promos-add-btn').addEventListener('click', () => {
+        promosDraft.push({ title: 'Новая акция', discount: 10, days: [0, 1, 2, 3, 4, 5, 6], from: 16, to: 19, categories: [] });
+        renderPromosAdmin();
+      });
+
+      document.getElementById('promos-save-btn').addEventListener('click', () => {
+        if (getRole() !== 'admin') return;
+        const bad = promosDraft.some(p => !p.title || !p.days || !p.days.length);
+        if (bad) { alert('У каждой акции должны быть название и хотя бы один день недели.'); return; }
+
+        let ghToken = localStorage.getItem('lummu_gh_token');
+        if (!ghToken) {
+          ghToken = prompt('Вставьте GitHub-токен (github_pat_...):');
+          if (!ghToken) return;
+          ghToken = ghToken.trim();
+          if (!ghToken.startsWith('github_pat_')) {
+            alert('Строка не похожа на токен. Нажмите кнопку ещё раз и вставьте его целиком.');
+            return;
+          }
+          localStorage.setItem('lummu_gh_token', ghToken);
+        }
+
+        const data = { promos: promosDraft, updatedAt: Date.now() };
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        const headers = { 'Authorization': 'Bearer ' + ghToken, 'Accept': 'application/vnd.github+json' };
+        const api = `https://api.github.com/repos/${GH_REPO}/contents/${PROMOS_FILE}`;
+
+        fetch(api + `?ref=${GH_BRANCH}`, { headers })
+          .then(r => r.json())
+          .then(file => fetch(api, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Обновление акций', content, branch: GH_BRANCH, sha: file.sha })
+          }))
+          .then(r => r.json())
+          .then(res => {
+            if (res.commit) {
+              HAPPY_HOURS = JSON.parse(JSON.stringify(promosDraft));
+              localStorage.setItem('lummu_promos_stamp', String(data.updatedAt));
+              updateHappyBanner();
+              alert('✅ Акции сохранены! На устройствах гостей обновятся в течение минуты.');
+            } else {
+              if ((res.message || '') === 'Bad credentials') localStorage.removeItem('lummu_gh_token');
+              alert('Ошибка GitHub: ' + (res.message || 'неизвестная'));
+            }
+          })
+          .catch(e => alert('Ошибка сети: ' + e));
+      });
+
       // === ПОИСК ПО МЕНЮ ===
       let currentCat = 'all';
       let searchQuery = '';
@@ -3659,7 +3915,7 @@ function updateHappyBanner() {
         applyFilters();
         inp.focus();
       });
-        
+
       // === МЕНЮ ИЗ JSON ===
       async function loadMenu() {
         try {
@@ -3670,7 +3926,6 @@ function updateHappyBanner() {
           document.querySelector('.categories').innerHTML = menu.categories
             .map(c => `<button class="cat-btn" data-category="${c.id}">${c.title}</button>`)
             .join('');
-    
 
           document.querySelector('.items-grid').innerHTML = menu.items.map(it => `
             <article class="item-card ${it.promo ? 'promo-card' : ''} ${it.sold ? 'sold-card' : ''}" data-category="${it.category}" data-id="${it.id}">
@@ -3688,12 +3943,12 @@ function updateHappyBanner() {
                 ${it.list && it.list.length
                   ? `<div class="tobacco-cards">${it.list.map(l => {
                       if (typeof l === 'string') return `<div class="tobacco-chip">${esc(l)}</div>`;
-               return l.img
-                ? `<div class="tobacco-chip tobacco-photo">
-                     <img src="${l.img}" alt="${esc(l.name)}" loading="lazy" onerror="this.style.display='none'">
-                     <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span>
-                   </div>`
-                : `<div class="tobacco-chip"><span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;
+                      return l.img
+                        ? `<div class="tobacco-chip tobacco-photo">
+                             <img src="${l.img}" alt="${esc(l.name)}" loading="lazy" onerror="this.style.display='none'">
+                             <span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span>
+                           </div>`
+                        : `<div class="tobacco-chip"><span>${esc(l.name)}${l.price ? ' · ' + l.price + ' ₽' : ''}</span></div>`;
                     }).join('')}</div>` : ''}
                 ${priceHtml(it)}
                 ${it.note ? `<input type="text" class="tobacco-input" placeholder="${it.note}">` : ''}
@@ -3703,12 +3958,13 @@ function updateHappyBanner() {
                 ${it.tobaccoBtn ? '<button class="tobacco-btn" data-goto="tobacco">Ассортимент табаков →</button>' : ''}
                 ${it.list && it.list.length ? `<button class="mix-btn" data-id="${it.id}">🧪 Собрать микс</button>` : ''}
                 ${getRole() === 'admin' && it.price ? `<button class="item-sold-toggle" data-id="${it.id}">${isItemSold(it.id) ? '↩ Вернуть в продажу' : '⛔ В стоп-лист'}</button>` : ''}
-                    ${getRole() === 'admin' && it.price && stockOf(it.id) !== null ? `
+                ${getRole() === 'admin' && it.price && stockOf(it.id) !== null ? `
                   <div class="stock-row">
                     <button class="stock-btn" data-stock-dec="${it.id}">−</button>
-                    <span>${stockOf(it.id) === 0 ? '🚫 стоп' : stockOf(it.id) + ' осталось'}</span>
+                    <span>${stockOf(it.id) === 0 ? '🚫 стоп' : (isLowStock(it.id) ? '⚠ ' : '') + stockOf(it.id) + (stockMinOf(it.id) !== null ? '/' + stockMinOf(it.id) : '') + ' осталось'}</span>
                     <button class="stock-btn" data-stock-inc="${it.id}">+</button>
                     <button class="stock-off-btn" data-stock-off="${it.id}" title="Убрать учёт остатка">✕</button>
+                    <button class="writeoff-btn" data-writeoff="${it.id}" title="Списать с причиной">📉</button>
                   </div>` : ''}
                 ${getRole() === 'admin' && it.price && stockOf(it.id) === null ? `<button class="stock-enable-btn" data-id="${it.id}">🔢 Вести остаток</button>` : ''}
 
@@ -3716,6 +3972,7 @@ function updateHappyBanner() {
             </article>`).join('');
 
           updateCartButtons();
+          updatePurchaseBtn();
 
           // Плавное появление карточек при скролле
           const io = new IntersectionObserver((entries) => {
@@ -3728,16 +3985,16 @@ function updateHappyBanner() {
           }, { threshold: 0.1 });
           document.querySelectorAll('.item-card').forEach(c => io.observe(c));
 
-         if (!('IntersectionObserver' in window)) document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
+          if (!('IntersectionObserver' in window)) document.querySelectorAll('.item-card').forEach(c => c.classList.add('reveal'));
         } catch (err) {
           console.error('Не удалось загрузить menu.json:', err);
         }
       }
-        
-           showHero();
+
+      showHero();
       loadMenu();
       pullRemoteState();
-      loadPromos();          // ← добавить эту строку
+      loadPromos();
       updateHappyBanner();
       updateOpenStatus();
       setInterval(updateOpenStatus, 60000); // обновлять каждую минуту
@@ -3760,13 +4017,13 @@ function updateHappyBanner() {
         }
         return shiftStatusCache.open === true;
       }
-        
+
       // --- Добавление позиции в корзину (общая для всех путей) ---
       let lastAddClick = 0; // защита от двойного клика / случайного двойного тапа
 
       async function addItemToCart(it, note, priceOverride) {
         const now = Date.now();
-        if (now - lastAddClick < 1000) return; // повторный клик раньше секунды — игнорируем
+        if (now - lastAddClick < 1000) return;
         lastAddClick = now;
 
         const open = await isShiftOpenNow();
@@ -3775,13 +4032,13 @@ function updateHappyBanner() {
           return;
         }
         const p = (typeof priceOverride === 'number' && priceOverride > 0)
-        ? priceOverride
-        : (happyPriceFor(it) || it.price);
+          ? priceOverride
+          : (happyPriceFor(it) || it.price);
         const existing = cart.find(item =>
           item.name === it.title && item.size === (it.size || '') && item.note === note
         );
         if (existing) existing.qty += 1;
-        else cart.push({ id: it.id, name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });      
+        else cart.push({ id: it.id, name: it.title, price: p, size: it.size || '', note: note || '', qty: 1 });
         updateCart();
         showCart();
 
@@ -3798,17 +4055,21 @@ function updateHappyBanner() {
           + (tbl ? ' · 🪑 стол ' + tbl : '')
           + '\n🕐 ' + time
         );
-      }                  
+      }
 
       function stockControlHtml(it) {
         if (stockOf(it.id) === null) {
           return `<button class="stock-enable-btn" data-id="${it.id}">🔢 Вести остаток</button>`;
         }
+        const min = stockMinOf(it.id);
+        const n = stockOf(it.id);
+        const label = n === 0 ? '🚫 стоп' : (isLowStock(it.id) ? '⚠ ' : '') + n + (min !== null ? '/' + min : '') + ' осталось';
         return `<div class="stock-row">
           <button class="stock-btn" data-stock-dec="${it.id}">−</button>
-          <span>${stockOf(it.id) === 0 ? '🚫 стоп' : stockOf(it.id) + ' осталось'}</span>
+          <span>${label}</span>
           <button class="stock-btn" data-stock-inc="${it.id}">+</button>
           <button class="stock-off-btn" data-stock-off="${it.id}" title="Убрать учёт">✕</button>
+          <button class="writeoff-btn" data-writeoff="${it.id}" title="Списать с причиной">📉</button>
         </div>`;
       }
 
@@ -3823,7 +4084,7 @@ function updateHappyBanner() {
           else info.insertAdjacentHTML('beforeend', stockControlHtml(it));
         });
       }
-        
+
       // === ДЕЛЕГИРОВАНИЕ КЛИКОВ ===
       document.addEventListener('click', (e) => {
         const stockEnable = e.target.closest('.stock-enable-btn');
@@ -3834,9 +4095,10 @@ function updateHappyBanner() {
           if (raw === null) return;
           const n = parseInt(String(raw).replace(/\D/g, ''), 10);
           if (isNaN(n) || n < 0) return;
+          const prevN = stockOf(it.id);
           stockCounts[it.id] = n;
           saveStockState();
-          applyStockAutoState(it);
+          applyStockAutoState(it, prevN);
           refreshStockUI(it);
           updateCartButtons();
           return;
@@ -3851,7 +4113,7 @@ function updateHappyBanner() {
           if (n === null) return;
           stockCounts[id] = Math.max(n + (stockBtn.dataset.stockInc ? 1 : -1), 0);
           saveStockState();
-          applyStockAutoState(it);
+          applyStockAutoState(it, n); // n — остаток до изменения
           refreshStockUI(it);
           updateCartButtons();
           return;
@@ -3868,13 +4130,29 @@ function updateHappyBanner() {
               unmarkPurchase('item:' + it.id);
               saveItemState();
             }
-
+            unmarkPurchase('low:' + it.id); // НОВОЕ: след за минимумом тоже снимаем
             refreshStockUI(it);
             updateCartButtons();
           }
           return;
-        }       
-          
+        }
+
+        // НОВОЕ: списание с причиной
+        const wBtn = e.target.closest('.writeoff-btn');
+        if (wBtn) {
+          const it = menuItems.find(i => i.id === wBtn.dataset.writeoff);
+          if (!it) return;
+          const raw = prompt('Сколько порций «' + it.title + '» списать?', '1');
+          if (raw === null) return;
+          const qty = parseInt(String(raw).replace(/\D/g, ''), 10);
+          if (isNaN(qty) || qty <= 0) return;
+          const reason = (prompt('Причина списания:\n1 — разбито\n2 — брак\n3 — гости\n4 — дегустация\n(введите 1–4 или своё слово)', '1') || '1').trim();
+          const map = { '1': 'разбито', '2': 'брак', '3': 'гости', '4': 'дегустация' };
+          const reasonText = map[reason] || reason;
+          doWriteoff(it, qty, reasonText);
+          return;
+        }
+
         const cat = e.target.closest('.cat-btn');
         if (cat) {
           document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -3883,7 +4161,7 @@ function updateHappyBanner() {
           applyFilters();
           return;
         }
-      
+
         const soldBtn = e.target.closest('.item-sold-toggle');
         if (soldBtn) {
           const id = soldBtn.dataset.id;
@@ -3905,7 +4183,7 @@ function updateHappyBanner() {
           );
           return;
         }
-          
+
         const addBtn = e.target.closest('.add-to-cart-btn');
         if (addBtn) {
           if (addBtn.disabled) return;
@@ -3924,12 +4202,12 @@ function updateHappyBanner() {
           return;
         }
 
-       const mixBtn = e.target.closest('.mix-btn');
+        const mixBtn = e.target.closest('.mix-btn');
         if (mixBtn) {
           openMixBuilder(mixBtn.dataset.id);
           return;
         }
-  
+
         const tabBtn = e.target.closest('.tobacco-btn');
         if (tabBtn) {
           const target = document.querySelector('.cat-btn[data-category="tobacco"]');
@@ -3956,7 +4234,6 @@ function updateHappyBanner() {
         });
       }
 
-  
       // --- Обновление корзины ---
       function updateCart() {
         const count = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -4101,17 +4378,17 @@ function updateHappyBanner() {
       }
 
       let checkoutBusy = false; // замок от двойного тапа по «Оформить»
-        
+
       let checkoutBatchId = null; // метка текущего заказа: защита от задвоения при повторной отправке
       let checkoutAdded = null;   // снимок корзины на момент первой попытки
 
- function clearCart() {
+      function clearCart() {
         cart.length = 0;
         checkoutBatchId = null;
         checkoutAdded = null;
         updateCart();
       }
-        
+
       function sendToTable(idx) {
         if (checkoutBusy) return;
         if (cart.length === 0) return;
@@ -4122,7 +4399,7 @@ function updateHappyBanner() {
         checkoutBtn.disabled = true;
         const originalText = checkoutBtn.textContent;
         checkoutBtn.textContent = 'Отправка...';
-        
+
         // Метка заказа: при повторной попытке отправки позиции не вливаются второй раз
         if (!checkoutBatchId) {
           checkoutBatchId = 'b' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
@@ -4161,7 +4438,6 @@ function updateHappyBanner() {
 
         let text = `🛎 Заказ по столу ${table.table}\n`;
 
-        // для дополнений — что именно добавили в этот раз
         if (!isNew) {
           text += `\n➕ Добавлено в ${time}:\n`;
           added.forEach(item => {
@@ -4184,76 +4460,75 @@ function updateHappyBanner() {
         const request = (apiMethod, p) => tgEdit(TG_CHAT, p.message_id, p.text);
 
         request(isNew ? 'sendMessage' : 'editMessageText', params)
-        .then(data => {
-          if (data.ok) {
-            if (isNew) table.lastMsgId = data.result.message_id;
-            saveTables();
-            (added || []).forEach(i => {      // ← списание остатков
-              if (!i.id) return;
-              const n = stockOf(i.id);
-              if (n === null) return;
-              stockCounts[i.id] = Math.max(n - i.qty, 0);
-              const it0 = menuItems.find(x => x.id === i.id);
-              if (it0) applyStockAutoState(it0);
+          .then(data => {
+            if (data.ok) {
+              if (isNew) table.lastMsgId = data.result.message_id;
+              saveTables();
+              (added || []).forEach(i => {      // списание остатков
+                if (!i.id) return;
+                const n = stockOf(i.id);
+                if (n === null) return;
+                stockCounts[i.id] = Math.max(n - i.qty, 0);
+                const it0 = menuItems.find(x => x.id === i.id);
+                if (it0) applyStockAutoState(it0, n); // n — остаток до списания
 
-              // автосписание вкусов из заметки микса
-              const note = i.note || '';
-              if (!note) return;
-              note.split('+')
-                .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
-                .filter(Boolean)
-                .forEach(name => {
-                  const fn = flavorStockOf(i.id, name);
-                  if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
-                  flavorStock[name] = Math.max(fn - i.qty, 0);
-                  applyFlavorAutoState(i.id, name);
+                // автосписание вкусов из заметки микса
+                const note = i.note || '';
+                if (!note) return;
+                note.split('+')
+                  .map(s => s.replace(/\s*\d+\s*%\s*$/, '').trim())
+                  .filter(Boolean)
+                  .forEach(name => {
+                    const fn = flavorStockOf(i.id, name);
+                    if (fn === null) return; // учёт этого вкуса не ведётся — не трогаем
+                    flavorStock[name] = Math.max(fn - i.qty, 0);
+                    applyFlavorAutoState(i.id, name);
+                  });
+              });
+
+              saveStockState();
+              saveFlavorStockState();
+              updateCartButtons();
+              alert(isNew
+                ? `✅ Новый заказ отправлен! Стол ${table.table}`
+                : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
+              clearCart();
+              const chooser = cartContainer.querySelector('.table-chooser');
+              if (chooser) chooser.style.display = 'none';
+              showMenu();
+            } else if (!isNew && (data.description || '').includes('message to edit not found')) {
+              table.lastMsgId = null;
+              saveTables();
+              request('sendMessage', { chat_id: TG_CHAT, text: text })
+                .then(d2 => {
+                  if (d2.ok) {
+                    table.lastMsgId = d2.result.message_id;
+                    saveTables();
+                    alert(`⚠️ Старое сообщение не найдено — заказ стола ${table.table} отправлен заново.`);
+                    clearCart();
+                    showMenu();
+                  } else {
+                    alert('Не удалось отправить: ' + (d2.description || 'неизвестная ошибка'));
+                  }
                 });
-            });
-
-            saveStockState();
-            saveFlavorStockState();
-            updateCartButtons();
-            alert(isNew
-              ? `✅ Новый заказ отправлен! Стол ${table.table}`
-              : `✅ Стол ${table.table} дополнен! Итого: ${grandTotal.toLocaleString()} ₽`);
-            clearCart();
-            const chooser = cartContainer.querySelector('.table-chooser');
-            if (chooser) chooser.style.display = 'none';
-            showMenu();
-          } else if (!isNew && (data.description || '').includes('message to edit not found')) {
-            table.lastMsgId = null;
-            saveTables();
-            request('sendMessage', { chat_id: TG_CHAT, text: text })
-            .then(d2 => {
-              if (d2.ok) {
-                table.lastMsgId = d2.result.message_id;
-                saveTables();
-                alert(`⚠️ Старое сообщение не найдено — заказ стола ${table.table} отправлен заново.`);
-                clearCart();
-                showMenu();
-              } else {
-                alert('Не удалось отправить: ' + (d2.description || 'неизвестная ошибка'));
-              }
-            });
-          } else if (!isNew && (data.description || '').includes('message is not modified')) {
-            saveTables();
-            clearCart();
-            showMenu();
-          } else {
-            console.error('Ошибка Telegram:', data);
-            alert('Не удалось отправить: ' + (data.description || 'неизвестная ошибка'));
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          alert('Ошибка сети. Попробуйте ещё раз.');
-        })
-
+            } else if (!isNew && (data.description || '').includes('message is not modified')) {
+              saveTables();
+              clearCart();
+              showMenu();
+            } else {
+              console.error('Ошибка Telegram:', data);
+              alert('Не удалось отправить: ' + (data.description || 'неизвестная ошибка'));
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert('Ошибка сети. Попробуйте ещё раз.');
+          })
           .finally(() => {
-          checkoutBusy = false;
-          checkoutBtn.disabled = false;
-          checkoutBtn.textContent = originalText;
-        });
+            checkoutBusy = false;
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = originalText;
+          });
       }
 
       // --- Оформление заказа: с QR — сразу в стол, без — выбор из списка ---
@@ -4262,7 +4537,6 @@ function updateHappyBanner() {
         const isStaff = getRole() !== '';
         const qrTable = getQrTable();
 
-        // Гость с QR — заказ идёт только в его стол, список не показываем
         if (qrTable) {
           let idx = tables.findIndex(t => t.table === qrTable);
           if (idx === -1) {
@@ -4274,14 +4548,12 @@ function updateHappyBanner() {
           return;
         }
 
-        // Персонал — выбор из всех столов
         if (isStaff) {
           buildTableChooser();
           window.scrollTo({ top: 0 });
           return;
         }
 
-        // Гость без QR — спрашиваем только его стол
         const num = prompt('За каким столом вы находитесь? Введите номер стола (например, 12):');
         if (!num || !num.trim()) return;
         let idx = tables.findIndex(t => t.table === num.trim());
@@ -4293,13 +4565,13 @@ function updateHappyBanner() {
         sendToTable(idx);
       });
 
-    // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
-       setInterval(async () => {
+      // === АВТООБНОВЛЕНИЕ СТОЛОВ ===
+      setInterval(async () => {
         const changed = await pullRemoteState();
         if (changed && tablesPage.style.display !== 'none') renderTables();
         await pullRemoteFlavorState();
         await pullRemoteItemState();
-        await pullRemoteFlavorStockState(); 
+        await pullRemoteFlavorStockState();
         await pullRemoteStockState();
         await pullRemoteExtraItems();
         await pullRemotePromos();
@@ -4309,17 +4581,16 @@ function updateHappyBanner() {
       const callOverlay = document.createElement('div');
       callOverlay.id = 'call-overlay';
       document.body.appendChild(callOverlay);
-     callOverlay.addEventListener('click', (ev) => {
-       if (ev.target === callOverlay) { callOverlay.style.display = 'none'; lockScroll(false); }
-     });
-
+      callOverlay.addEventListener('click', (ev) => {
+        if (ev.target === callOverlay) { callOverlay.style.display = 'none'; lockScroll(false); }
+      });
 
       function buildCallPanel() {
         const qrTable = getQrTable();
         const isStaff = getRole() !== '';
         const tablesOptions = isStaff && tables.length
           ? tables.map(t => `<button class="call-table-btn" data-t="${esc(t.table)}">🪑 Стол ${esc(t.table)}${t.items.length ? ' — заказ уже есть' : ''}</button>`).join('')
-          : '<p class="call-hint">Укажите номер вашего стола вручную.</p>';        
+          : '<p class="call-hint">Укажите номер вашего стола вручную.</p>';
 
         callOverlay.innerHTML = `
           <div id="call-panel">
@@ -4370,12 +4641,11 @@ function updateHappyBanner() {
 
         const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const text = `💨 Вызов кальянщика\n\n🪑 Стол ${tableNum}\n🕐 В ${time}`;
-          fetch(`${TG_API}/api/send`, {
+        fetch(`${TG_API}/api/send`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat: TG_CHAT, text })
         }).then(r => r.json()).then(d => {
-
           if (d.ok) {
             callOverlay.style.display = 'none';
             lockScroll(false);
@@ -4389,7 +4659,7 @@ function updateHappyBanner() {
       }
 
       document.getElementById('hookah-call-btn').addEventListener('click', openCallPanel);
-   
+
       // === КОНСТРУКТОР МИКСОВ ===
       const mixOverlay = document.createElement('div');
       mixOverlay.id = 'mix-overlay';
@@ -4482,7 +4752,7 @@ function updateHappyBanner() {
               + esc(name) + '\n🧪 ' + esc(it.title) + '\n🕐 ' + time
             );
           };
-        });    
+        });
 
         mixOverlay.querySelectorAll('.flstock-enable').forEach(btn => {
           btn.onclick = (ev) => {
@@ -4491,7 +4761,7 @@ function updateHappyBanner() {
             if (raw === null) return;
             const n = parseInt(String(raw).replace(/\D/g, ''), 10);
             if (isNaN(n) || n < 0) return;
-           flavorStock[btn.dataset.name] = n;           
+            flavorStock[btn.dataset.name] = n;
             saveFlavorStockState();
             applyFlavorAutoState(btn.dataset.iid, btn.dataset.name);
             renderMixBuilder(it);
@@ -4501,7 +4771,7 @@ function updateHappyBanner() {
         mixOverlay.querySelectorAll('.flstock-btn').forEach(btn => {
           btn.onclick = (ev) => {
             ev.stopPropagation();
-            const key = btn.dataset.name;           
+            const key = btn.dataset.name;
             const n = flavorStockOf(btn.dataset.iid, btn.dataset.name);
             if (n === null) return;
             flavorStock[key] = Math.max(n + (btn.hasAttribute('data-inc') ? 1 : -1), 0);
@@ -4520,7 +4790,6 @@ function updateHappyBanner() {
           };
         });
 
-        
         mixOverlay.querySelector('#mix-close-btn').onclick = closeMixBuilder;
         mixOverlay.querySelector('#mix-apply-btn').onclick = applyMix;
         renderMixWeights();
@@ -4542,7 +4811,7 @@ function updateHappyBanner() {
             const total = mixSelected.reduce((acc, x) => acc + x.weight, 0) || 1;
             mixSelected.forEach(x => { x.norm = Math.round(x.weight / total * 100); });
             const sum = mixSelected.reduce((acc, x) => acc + x.norm, 0);
-            mixSelected[mixSelected.length - 1].norm += 100 - sum; // поправка на округление
+            mixSelected[mixSelected.length - 1].norm += 100 - sum;
             const it0 = menuItems.find(i => i.id === mixItemId);
             const base = it0 && typeof it0.price === 'number' ? it0.price : 0;
             const surcharge = mixSelected.filter(x => x.norm > 0 && x.price).reduce((s, x) => s + x.price, 0);
@@ -4556,7 +4825,6 @@ function updateHappyBanner() {
         });
       }
 
-
       function applyMix() {
         if (!mixSelected.length) {
           alert(mixForced ? 'Выберите хотя бы один вкус — без него кальян не добавить.' : 'Сначала выберите хотя бы один вкус.');
@@ -4564,7 +4832,6 @@ function updateHappyBanner() {
         }
         const text = mixSelected.filter(x => x.norm > 0).map(x => `${x.name} ${x.norm}%`).join(' + ');
 
-        // Режим заказа кальяна: сразу в корзину с выбранным вкусом
         if (mixForced) {
           const it = menuItems.find(i => i.id === mixItemId);
           closeMixBuilder();
@@ -4576,7 +4843,6 @@ function updateHappyBanner() {
           return;
         }
 
-        // Обычный режим: подставить вкус в заметку карточки
         let card = document.querySelector(`.item-card[data-id="${mixItemId}"]`);
         if (!card) return;
 
@@ -4611,7 +4877,9 @@ function updateHappyBanner() {
           soldFlavors: soldFlavors,
           stockCounts: stockCounts,
           flavorStock: flavorStock,
-          purchaseTimes: purchaseTimes
+          purchaseTimes: purchaseTimes,
+          writeoffLog: writeoffLog,
+          inventoryLog: inventoryLog
         };
       }
 
@@ -4623,7 +4891,7 @@ function updateHappyBanner() {
         a.download = 'lumu_backup_' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.json';
         a.click();
         URL.revokeObjectURL(a.href);
-        alert('✅ Бэкап скачан: ' + a.download + '\nВнутри: меню, журналы, столы, стоп-листы, остатки.');
+        alert('✅ Бэкап скачан: ' + a.download + '\nВнутри: меню, журналы, столы, стоп-листы, остатки, списания, сверки.');
       });
 
       // === ИНВЕНТАРИЗАЦИЯ (сверка остатков) ===
@@ -4685,9 +4953,19 @@ function updateHappyBanner() {
       });
 
       function openInventory() {
-        const items = menuItems.filter(it => typeof it.price === 'number' && stockOf(it.id) !== null)
-          .concat(extraItems.map(x => ({ id: x.id, title: x.name, price: null, isExtra: true })));      
-        const flavorNames = Object.keys(flavorStock);
+        // НОВОЕ: порядок строк по значимости — самые дорогие первыми
+        const menuTracked = menuItems
+          .filter(it => typeof it.price === 'number' && stockOf(it.id) !== null)
+          .sort((a, b) => (b.price || 0) - (a.price || 0));
+        const items = menuTracked
+          .concat(extraItems.map(x => ({ id: x.id, title: x.name, price: null, isExtra: true })));
+        // вкусы тоже по цене, где она известна
+        const flavorNames = Object.keys(flavorStock).sort((a, b) => {
+          const fa = (menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === a) || {}).price || 0;
+          const fb = (menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === b) || {}).price || 0;
+          return fb - fa;
+        });
+
         if (!items.length && !flavorNames.length) {
           alert('Учёт остатков не ведётся — сверять нечего. Начните вести остатки (🔢 на карточке), и они попадут в инвентаризацию.');
           return;
@@ -4702,14 +4980,18 @@ function updateHappyBanner() {
         invOverlay.innerHTML = `
           <div id="inv-panel">
             <h3>📋 Инвентаризация</h3>
-            <p class="mix-hint">Впишите сколько реально на полке. Пустое поле = пропустить позицию. После сохранения учёт пересчитается по факту.</p>
+            <p class="mix-hint">Впишите сколько реально на полке. Пустое поле = пропустить позицию. Самые дорогие позиции — первыми.</p>
+            <!-- НОВОЕ: слепой подсчёт -->
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; margin-bottom:8px;">
+              <input type="checkbox" id="inv-blind-toggle"> 🙈 Считать вслепую (спрятать «по учёту»)
+            </label>
             ${items.map(it => `
               <div class="inv-row">
-                <span class="inv-name">${it.isExtra ? '📦 ' : ''}${esc(it.title)}</span>
+                <span class="inv-name">${it.isExtra ? '📦 ' : ''}${esc(it.title)}${it.price ? ' <span style="color:#777;">· ' + it.price + ' ₽</span>' : ''}</span>
                 <span class="inv-exp">по учёту: ${stockOf(it.id)}</span>
                 <input type="number" min="0" data-inv-item="${it.id}" placeholder="факт">
                 ${it.isExtra ? `<button class="inv-row-del" data-xid="${it.id}" title="Удалить позицию" style="background:none;border:none;color:#ff5a6a;cursor:pointer;font-size:0.95rem;padding:0 2px;">🗑</button>` : ''}
-              </div>`).join('')}          
+              </div>`).join('')}
             ${flavorNames.map(fn => `
               <div class="inv-row">
                 <span class="inv-name">🍃 ${esc(fn)}</span>
@@ -4723,13 +5005,19 @@ function updateHappyBanner() {
               ${extraItems.map((x, xi) => `• ${esc(x.name)} <button class="inv-extra-del" data-xi="${xi}" title="Убрать из инвентаризации" style="background:none;border:none;color:#777;cursor:pointer;">✕</button>`).join('<br>') || 'пока пусто'}
             </div>
             <input type="text" id="inv-extra-name" class="tobacco-input" placeholder="Название (например, Хаус-алкоголь)">
-            <button id="inv-extra-add-btn" class="mix-ghost" style="margin-top:6px;">➕ Добавить складскую позицию</button>            
+            <button id="inv-extra-add-btn" class="mix-ghost" style="margin-top:6px;">➕ Добавить складскую позицию</button>
             ${hist ? `<div class="inv-hist"><b>Последние сверки:</b><br>${hist}</div>` : ''}
           </div>`;
 
+        // НОВОЕ: слепой подсчёт — прячет «по учёту», пока галочка включена
+        const panel = invOverlay.querySelector('#inv-panel');
+        invOverlay.querySelector('#inv-blind-toggle').onchange = (ev) => {
+          panel.classList.toggle('inv-blind-on', ev.target.checked);
+        };
+
         invOverlay.querySelector('#inv-close-btn').onclick = () => { invOverlay.style.display = 'none'; lockScroll(false); };
         invOverlay.querySelector('#inv-excel-btn').onclick = exportInventoryExcel;
-        invOverlay.querySelector('#inv-save-btn').onclick = () => submitInventory(items, flavorNames);
+        invOverlay.querySelector('#inv-save-btn').onclick = () => startInventoryReview(items, flavorNames);
         invOverlay.querySelector('#inv-extra-add-btn').onclick = () => {
           const inp = invOverlay.querySelector('#inv-extra-name');
           const name = (inp.value || '').trim();
@@ -4741,7 +5029,7 @@ function updateHappyBanner() {
           const x = { id: 'extra-' + Date.now(), name };
           extraItems.push(x);
           saveExtraItems();
-          stockCounts[x.id] = 0;   // остаток начинаем вести с нуля
+          stockCounts[x.id] = 0;
           saveStockState();
           openInventory();
         };
@@ -4765,7 +5053,7 @@ function updateHappyBanner() {
 
         invOverlay.querySelectorAll('.inv-row-del').forEach(btn => {
           btn.onclick = () => {
-            const x = extraItems.find(e => e.id === btn.dataset.xid);
+            const x = extraItems.find(e2 => e2.id === btn.dataset.xid);
             if (!x) return;
             if (!confirm(`Удалить «${x.name}» из инвентаризации? Остаток и стоп-лист сбросятся, история сверок в журнале останется.`)) return;
             delete stockCounts[x.id];
@@ -4783,7 +5071,159 @@ function updateHappyBanner() {
 
         lockScroll(true);
         invOverlay.style.display = 'flex';
-      }       
+      }
+
+      // Сбор введённых значений с панели (для первого и повторного прохода)
+      function collectInventoryInput(items, flavorNames) {
+        const invItems = [], invFlavors = [];
+        invOverlay.querySelectorAll('[data-inv-item]').forEach(inp => {
+          if (inp.value === '') return;
+          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
+          const it = items.find(x => x.id === inp.dataset.invItem);
+          if (!it) return;
+          const expected = stockOf(it.id);
+          invItems.push({ id: it.id, name: it.title, price: it.price, expected, actual: n, diff: n - expected });
+        });
+        invOverlay.querySelectorAll('[data-inv-flavor]').forEach(inp => {
+          if (inp.value === '') return;
+          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
+          const fn = inp.dataset.invFlavor;
+          const expected = flavorStock[fn] || 0;
+          const fl = menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === fn);
+          invFlavors.push({ name: fn, price: (fl && fl.price) || null, expected, actual: n, diff: n - expected });
+        });
+        return { invItems, invFlavors };
+      }
+
+      // НОВОЕ: повторная проверка — сначала показываем только расхождения
+      function startInventoryReview(items, flavorNames) {
+        const { invItems, invFlavors } = collectInventoryInput(items, flavorNames);
+        if (!invItems.length && !invFlavors.length) {
+          alert('Ни одной позиции не заполнено — сверять нечего.');
+          return;
+        }
+        const mism = invItems.filter(i => i.diff !== 0);
+        const mismF = invFlavors.filter(i => i.diff !== 0);
+        if (!mism.length && !mismF.length) {
+          finalizeInventory(invItems, invFlavors); // всё сошлось — сразу пишем
+          return;
+        }
+        const money = (arr) => arr.reduce((s, i) => i.diff < 0 && i.price ? s + Math.abs(i.diff) * i.price : s, 0);
+        const loss = money(mism) + money(mismF);
+
+        // экран перепроверки: только спорные строки, значения можно поправить
+        invOverlay.querySelector('#inv-panel').innerHTML = `
+          <h3>🔍 Повторная проверка</h3>
+          <p class="mix-hint">Проверьте расхождения ещё раз — опечатка «2 вместо 12» ловится именно здесь. Значения можно поправить, затем подтвердить.</p>
+          ${mism.map((i, k) => `
+            <div class="inv-row">
+              <span class="inv-name">${esc(i.name)}</span>
+              <span class="inv-exp">по учёту: ${i.expected}</span>
+              <input type="number" min="0" data-rev-item="${k}" value="${i.actual}">
+            </div>`).join('')}
+          ${mismF.map((i, k) => `
+            <div class="inv-row">
+              <span class="inv-name">🍃 ${esc(i.name)}</span>
+              <span class="inv-exp">по учёту: ${i.expected}</span>
+              <input type="number" min="0" data-rev-flavor="${k}" value="${i.actual}">
+            </div>`).join('')}
+          <div class="inv-hist">Расхождений: ${mism.length + mismF.length} · возможная недостача ~${loss.toLocaleString('ru-RU')} ₽</div>
+          <button id="inv-confirm-btn" class="mix-primary" style="margin-top: 12px;">✅ Всё верно — сохранить</button>
+          <button id="inv-back-btn" class="mix-ghost">← Вернуться и дописать</button>`;
+
+        invOverlay.querySelector('#inv-back-btn').onclick = openInventory;
+        invOverlay.querySelector('#inv-confirm-btn').onclick = () => {
+          // перечитываем поправленные значения в те же объекты
+          invOverlay.querySelectorAll('[data-rev-item]').forEach(inp => {
+            const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
+            mism[+inp.dataset.revItem].actual = n;
+            mism[+inp.dataset.revItem].diff = n - mism[+inp.dataset.revItem].expected;
+          });
+          invOverlay.querySelectorAll('[data-rev-flavor]').forEach(inp => {
+            const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
+            mismF[+inp.dataset.revFlavor].actual = n;
+            mismF[+inp.dataset.revFlavor].diff = n - mismF[+inp.dataset.revFlavor].expected;
+          });
+          finalizeInventory(invItems, invFlavors);
+        };
+      }
+
+      // Запись сверки: учёт пересчитывается, отчёт формируется
+      function finalizeInventory(invItems, invFlavors) {
+        // учёт пересчитывается по факту
+        invItems.forEach(i => { stockCounts[i.id] = i.actual; });
+        invFlavors.forEach(i => { flavorStock[i.name] = i.actual; });
+        saveStockState();
+        saveFlavorStockState();
+
+        // пересчёт стоп-листов и минимумов после сверки
+        invItems.forEach(i => {
+          const it = menuItems.find(x => x.id === i.id) || extraItems.find(x => x.id === i.id);
+          if (it) applyStockAutoState(it, i.expected);
+        });
+        invFlavors.forEach(i => applyFlavorAutoState(null, i.name));
+        updateCartButtons();
+        updatePurchaseBtn();
+
+        const entry = {
+          inventoryAt: new Date().toISOString(),
+          week: weekKeyOf(new Date()),
+          by: 'админ',
+          items: invItems,
+          flavors: invFlavors
+        };
+        inventoryLog.unshift(entry);
+        saveInventoryLog();
+
+        const money = (arr) => arr.reduce((s, i) => i.diff < 0 && i.price ? s + Math.abs(i.diff) * i.price : s, 0);
+        const loss = money(invItems) + money(invFlavors);
+
+        let text = `📋 Инвентаризация — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
+        const line = (i) => `• ${i.name}: по учёту ${i.expected}, факт ${i.actual} → ` +
+          (i.diff < 0 ? `❗ недостача ${Math.abs(i.diff)}` : `📈 излишек +${i.diff}`) +
+          (i.diff < 0 && i.price ? ` (~${(Math.abs(i.diff) * i.price).toLocaleString('ru-RU')} ₽)` : '');
+        const mism = invItems.filter(i => i.diff !== 0);
+        const mismF = invFlavors.filter(i => i.diff !== 0);
+        if (mism.length || mismF.length) {
+          text += mism.length ? `Позиции:\n${mism.map(line).join('\n')}\n` : '';
+          text += mismF.length ? `Вкусы:\n${mismF.map(line).join('\n')}\n` : '';
+          text += `\n📉 Суммарная недостача: ${loss.toLocaleString('ru-RU')} ₽`;
+        } else {
+          text += '✅ Всё сошлось — расхождений нет 🎉';
+        }
+
+        // Сравнение с прошлой сверкой: расход по системе и потери вне системы — в штуках и деньгах
+        const prev = prevFactMap();
+        const deltaLines = [];
+        const delta = (i, prevVal) => {
+          const was = prevVal;
+          const used = was - i.expected;                 // списалось по системе
+          const off = i.actual - i.expected;             // расхождение факт/учёт
+          const moneyTxt = (off < 0 && i.price) ? ` (~${(Math.abs(off) * i.price).toLocaleString('ru-RU')} ₽)` : '';
+          const offTxt = off < 0
+            ? `−${Math.abs(off)} вне системы${moneyTxt}`
+            : off > 0 ? `+${off} не внесено в учёт` : 'в норме';
+          return `• ${i.name}: было ${was}, списалось ${used}, факт ${i.actual} → ${offTxt}`;
+        };
+        invItems.forEach(i => {
+          if (prev.byItem[i.id] === undefined) return;
+          deltaLines.push(delta(i, prev.byItem[i.id]));
+        });
+        invFlavors.forEach(i => {
+          if (prev.byFlavor[i.name] === undefined) return;
+          deltaLines.push(delta(i, prev.byFlavor[i.name]));
+        });
+        if (deltaLines.length) {
+          text += `\n📊 Динамика с прошлой сверки:\n` + deltaLines.join('\n');
+        }
+
+        // tgSend(text);
+        invOverlay.style.display = 'none';
+        lockScroll(false);
+        alert(mism.length || mismF.length
+          ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}. Учёт пересчитан по факту.`
+          : '✅ Инвентаризация записана — всё сошлось!');
+      }
 
       // Последний известный факт из прошлых сверок: для позиций по id, для вкусов по имени
       function prevFactMap() {
@@ -4829,99 +5269,6 @@ function updateHappyBanner() {
         XLSX.utils.book_append_sheet(wb, ws, 'Сверки');
         XLSX.writeFile(wb, 'inventarizaciya_' + new Date().toISOString().slice(0, 10) + '.xlsx');
       }
-        
-      function submitInventory(items, flavorNames) {
-        const invItems = [], invFlavors = [];
-        invOverlay.querySelectorAll('[data-inv-item]').forEach(inp => {
-          if (inp.value === '') return;
-          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
-          const it = items.find(x => x.id === inp.dataset.invItem);
-          if (!it) return;
-          const expected = stockOf(it.id);
-          invItems.push({ id: it.id, name: it.title, price: it.price, expected, actual: n, diff: n - expected });
-        });
-        invOverlay.querySelectorAll('[data-inv-flavor]').forEach(inp => {
-          if (inp.value === '') return;
-          const n = Math.max(parseFloat(String(inp.value).replace(',', '.')) || 0, 0);
-          const fn = inp.dataset.invFlavor;
-          const expected = flavorStock[fn] || 0;
-          const fl = menuItems.flatMap(m => m.list || []).find(l => typeof l !== 'string' && l.name === fn);
-          invFlavors.push({ name: fn, price: (fl && fl.price) || null, expected, actual: n, diff: n - expected });
-        });
-
-        if (!invItems.length && !invFlavors.length) {
-          alert('Ни одной позиции не заполнено — сверять нечего.');
-          return;
-        }
-
-        // учёт пересчитывается по факту
-        invItems.forEach(i => { stockCounts[i.id] = i.actual; });
-        invFlavors.forEach(i => { flavorStock[i.name] = i.actual; });
-        saveStockState();
-        saveFlavorStockState();
-        updateCartButtons();
-
-        const entry = {
-          inventoryAt: new Date().toISOString(),
-          week: weekKeyOf(new Date()),
-          by: 'админ',
-          items: invItems,
-          flavors: invFlavors
-        };
-        inventoryLog.unshift(entry);
-        saveInventoryLog();
-
-        const money = (arr) => arr.reduce((s, i) => i.diff < 0 && i.price ? s + Math.abs(i.diff) * i.price : s, 0);
-        const loss = money(invItems) + money(invFlavors);
-
-        let text = `📋 Инвентаризация — ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}\n\n`;
-        const line = (i) => `• ${i.name}: по учёту ${i.expected}, факт ${i.actual} → ` +
-          (i.diff < 0 ? `❗ недостача ${Math.abs(i.diff)}` : `📈 излишек +${i.diff}`) +
-          (i.diff < 0 && i.price ? ` (~${(Math.abs(i.diff) * i.price).toLocaleString('ru-RU')} ₽)` : '');
-        const mism = invItems.filter(i => i.diff !== 0);
-        const mismF = invFlavors.filter(i => i.diff !== 0);
-        if (mism.length || mismF.length) {
-          text += mism.length ? `Позиции:\n${mism.map(line).join('\n')}\n` : '';
-          text += mismF.length ? `Вкусы:\n${mismF.map(line).join('\n')}\n` : '';
-          text += `\n📉 Суммарная недостача: ${loss.toLocaleString('ru-RU')} ₽`;
-        } else {
-          text += '✅ Всё сошлось — расхождений нет 🎉';
-        }
-
-        // Сравнение с прошлой сверкой: расход по системе и потери вне системы
-        const prev = prevFactMap();
-        const deltaLines = [];
-        invItems.forEach(i => {
-          if (prev.byItem[i.id] === undefined) return;
-          const was = prev.byItem[i.id];
-          const used = was - i.expected;                 // списалось по системе
-          const off = i.actual - i.expected;             // расхождение факт/учёт
-          const offTxt = off < 0
-            ? `−${Math.abs(off)} вне системы`
-            : off > 0 ? `+${off} не внесено в учёт` : 'в норме';
-          deltaLines.push(`• ${i.name}: было ${was}, списалось ${used}, факт ${i.actual} → ${offTxt}`);
-        });
-        invFlavors.forEach(i => {
-          if (prev.byFlavor[i.name] === undefined) return;
-          const was = prev.byFlavor[i.name];
-          const used = was - i.expected;
-          const off = i.actual - i.expected;
-          const offTxt = off < 0
-            ? `−${Math.abs(off)} вне системы`
-            : off > 0 ? `+${off} не внесено в учёт` : 'в норме';
-          deltaLines.push(`• ${i.name}: было ${was}, списалось ${used}, факт ${i.actual} → ${offTxt}`);
-        });
-        if (deltaLines.length) {
-          text += `\n📊 Динамика с прошлой сверки:\n` + deltaLines.join('\n');
-        }
-          
-        // tgSend(text);
-        invOverlay.style.display = 'none';
-        lockScroll(false);
-        alert(mism.length || mismF.length
-          ? `📋 Инвентаризация записана. Расхождений: ${mism.length + mismF.length}. Учёт пересчитан по факту.`
-          : '✅ Инвентаризация записана — всё сошлось!');
-      }    
 
       // напоминание по воскресеньям: один раз в день, только админу
       function maybeInventoryReminder() {
@@ -4965,7 +5312,7 @@ function updateHappyBanner() {
           }
         } catch (e) {}
       })();
-        
+
       // --- Установка PWA ---
       document.getElementById('install-btn').addEventListener('click', () => {
         if (deferredPrompt) {
@@ -4978,8 +5325,6 @@ function updateHappyBanner() {
     });
 
     </script>
-    <button id="hookah-call-btn">💨 Вызвать кальянщика</button>
-    <button id="nav-admin-btn" title="Служебный вход">⚙</button>
 </body>
 </html>
 
