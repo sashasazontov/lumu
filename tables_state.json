@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "2",
       "lastMsgId": 487,
@@ -14,10 +15,10 @@
           "qty": 1,
           "batchId": "bmwvizyly-30do"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "closedAt": "2026-11-25T14:40:29.135Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -93,5 +94,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795617572015
+  "updatedAt": 1795617635682
 }
