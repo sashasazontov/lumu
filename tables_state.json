@@ -44,7 +44,7 @@
     {
       "table": "1",
       "lastMsgId": 502,
-      "orderNo": 1,
+      "orderNo": 2,
       "items": [
         {
           "id": "kalyan-standard",
@@ -54,6 +54,24 @@
           "note": "Musthave-Мандарин Апельсин 100%",
           "qty": 1,
           "batchId": "bmwwfh88p-pnqg"
+        },
+        {
+          "id": "suhari",
+          "name": "Сухари",
+          "price": 300,
+          "size": "",
+          "note": "Краб",
+          "qty": 1,
+          "batchId": "bmwwfsn4j-o5u4"
+        },
+        {
+          "id": "beer-280",
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Бад",
+          "qty": 1,
+          "batchId": "bmwwfsn4j-o5u4"
         }
       ]
     }
@@ -134,5 +152,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795629562282
+  "updatedAt": 1795630095389
 }
