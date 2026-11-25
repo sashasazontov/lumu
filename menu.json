@@ -433,7 +433,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 3
+      "minStock": 5
     },
     {
       "id": "lipton",
@@ -469,7 +469,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 2
+      "minStock": 5
     },
     {
       "id": "adrenaline-b",
@@ -511,7 +511,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 5
+      "minStock": 4
     },
     {
       "id": "red-bull-m",
@@ -781,7 +781,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 20
+      "minStock": 5
     },
     {
       "id": "beer-320",
@@ -795,7 +795,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "minStock": 20
+      "minStock": 5
     },
     {
       "id": "shot-fly-girl",
@@ -1092,8 +1092,7 @@
       "promo": false,
       "tobaccoBtn": false,
       "list": [],
-      "sold": false,
-      "minStock": 1
+      "sold": false
     },
     {
       "id": "suhari",
