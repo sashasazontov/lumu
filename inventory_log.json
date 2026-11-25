@@ -1,5 +1,37 @@
 [
   {
+    "inventoryAt": "2026-11-25T02:23:22.271Z",
+    "week": "2026-11-22",
+    "by": "админ",
+    "items": [
+      {
+        "id": "wine-red",
+        "name": "Вино красное",
+        "price": 2499,
+        "expected": 1,
+        "actual": 0,
+        "diff": -1
+      }
+    ],
+    "flavors": []
+  },
+  {
+    "inventoryAt": "2026-11-25T02:22:49.182Z",
+    "week": "2026-11-22",
+    "by": "админ",
+    "items": [
+      {
+        "id": "cheese-kosichka",
+        "name": "Сыр",
+        "price": 449,
+        "expected": 3,
+        "actual": 3,
+        "diff": 0
+      }
+    ],
+    "flavors": []
+  },
+  {
     "inventoryAt": "2026-11-24T03:11:36.434Z",
     "week": "2026-11-22",
     "by": "админ",
