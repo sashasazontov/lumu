@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "6",
       "lastMsgId": 501,
@@ -14,10 +15,11 @@
           "qty": 1,
           "batchId": "bmwwf8fpe-2j13"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "guests": 12,
+      "closedAt": "2026-11-25T21:27:54.057Z",
+      "pay": "💳 Перевод"
+    },
     {
       "table": "1",
       "lastMsgId": 502,
@@ -167,5 +169,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795632029463
+  "updatedAt": 1795642075565
 }
