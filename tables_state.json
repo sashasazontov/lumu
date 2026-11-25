@@ -3,7 +3,7 @@
     {
       "table": "1",
       "lastMsgId": 471,
-      "orderNo": 1,
+      "orderNo": 2,
       "items": [
         {
           "id": "cork-fee",
@@ -13,6 +13,15 @@
           "note": "",
           "qty": 1,
           "batchId": "bmwvi54fi-w3i0"
+        },
+        {
+          "id": "mohito-can",
+          "name": "Мохито в банке",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwvi5qnp-1lwg"
         }
       ]
     }
@@ -93,5 +102,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795573570067
+  "updatedAt": 1795573598833
 }
