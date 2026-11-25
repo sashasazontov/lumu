@@ -1,24 +1,32 @@
 {
-  "tables": [],
-  "closedTables": [
+  "tables": [
     {
-      "table": "2",
-      "lastMsgId": 487,
-      "orderNo": 2,
+      "table": "3",
+      "lastMsgId": 500,
+      "orderNo": 1,
       "items": [
         {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2900,
+          "id": "beer-280",
+          "name": "Пиво за 280",
+          "price": 280,
           "size": "",
-          "note": "Dark Side — Redberry 50% + Dark Side — Ананас Ментол Киви 50%",
+          "note": "Грин бит",
+          "qty": 3,
+          "batchId": "bmwwf3rgo-rp3b"
+        },
+        {
+          "id": "chips-lays",
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "Сметана лук",
           "qty": 1,
-          "batchId": "bmwvizyly-30do"
+          "batchId": "bmwwf3rgo-rp3b"
         }
-      ],
-      "closedAt": "2026-11-25T14:40:29.135Z",
-      "pay": "💳 Перевод"
-    },
+      ]
+    }
+  ],
+  "closedTables": [
     {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
@@ -94,5 +102,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795617635682
+  "updatedAt": 1795629085906
 }
