@@ -24,6 +24,22 @@
           "batchId": "bmwwf3rgo-rp3b"
         }
       ]
+    },
+    {
+      "table": "6",
+      "lastMsgId": 501,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-standard",
+          "name": "Кальян Стандарт",
+          "price": 1500,
+          "size": "",
+          "note": "Musthave-Малина 100%",
+          "qty": 1,
+          "batchId": "bmwwf8fpe-2j13"
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -102,5 +118,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795629085906
+  "updatedAt": 1795629151996
 }
