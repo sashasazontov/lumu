@@ -19,60 +19,6 @@
   ],
   "closedTables": [
     {
-      "table": "1",
-      "lastMsgId": 482,
-      "orderNo": 5,
-      "items": [
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1,
-          "batchId": "bmwvigv52-0rj3"
-        },
-        {
-          "id": "promo-bowl",
-          "name": "АКЦИИ В ЛУМУ ЧАША",
-          "price": 300,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1,
-          "batchId": "bmwvijwpq-9esj"
-        },
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1,
-          "batchId": "bmwvivrrq-ldyj"
-        },
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2500,
-          "size": "",
-          "note": "Musthave-Мандарин Апельсин 100%",
-          "qty": 1,
-          "batchId": "bmwvix386-8mip"
-        },
-        {
-          "id": "kalyan-premium",
-          "name": "Кальян Премиум",
-          "price": 2700,
-          "size": "",
-          "note": "Sebero — Шипучка яблоко 50% + Dark Side — Redberry 50%",
-          "qty": 1,
-          "batchId": "bmwviy12e-s7x9"
-        }
-      ],
-      "closedAt": "2026-11-25T03:03:31.858Z",
-      "pay": "💵 Наличка"
-    },
-    {
       "table": "1 стол Алик мы не считаем",
       "lastMsgId": 439,
       "orderNo": 1,
@@ -147,5 +93,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795575813362
+  "updatedAt": 1795617572015
 }
