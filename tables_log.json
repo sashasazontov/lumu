@@ -1,5 +1,24 @@
 [
   {
+    "table": "6",
+    "lastMsgId": 501,
+    "orderNo": 1,
+    "items": [
+      {
+        "id": "kalyan-standard",
+        "name": "Кальян Стандарт",
+        "price": 1500,
+        "size": "",
+        "note": "Musthave-Малина 100%",
+        "qty": 1,
+        "batchId": "bmwwf8fpe-2j13"
+      }
+    ],
+    "guests": 12,
+    "closedAt": "2026-11-25T21:27:54.057Z",
+    "pay": "💳 Перевод"
+  },
+  {
     "table": "1",
     "lastMsgId": 502,
     "orderNo": 2,
