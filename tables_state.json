@@ -1,5 +1,22 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "1 Друзья Алика",
+      "lastMsgId": 510,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "coca-cola",
+          "name": "Coca‑Cola",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 2,
+          "batchId": "bmwy1zhm8-kkci"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "6",
@@ -169,5 +186,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795642075565
+  "updatedAt": 1795727833304
 }
