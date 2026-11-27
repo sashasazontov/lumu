@@ -11,7 +11,7 @@
           "price": 280,
           "size": "",
           "note": "Budd",
-          "qty": 1,
+          "qty": 2,
           "batchId": "bmwzk4ty1-ivlq"
         }
       ]
@@ -269,5 +269,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795818781331
+  "updatedAt": 1795821528852
 }
