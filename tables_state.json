@@ -3,7 +3,7 @@
     {
       "table": "4",
       "lastMsgId": 521,
-      "orderNo": 1,
+      "orderNo": 2,
       "items": [
         {
           "id": "beer-320",
@@ -22,6 +22,15 @@
           "note": "Сыр Cheetos",
           "qty": 1,
           "batchId": "bmwz77rcd-p55h"
+        },
+        {
+          "id": "beer-320",
+          "name": "Пиво за 320",
+          "price": 320,
+          "size": "",
+          "note": "Corona 2x",
+          "qty": 2,
+          "batchId": "bmwz7dxja-1o8u"
         }
       ]
     }
@@ -214,5 +223,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795797082319
+  "updatedAt": 1795797371380
 }
