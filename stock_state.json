@@ -1,10 +1,10 @@
 {
   "stock": {
-    "cheese-kosichka": 3,
+    "cheese-kosichka": 2,
     "item-1795311818077": 3,
     "item-1795310786453": 5,
     "pepsi": 19,
-    "beer-280": 140,
+    "beer-280": 139,
     "whiskey": 20,
     "vodka": 20,
     "wine-red": 1,
@@ -12,7 +12,7 @@
     "item-1795388973237": 14,
     "suhari": 18,
     "olives": 1,
-    "beer-320": 30,
+    "beer-320": 27,
     "coca-cola": 19,
     "fanta": 13,
     "mohito-can": 9,
@@ -144,5 +144,5 @@
     "extra-uxdild": 250,
     "extra-17qjio": 200
   },
-  "updatedAt": 1795797082320
+  "updatedAt": 1795818781351
 }
