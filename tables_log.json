@@ -1,5 +1,69 @@
 [
   {
+    "table": "4",
+    "lastMsgId": 521,
+    "orderNo": 4,
+    "items": [
+      {
+        "id": "beer-320",
+        "name": "Пиво за 320",
+        "price": 320,
+        "size": "",
+        "note": "Corona 2x, Phoenix 1x",
+        "qty": 3,
+        "batchId": "bmwz77rcd-p55h"
+      },
+      {
+        "id": "chips-lays",
+        "name": "Чипсы на выбор (LAYS)",
+        "price": 350,
+        "size": "",
+        "note": "Сыр Cheetos",
+        "qty": 1,
+        "batchId": "bmwz77rcd-p55h"
+      },
+      {
+        "id": "beer-320",
+        "name": "Пиво за 320",
+        "price": 320,
+        "size": "",
+        "note": "Corona 2x",
+        "qty": 2,
+        "batchId": "bmwz7dxja-1o8u"
+      },
+      {
+        "id": "cheese-kosichka",
+        "name": "Сыр",
+        "price": 449,
+        "size": "",
+        "note": "",
+        "qty": 1,
+        "batchId": "bmwz7n6lz-x33l"
+      },
+      {
+        "id": "tequila-sunrise",
+        "name": "Текила Санрайз",
+        "price": 479,
+        "size": "",
+        "note": "",
+        "qty": 1,
+        "batchId": "bmwz8dvaa-u2yu"
+      },
+      {
+        "id": "beer-320",
+        "name": "Пиво за 320",
+        "price": 320,
+        "size": "",
+        "note": "Corona 2x, Phoenix 1x",
+        "qty": 3,
+        "batchId": "bmwz8dvaa-u2yu"
+      }
+    ],
+    "guests": 2,
+    "closedAt": "2026-11-27T17:50:28.895Z",
+    "pay": "💵 Наличка"
+  },
+  {
     "shiftOpenAt": "2026-11-27T16:30:05.383Z",
     "openedBy": "Егор",
     "startCash": 1350
