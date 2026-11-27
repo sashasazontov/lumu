@@ -1,5 +1,6 @@
 {
-  "tables": [
+  "tables": [],
+  "closedTables": [
     {
       "table": "4",
       "lastMsgId": 521,
@@ -59,10 +60,11 @@
           "qty": 3,
           "batchId": "bmwz8dvaa-u2yu"
         }
-      ]
-    }
-  ],
-  "closedTables": [
+      ],
+      "guests": 2,
+      "closedAt": "2026-11-27T17:50:28.895Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "1 Друзья Алика",
       "lastMsgId": 510,
@@ -250,5 +252,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795799354475
+  "updatedAt": 1795801830399
 }
