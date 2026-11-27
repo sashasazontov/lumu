@@ -3,7 +3,7 @@
     {
       "table": "4",
       "lastMsgId": 521,
-      "orderNo": 3,
+      "orderNo": 4,
       "items": [
         {
           "id": "beer-320",
@@ -40,6 +40,24 @@
           "note": "",
           "qty": 1,
           "batchId": "bmwz7n6lz-x33l"
+        },
+        {
+          "id": "tequila-sunrise",
+          "name": "Текила Санрайз",
+          "price": 479,
+          "size": "",
+          "note": "",
+          "qty": 2,
+          "batchId": "bmwz8dvaa-u2yu"
+        },
+        {
+          "id": "beer-320",
+          "name": "Пиво за 320",
+          "price": 320,
+          "size": "",
+          "note": "Corona 2x, Phoenix 1x",
+          "qty": 1,
+          "batchId": "bmwz8dvaa-u2yu"
         }
       ]
     }
@@ -232,5 +250,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795797802448
+  "updatedAt": 1795799048954
 }
