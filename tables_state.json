@@ -1,5 +1,22 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "7",
+      "lastMsgId": 527,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "beer-280",
+          "name": "Пиво за 280",
+          "price": 280,
+          "size": "",
+          "note": "Budd",
+          "qty": 1,
+          "batchId": "bmwzk4ty1-ivlq"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "4",
@@ -252,5 +269,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795801830399
+  "updatedAt": 1795818781331
 }
