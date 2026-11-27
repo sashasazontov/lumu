@@ -1,5 +1,31 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "4",
+      "lastMsgId": 521,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "beer-320",
+          "name": "Пиво за 320",
+          "price": 320,
+          "size": "",
+          "note": "Corona 2x, Phoenix 1x",
+          "qty": 3,
+          "batchId": "bmwz77rcd-p55h"
+        },
+        {
+          "id": "chips-lays",
+          "name": "Чипсы на выбор (LAYS)",
+          "price": 350,
+          "size": "",
+          "note": "Сыр Cheetos",
+          "qty": 1,
+          "batchId": "bmwz77rcd-p55h"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "1 Друзья Алика",
@@ -188,5 +214,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795730419578
+  "updatedAt": 1795797082319
 }
