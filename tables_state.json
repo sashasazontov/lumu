@@ -56,7 +56,7 @@
           "price": 320,
           "size": "",
           "note": "Corona 2x, Phoenix 1x",
-          "qty": 1,
+          "qty": 3,
           "batchId": "bmwz8dvaa-u2yu"
         }
       ]
@@ -250,5 +250,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795799344686
+  "updatedAt": 1795799354475
 }
