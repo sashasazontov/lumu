@@ -3,7 +3,7 @@
     {
       "table": "4",
       "lastMsgId": 521,
-      "orderNo": 2,
+      "orderNo": 3,
       "items": [
         {
           "id": "beer-320",
@@ -31,6 +31,15 @@
           "note": "Corona 2x",
           "qty": 2,
           "batchId": "bmwz7dxja-1o8u"
+        },
+        {
+          "id": "cheese-kosichka",
+          "name": "Сыр",
+          "price": 449,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmwz7n6lz-x33l"
         }
       ]
     }
@@ -223,5 +232,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795797371380
+  "updatedAt": 1795797802448
 }
