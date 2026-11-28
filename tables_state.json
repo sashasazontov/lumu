@@ -15,6 +15,22 @@
           "batchId": "bmx0lf9as-2ufy"
         }
       ]
+    },
+    {
+      "table": "1",
+      "lastMsgId": 536,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "item-1795388973237",
+          "name": "Jagermeister",
+          "price": 329,
+          "size": "50 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmx0q3cgw-z2k4"
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -306,5 +322,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795882935838
+  "updatedAt": 1795889255310
 }
