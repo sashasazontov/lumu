@@ -1,6 +1,33 @@
 {
   "tables": [
     {
+      "table": "1",
+      "lastMsgId": 536,
+      "orderNo": 2,
+      "items": [
+        {
+          "id": "item-1795388973237",
+          "name": "Jagermeister",
+          "price": 329,
+          "size": "50 мл",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmx0q3cgw-z2k4"
+        },
+        {
+          "id": "fanta",
+          "name": "Fanta",
+          "price": 250,
+          "size": "",
+          "note": "",
+          "qty": 1,
+          "batchId": "bmx0sjn2p-c4zo"
+        }
+      ]
+    }
+  ],
+  "closedTables": [
+    {
       "table": "5",
       "lastMsgId": 534,
       "orderNo": 1,
@@ -14,26 +41,11 @@
           "qty": 1,
           "batchId": "bmx0lf9as-2ufy"
         }
-      ]
+      ],
+      "guests": 1,
+      "closedAt": "2026-11-28T18:07:52.345Z",
+      "pay": "💵 Наличка"
     },
-    {
-      "table": "1",
-      "lastMsgId": 536,
-      "orderNo": 1,
-      "items": [
-        {
-          "id": "item-1795388973237",
-          "name": "Jagermeister",
-          "price": 329,
-          "size": "50 мл",
-          "note": "",
-          "qty": 1,
-          "batchId": "bmx0q3cgw-z2k4"
-        }
-      ]
-    }
-  ],
-  "closedTables": [
     {
       "table": "3",
       "lastMsgId": 533,
@@ -322,5 +334,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795889255310
+  "updatedAt": 1795893374650
 }
