@@ -15,6 +15,22 @@
           "batchId": "bmx0gh8ha-epec"
         }
       ]
+    },
+    {
+      "table": "5",
+      "lastMsgId": 534,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-standard",
+          "name": "Кальян Стандарт",
+          "price": 1700,
+          "size": "",
+          "note": "Dark Side — Redberry 100%",
+          "qty": 1,
+          "batchId": "bmx0lf9as-2ufy"
+        }
+      ]
     }
   ],
   "closedTables": [
@@ -288,5 +304,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795873106963
+  "updatedAt": 1795881413010
 }
