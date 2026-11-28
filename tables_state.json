@@ -1,22 +1,6 @@
 {
   "tables": [
     {
-      "table": "3",
-      "lastMsgId": 533,
-      "orderNo": 1,
-      "items": [
-        {
-          "id": "kalyan-two-flavors",
-          "name": "Кальян от двух вкусов",
-          "price": 2000,
-          "size": "",
-          "note": "Musthave-Пинкман 50% + Musthave-Малина 50%",
-          "qty": 1,
-          "batchId": "bmx0gh8ha-epec"
-        }
-      ]
-    },
-    {
       "table": "5",
       "lastMsgId": 534,
       "orderNo": 1,
@@ -34,6 +18,24 @@
     }
   ],
   "closedTables": [
+    {
+      "table": "3",
+      "lastMsgId": 533,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-two-flavors",
+          "name": "Кальян от двух вкусов",
+          "price": 2000,
+          "size": "",
+          "note": "Musthave-Пинкман 50% + Musthave-Малина 50%",
+          "qty": 1,
+          "batchId": "bmx0gh8ha-epec"
+        }
+      ],
+      "closedAt": "2026-11-28T16:22:14.331Z",
+      "pay": "💵 Наличка"
+    },
     {
       "table": "7",
       "lastMsgId": 527,
@@ -304,5 +306,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795881413010
+  "updatedAt": 1795882935838
 }
