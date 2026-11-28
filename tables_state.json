@@ -1,5 +1,22 @@
 {
-  "tables": [],
+  "tables": [
+    {
+      "table": "3",
+      "lastMsgId": 533,
+      "orderNo": 1,
+      "items": [
+        {
+          "id": "kalyan-two-flavors",
+          "name": "Кальян от двух вкусов",
+          "price": 2000,
+          "size": "",
+          "note": "Musthave-Пинкман 50% + Musthave-Малина 50%",
+          "qty": 1,
+          "batchId": "bmx0gh8ha-epec"
+        }
+      ]
+    }
+  ],
   "closedTables": [
     {
       "table": "7",
@@ -271,5 +288,5 @@
       "pay": "💳 Перевод"
     }
   ],
-  "updatedAt": 1795822757118
+  "updatedAt": 1795873106963
 }
